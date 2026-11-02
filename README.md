@@ -2,11 +2,13 @@
 
 An unofficial, offline-capable PWA companion for the board game *7 Wonders*.
 
-- **Score pad**: tap-to-score grid for 3–7 players, with helpers (coins → VP, science sets with wild symbols, guild/commerce counts, wonder stages). Ties are broken by coins. Finished games go into a local history with a win tally.
-- **Science**: optimal wild assignment and how many points each next symbol is worth.
-- **War**: enter shields at the end of each age to get victory/defeat tokens for every player. These feed into the score pad.
-- **Wonders**: A/B stages for all 7 base wonders, with strategy tips.
-- **Guide**: rules in 60 seconds, scoring, strategy, free-build chains, common mistakes.
+Dutch-only, for the 2020 (2nd) edition. All data was checked against a physical Dutch 2020 copy (wonder boards, card overview, guilds).
+
+- **Score**: tap-to-score pad for 3–7 players with helpers (coins, science with wilds, guilds, Age III yellow cards, wonder stages). Ties go to most coins. Local history with win tally.
+- **Wetenschap**: best use of wild symbols and how much each next symbol is worth.
+- **Oorlog**: enter shields per age to get every player's military tokens; feeds the score pad.
+- **Wonders**: Day/Night stages for all 7 wonders, with tips.
+- **Gids**: step-by-step rules for a first game, colour overview, beginner tips, free-build chains.
 
 No build step and no dependencies. Data stays in the browser's localStorage.
 

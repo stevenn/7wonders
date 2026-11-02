@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="nl">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Wonders Companion</title>
-<meta name="description" content="Score pad, science optimizer, military tracker and strategy guide for 7 Wonders.">
+<meta name="description" content="Scoreblok, wetenschapshulp, veldslagteller en spelregels voor 7 Wonders (2020).">
 <meta name="theme-color" content="#1b1712">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -49,7 +49,6 @@ nav.tabs button[aria-current="page"]{color:var(--accent)}
 .btn.small{padding:6px 10px;font-size:13px}
 .btn.block{width:100%}
 .btn.danger{color:var(--lose)}
-.lang-btn{font-weight:700;font-size:14px;border:1px solid var(--line);border-radius:8px;padding:5px 8px;color:var(--text)}
 .icon-btn{background:none;border:0;padding:6px;cursor:pointer;color:var(--muted)}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{border:1px solid var(--line);background:var(--bg2);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer}
@@ -123,6 +122,12 @@ details[open] summary::after{content:"–"}
 details .body{padding:0 14px 14px}
 details .body p,details .body li{font-size:15px}
 details .body ul{padding-left:20px;margin:6px 0}
+.gstep{display:flex;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.gstep:last-child{border-bottom:0}
+.gstep p,.gstep ul{margin:4px 0 0}
+.gnum{flex:0 0 auto;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px;margin-top:1px}
+details .body ol{padding-left:20px;margin:6px 0}
+details .body li{margin-bottom:4px}
 .wonder h3{font-family:Georgia,serif;font-size:18px}
 .stage{display:flex;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:14px}
 .stage:last-child{border-bottom:0}
@@ -139,9 +144,8 @@ details .body ul{padding-left:20px;margin:6px 0}
 </head>
 <body>
 <header class="top">
-  <div class="grow"><h1>Wonders Companion</h1><div class="sub" id="subtitle">Score · Science · War · Strategy</div></div>
-  <button class="icon-btn lang-btn" id="langBtn">NL</button>
-  <button class="icon-btn" id="themeBtn" aria-label="Toggle theme"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+  <div class="grow"><h1>Wonders Companion</h1><div class="sub" id="subtitle">Scoreblok</div></div>
+  <button class="icon-btn" id="themeBtn" aria-label="Thema wisselen"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
 </header>
 
 <main>
@@ -154,10 +158,10 @@ details .body ul{padding-left:20px;margin:6px 0}
 
 <nav class="tabs" id="tabs">
   <button data-tab="score" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>Score</span></button>
-  <button data-tab="sci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg><span>Science</span></button>
-  <button data-tab="war"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg><span>War</span></button>
+  <button data-tab="sci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg><span>Wetenschap</span></button>
+  <button data-tab="war"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg><span>Oorlog</span></button>
   <button data-tab="wonders"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 3 20h18z"/><path d="M8 20l4-8 4 8"/></svg><span>Wonders</span></button>
-  <button data-tab="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/></svg><span>Guide</span></button>
+  <button data-tab="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/></svg><span>Gids</span></button>
 </nav>
 
 <div class="scrim" id="scrim"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
@@ -165,192 +169,105 @@ details .body ul{padding-left:20px;margin:6px 0}
 
 <script>
 'use strict';
-/* ============ STORAGE + LANGUAGE ============ */
+/* 7 Wonders (2020, Nederlandstalige editie) — hulp-app. Alle gegevens nagekeken met de eigen doos. */
+
+/* ============ OPSLAG ============ */
 const LS = {
   get(k, d){ try{ const v = localStorage.getItem('7wc.'+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
   set(k, v){ try{ localStorage.setItem('7wc.'+k, JSON.stringify(v)); }catch(e){} },
 };
-let lang = LS.get('lang', ((navigator.language||'')+'').toLowerCase().startsWith('nl') ? 'nl' : 'en');
-const L = (en, nl) => lang==='nl' ? nl : en;            // inline bilingual text
-const tx = v => Array.isArray(v) ? (lang==='nl' ? v[1] : v[0]) : v;   // [en, nl] data text
-const VP = n => L(`${n} VP`, `${n} ${n===1?'punt':'punten'}`);
-const VPshort = L('VP','pt');
+const PT = n => `${n} ${n===1?'punt':'punten'}`;
 
-/* ============ DATA ============ */
+/* ============ GEGEVENS ============ */
 const CATS = [
-  {k:'mil', n:['Military','Militair'], c:'var(--mil)'},
-  {k:'coin', n:['Treasury','Schatkist'], c:'var(--coin)'},
-  {k:'wonder', n:['Wonder','Wereldwonder'], c:'var(--wonder)'},
-  {k:'civ', n:['Civilian','Burgerlijk'], c:'var(--civ)'},
-  {k:'com', n:['Commerce','Handel'], c:'var(--com)'},
-  {k:'guild', n:['Guilds','Gilden'], c:'var(--guild)'},
-  {k:'sci', n:['Science','Wetenschap'], c:'var(--sci)'},
-  {k:'leaders', n:['Leaders','Leiders'], c:'var(--leaders)', exp:'leaders'},
-  {k:'cities', n:['Cities','Steden'], c:'var(--cities)', exp:'cities'},
-  {k:'debt', n:['Debt','Schulden'], c:'var(--debt)', exp:'cities', neg:true},
+  {k:'mil', n:'Militair', c:'var(--mil)'},
+  {k:'coin', n:'Schatkist', c:'var(--coin)'},
+  {k:'wonder', n:'Wereldwonder', c:'var(--wonder)'},
+  {k:'civ', n:'Burgerlijk', c:'var(--civ)'},
+  {k:'com', n:'Handel', c:'var(--com)'},
+  {k:'guild', n:'Gilden', c:'var(--guild)'},
+  {k:'sci', n:'Wetenschap', c:'var(--sci)'},
 ];
-const CAT_HINT = {
-  civ:['Sum the VP printed on your blue cards.','Tel de punten op je blauwe kaarten op.'],
-  leaders:['Sum the VP from your Leader cards.','Tel de punten van je leiderskaarten op.'],
-  cities:['Sum the VP from your black City cards.','Tel de punten van je zwarte stadskaarten op.'],
-  debt:['Number of debt tokens (each is −1 VP).','Aantal schuldfiches (elk −1 punt).'],
-};
-const RES = {ore:['Ore','Erts'], glass:['Glass','Glas'], papyrus:['Papyrus','Papyrus'], clay:['Clay','Klei'], wood:['Wood','Hout'], loom:['Loom (textile)','Textiel'], stone:['Stone','Steen']};
-// Shared stage effects
+const RES = {ore:'Erts', glass:'Glas', papyrus:'Papyrus', clay:'Klei', wood:'Hout', loom:'Textiel', stone:'Steen'};
+// Wonderborden. vp = punten van die fase. 'A' = Dag, 'B' = Nacht. Nagekeken met de eigen borden.
 const E = {
-  shields2:['2 shields','2 schilden'],
-  raw:['1 raw resource of your choice each turn','Elke beurt 1 grondstof naar keuze (bruin)'],
-  grey:['1 manufactured good of your choice each turn','Elke beurt 1 fabricaat naar keuze (grijs)'],
-  sci:['1 science symbol of your choice (wild)','1 wetenschapssymbool naar keuze (joker)'],
-  coins9:['9 coins','9 munten'],
-  discard:['Build one card from the discard pile for free','Bouw gratis 1 kaart uit de aflegstapel'],
+  raw:'Elke beurt 1 bruine grondstof naar keuze',
+  grey:'Elke beurt 1 grijze grondstof naar keuze',
+  sci:'1 wetenschapssymbool naar keuze (joker)',
 };
-const pts = n => [`${n} VP`, `${n} punten`];
-// Wonders. vp = direct victory points per stage. Side 'A'/'B' = Day/Night in the 2020 edition.
-// 1st edition (2010) boards:
-const WONDERS1 = {
-  rhodes:{n:'Rhodes', full:['The Colossus of Rhodes','De Kolossus van Rhodos'], res:'ore',
-    A:[{vp:3},{vp:0,t:E.shields2},{vp:7}],
-    B:[{vp:3,t:['1 shield, 3 VP, 3 coins','1 schild, 3 punten, 3 munten']},{vp:4,t:['1 shield, 4 VP, 4 coins','1 schild, 4 punten, 4 munten']}],
-    tips:[['The military wonder: shields from stages are “free” red cards, so you can win most battles while buying fewer red cards.','Het militaire wonder: schilden op je bouwfases zijn “gratis” rode kaarten, dus je wint de meeste veldslagen met minder rode kaarten.'],
-          ['Ore start makes red cards and Age II weapons cheap. Make your neighbors pay to keep up.','Met erts als start zijn rode kaarten goedkoop. Laat je buren betalen om bij te blijven.'],
-          ['Side B is fast (2 stages) and gives coins, which suits a flexible game.','Kant B is snel (2 fases) en geeft munten, ideaal voor een flexibel spel.']]},
-  alexandria:{n:'Alexandria', full:['The Lighthouse of Alexandria','De Vuurtoren van Alexandrië'], res:'glass',
+const WONDERS = {
+  rhodes:{n:'Rhódos', full:'De Kolossus van Rhódos', res:'ore',
+    A:[{vp:3},{vp:0,t:'2 schilden'},{vp:7}],
+    B:[{vp:3,t:'1 schild, 3 munten, 3 punten'},{vp:4,t:'1 schild, 4 munten, 4 punten'}],
+    tips:['Het militaire wonder: de schilden op je bord zijn “gratis” rode kaarten.','Investeer niet te veel in rood: winnen met 1 schild levert evenveel op als met 10.','Nacht is snel (2 fases) en geeft munten.']},
+  alexandria:{n:'Alexandria', full:'De Vuurtoren van Alexandria', res:'glass',
     A:[{vp:3},{vp:0,t:E.raw},{vp:7}],
     B:[{vp:0,t:E.raw},{vp:0,t:E.grey},{vp:7}],
-    tips:[['Resource flexibility means you can skip many brown/grey cards and draft points instead.','Dankzij je flexibele grondstoffen kun je veel bruine/grijze kaarten overslaan en punten nemen.'],
-          ['Build the resource stages early, since they pay off every remaining turn.','Bouw de grondstof-fases vroeg: ze leveren elke resterende beurt op.'],
-          ['Glass start pairs naturally with science (green cards often need glass).','Glas als start past goed bij wetenschap (groene kaarten vragen vaak glas).']]},
-  ephesus:{n:'Ephesus', full:['The Temple of Artemis in Ephesus','De Tempel van Artemis in Efeze'], res:'papyrus',
-    A:[{vp:3},{vp:0,t:E.coins9},{vp:7}],
-    B:[{vp:2,t:['2 VP, 4 coins','2 punten, 4 munten']},{vp:3,t:['3 VP, 4 coins','3 punten, 4 munten']},{vp:5,t:['5 VP, 4 coins','5 punten, 4 munten']}],
-    tips:[['Coins buy whatever you lack from neighbors, so play the flexible “buy, don’t build” game.','Met munten koop je wat je mist bij je buren: speel “kopen, niet bouwen”.'],
-          ['Papyrus is used by science and some blue cards; both are good fits.','Papyrus is nodig voor wetenschap en sommige blauwe kaarten: beide passen goed.'],
-          ['Left-over coins still score 1 VP per 3 at the end.','Overgebleven munten zijn op het einde nog 1 punt per 3 waard.']]},
-  babylon:{n:'Babylon', full:['The Hanging Gardens of Babylon','De Hangende Tuinen van Babylon'], res:'clay',
+    tips:['Je wonder levert grondstoffen, dus je kunt veel bruine en grijze kaarten overslaan.','Bouw de grondstof-fases vroeg: ze helpen je elke beurt.','Je verkoopt weinig aan je buren, dus let op je munten.']},
+  ephesus:{n:'Éphesos', full:'De Tempel van Artemis in Éphesos', res:'papyrus',
+    A:[{vp:3},{vp:0,t:'9 munten'},{vp:7}],
+    B:[{vp:2,t:'4 munten, 2 punten'},{vp:3,t:'4 munten, 3 punten'},{vp:5,t:'4 munten, 5 punten'}],
+    tips:['Met je munten koop je wat je mist bij je buren.','Bouw je wonder vroeg zodat je munten voor je werken.','Overgebleven munten zijn op het einde nog 1 punt per 3 waard.']},
+  babylon:{n:'Babylon', full:'De Hangende Tuinen van Babylon', res:'wood',
     A:[{vp:3},{vp:0,t:E.sci},{vp:7}],
-    B:[{vp:3},{vp:0,t:['Play the 7th (last) card of each age instead of discarding it','Speel de 7e (laatste) kaart van elk tijdperk in plaats van ze af te leggen']},{vp:0,t:E.sci}],
-    tips:[['The science wonder: the wild symbol is often worth 10+ VP late in the game.','Het wetenschapswonder: het jokersymbool is laat in het spel vaak 10+ punten waard.'],
-          ['Commit to green cards in Age I so their chains make Age II/III science free.','Kies in tijdperk I voor groen, zodat de ketens latere wetenschap gratis maken.'],
-          ['Side B stage 2 lets you play an extra card every age; build it early.','Kant B fase 2 laat je elk tijdperk een extra kaart spelen: bouw ze vroeg.']]},
-  olympia:{n:'Olympia', full:['The Statue of Zeus in Olympia','Het Beeld van Zeus in Olympia'], res:'wood',
-    A:[{vp:3},{vp:0,t:['Once per age, build a structure for free','Eén keer per tijdperk een gebouw gratis bouwen']},{vp:7}],
-    B:[{vp:0,t:['Buy raw resources from both neighbors for 1 coin','Koop grondstoffen bij beide buren voor 1 munt']},{vp:5},{vp:0,t:['Copy one guild built by a neighbor at game end','Kopieer op het einde 1 gilde van een buur']}],
-    tips:[['Side A: save the free build for the most expensive card of each age (Palace, Pantheon, guilds).','Kant A: gebruik de gratis bouw voor de duurste kaart van het tijdperk (Paleis, Pantheon, gilden).'],
-          ['Side B: watch both neighbors’ guilds in Age III and copy the best one.','Kant B: let in tijdperk III op de gilden van je buren en kopieer de beste.'],
-          ['Very flexible; adapts to whatever strategy the cards offer.','Zeer flexibel: past zich aan aan wat de kaarten bieden.']]},
-  halicarnassus:{n:'Halicarnassus', full:['The Mausoleum of Halicarnassus','Het Mausoleum van Halicarnassus'], res:'loom',
-    A:[{vp:3},{vp:0,t:E.discard},{vp:7}],
-    B:[{vp:2,t:['2 VP + build a discarded card free','2 punten + bouw gratis een afgelegde kaart']},{vp:1,t:['1 VP + build a discarded card free','1 punt + bouw gratis een afgelegde kaart']},{vp:0,t:['Build a discarded card free','Bouw gratis een afgelegde kaart']}],
-    tips:[['Time the discard-build for the end of an age, when the pile holds the most cards (including the end-of-age discards).','Bouw deze fase op het einde van een tijdperk, als de aflegstapel het grootst is (inclusief de afgelegde laatste kaarten).'],
-          ['Everyone hate-discards in Age III; great guilds and science often end up in the pile.','In tijdperk III legt iedereen kaarten af om buren te blokkeren: sterke gilden en wetenschap belanden vaak op de stapel.'],
-          ['Side B gives three free cards; pick your best synergy each time.','Kant B geeft drie gratis kaarten: kies telkens wat het best past.']]},
-  giza:{n:'Giza', full:['The Pyramids of Giza','De Piramides van Gizeh'], res:'stone',
+    B:[{vp:0,t:'Je mag de laatste kaart van elk tijdperk ook spelen'},{vp:0,t:E.sci}],
+    tips:['Het wetenschapswonder: de joker is laat in het spel vaak 10+ punten waard.','Groene kaarten vormen veel ketens: begin er vroeg mee.','Nacht: bouw fase 1 zo vroeg mogelijk, dan speel je elk tijdperk een extra kaart.']},
+  olympia:{n:'Olympía', full:'Het Beeld van Zeus in Olympía', res:'clay',
+    A:[{vp:3},{vp:0,t:'De eerste kaart van elke kleur bouw je gratis'},{vp:7}],
+    B:[{vp:2,t:'De eerste kaart van elk tijdperk is gratis + 2 punten'},{vp:3,t:'De laatste kaart van elk tijdperk is gratis + 3 punten'},{vp:5}],
+    tips:['Bouw fase 2 zo vroeg mogelijk: gratis bouwen is waar dit wonder om draait.','Dag: gebruik de gratis kaart voor dure kaarten, bv. je eerste gilde.','Gratis bouwen geldt alleen voor kaarten, niet voor wonderfases.']},
+  halicarnassus:{n:'Halikarnassos', full:'Het Mausoleum van Halikarnassos', res:'loom',
+    A:[{vp:3},{vp:0,t:'Bouw gratis 1 kaart uit de aflegstapel'},{vp:7}],
+    B:[{vp:2,t:'Bouw gratis 1 kaart uit de aflegstapel + 2 punten'},{vp:1,t:'Bouw gratis 1 kaart uit de aflegstapel + 1 punt'},{vp:0,t:'Bouw gratis 1 kaart uit de aflegstapel'}],
+    tips:['Bouw deze fase op het einde van een tijdperk: dan ligt er het meest op de aflegstapel.','Sterke kaarten (gilden, groen) belanden vaak op de aflegstapel.','Nacht geeft drie gratis kaarten.']},
+  giza:{n:'Gizah', full:'De Piramides van Gizah', res:'stone',
     A:[{vp:3},{vp:5},{vp:7}],
     B:[{vp:3},{vp:5},{vp:5},{vp:7}],
-    tips:[['Pure points: 15 VP (A) or 20 VP (B) from the wonder alone.','Pure punten: 15 (A) of 20 (B) punten uit het wonder alleen.'],
-          ['Stone is plentiful for you; trade for the rest and pair with blue civilian cards.','Steen heb je genoeg; koop de rest en combineer met blauwe kaarten.'],
-          ['Building stages also buries cards your neighbors want (hate-drafting for free).','Een fase bouwen begraaft ook kaarten die je buren willen.']]},
+    tips:['Pure punten: 15 (Dag) of 20 (Nacht). Ideaal voor je eerste spel.','Bouw een fase als je hand zwak is.','Een fase bouwen “begraaft” ook een kaart die je buur wil.']},
 };
-// 2nd edition (2020) boards, from the 7 Wonders fan wiki (Day = 'A', Night = 'B').
-const WONDERS2 = {
-  rhodes:{n:'Rhódos', full:['The Colossus of Rhódos','De Kolossus van Rhódos'], res:'ore',
-    A:[{vp:3},{vp:0,t:E.shields2},{vp:7}],
-    B:[{vp:3,t:['1 shield, 3 VP, 3 coins','1 schild, 3 punten, 3 munten']},{vp:4,t:['1 shield, 4 VP, 4 coins','1 schild, 4 punten, 4 munten']}],
-    tips:[['The military wonder: shields from stages are “free” red cards, so you can win most battles while buying fewer red cards.','Het militaire wonder: schilden op je bouwfases zijn “gratis” rode kaarten, dus je wint de meeste veldslagen met minder rode kaarten.'],
-          ['Don’t over-invest in red: winning by 1 shield scores the same as winning by 10. Spend the spare turns on points.','Investeer niet te veel in rood: winnen met 1 schild levert evenveel op als met 10. Gebruik de extra beurten voor punten.'],
-          ['Night is fast (2 stages) and gives coins, which suits a flexible game.','Nacht is snel (2 fases) en geeft munten, ideaal voor een flexibel spel.']]},
-  alexandria:{n:'Alexandria', full:['The Lighthouse of Alexandria','De Vuurtoren van Alexandria'], res:'glass',
-    A:[{vp:3},{vp:0,t:E.raw},{vp:7}],
-    B:[{vp:0,t:E.raw},{vp:0,t:E.grey},{vp:7}],
-    tips:[['Resource flexibility means you can skip many brown/grey cards and draft points instead.','Dankzij je flexibele grondstoffen kun je veel bruine/grijze kaarten overslaan en punten nemen.'],
-          ['Build the resource stages early, since they pay off every remaining turn.','Bouw de grondstof-fases vroeg: ze leveren elke resterende beurt op.'],
-          ['You’ll sell few resources to neighbors, so watch your coins.','Je verkoopt weinig grondstoffen aan je buren, dus let op je munten.']]},
-  ephesus:{n:'Éphesos', full:['The Temple of Artemis in Éphesos','De Tempel van Artemis in Éphesos'], res:'papyrus',
-    A:[{vp:3},{vp:0,t:E.coins9},{vp:7}],
-    B:[{vp:2,t:['2 VP, 4 coins','2 punten, 4 munten']},{vp:3,t:['3 VP, 4 coins','3 punten, 4 munten']},{vp:5,t:['5 VP, 4 coins','5 punten, 4 munten']}],
-    tips:[['Coins buy whatever you lack from neighbors, so play the flexible “buy, don’t build” game.','Met munten koop je wat je mist bij je buren: speel “kopen, niet bouwen”.'],
-          ['Build the wonder early to get the coins working for you; a Trading Post or Marketplace stretches them further.','Bouw het wonder vroeg zodat je munten voor je werken; een Handelspost of Marktplaats maakt ze nog meer waard.'],
-          ['Left-over coins still score 1 VP per 3 at the end.','Overgebleven munten zijn op het einde nog 1 punt per 3 waard.']]},
-  babylon:{n:'Babylon', full:['The Hanging Gardens of Babylon','De Hangende Tuinen van Babylon'], res:'wood',
-    A:[{vp:3},{vp:0,t:E.sci},{vp:7}],
-    B:[{vp:0,t:['Play the last card of each age instead of discarding it','Speel de laatste kaart van elk tijdperk in plaats van ze af te leggen']},{vp:0,t:E.sci}],
-    tips:[['The science wonder: the wild symbol is often worth 10+ VP late in the game.','Het wetenschapswonder: het jokersymbool is laat in het spel vaak 10+ punten waard.'],
-          ['Green cards chain heavily, so Babylon can skip many brown cards and build science for free.','Groene kaarten vormen veel ketens, dus Babylon kan veel bruine kaarten overslaan en wetenschap gratis bouwen.'],
-          ['Night: build stage 1 as early as possible. In Age I it gives you 3 extra cards over the game. Night has no VP stages; the payoff is science.','Nacht: bouw fase 1 zo vroeg mogelijk. In tijdperk I levert dat 3 extra kaarten op. Nacht heeft geen puntenfases; de beloning is wetenschap.']]},
-  olympia:{n:'Olympía', full:['The Statue of Zeus in Olympía','Het Beeld van Zeus in Olympía'], res:'clay',
-    A:[{vp:3},{vp:0,t:['The first card of each color you build is free','De eerste kaart van elke kleur bouw je gratis']},{vp:7}],
-    B:[{vp:2,t:['2 VP + the first card of each age is free','2 punten + de eerste kaart van elk tijdperk is gratis']},{vp:3,t:['3 VP + the last card of each age is free','3 punten + de laatste kaart van elk tijdperk is gratis']},{vp:5}],
-    tips:[['Build stage 2 as early as possible: free builds are the whole point of this wonder.','Bouw fase 2 zo vroeg mogelijk: gratis bouwen is waar dit wonder om draait.'],
-          ['Day: hold the free “first of a color” for expensive cards, e.g. your first guild or a big blue card.','Dag: bewaar de gratis “eerste van een kleur” voor dure kaarten, bv. je eerste gilde of een grote blauwe kaart.'],
-          ['Night: stage 2 in Age I means 3 free last-cards. The effect only covers Age cards, not wonder stages.','Nacht: fase 2 in tijdperk I levert 3 gratis laatste kaarten op. Het effect geldt alleen voor tijdperkkaarten, niet voor wonderfases.']]},
-  halicarnassus:{n:'Halikarnassos', full:['The Mausoleum of Halikarnassos','Het Mausoleum van Halikarnassos'], res:'loom',
-    A:[{vp:3},{vp:0,t:E.discard},{vp:7}],
-    B:[{vp:2,t:['2 VP + build a discarded card free','2 punten + bouw gratis een afgelegde kaart']},{vp:1,t:['1 VP + build a discarded card free','1 punt + bouw gratis een afgelegde kaart']},{vp:0,t:['Build a discarded card free','Bouw gratis een afgelegde kaart']}],
-    tips:[['Time the discard-build for the end of an age, when the pile holds the most cards (including the end-of-age discards).','Bouw deze fase op het einde van een tijdperk, als de aflegstapel het grootst is (inclusief de afgelegde laatste kaarten).'],
-          ['Strong with science: grab green cards others discard, then chain the rest for free.','Sterk met wetenschap: pak groene kaarten die anderen afleggen en bouw de rest gratis via ketens.'],
-          ['Night gives three free cards; pick your best synergy each time.','Nacht geeft drie gratis kaarten: kies telkens wat het best past.']]},
-  giza:{n:'Gizah', full:['The Pyramids of Gizah','De Piramides van Gizah'], res:'stone',
-    A:[{vp:3},{vp:5},{vp:7}],
-    B:[{vp:3},{vp:5},{vp:5},{vp:7}],
-    tips:[['Pure points: 15 VP (Day) or 20 VP (Night). Night is usually the stronger side.','Pure punten: 15 (Dag) of 20 (Nacht). Nacht is meestal de sterkere kant.'],
-          ['Easy first wonder: build stages whenever your hand is weak.','Ideaal eerste wonder: bouw een fase als je hand zwak is.'],
-          ['Building stages also buries cards your neighbors want (hate-drafting for free).','Een fase bouwen begraaft ook kaarten die je buren willen.']]},
-};
-// Card names: [English, Dutch]. Dutch names follow the Dutch 2020 card overview.
-const GUILDS1 = [
-  {k:'workers', n:['Workers Guild','Arbeidersgilde'], m:1, of:['brown cards of both neighbors','bruine kaarten van beide buren']},
-  {k:'craftsmen', n:['Craftsmens Guild','Ambachtsgilde'], m:2, of:['grey cards of both neighbors','grijze kaarten van beide buren']},
-  {k:'traders', n:['Traders Guild','Handelarengilde'], m:1, of:['yellow cards of both neighbors','gele kaarten van beide buren']},
-  {k:'philosophers', n:['Philosophers Guild','Filosofengilde'], m:1, of:['green cards of both neighbors','groene kaarten van beide buren']},
-  {k:'spies', n:['Spies Guild','Spionnengilde'], m:1, of:['red cards of both neighbors','rode kaarten van beide buren']},
-  {k:'magistrates', n:['Magistrates Guild','Magistratengilde'], m:1, of:['blue cards of both neighbors','blauwe kaarten van beide buren']},
-  {k:'strategists', n:['Strategists Guild','Strategengilde'], m:1, of:['defeat tokens of both neighbors','nederlaagfiches van beide buren']},
-  {k:'builders', n:['Builders Guild','Bouwersgilde'], m:1, of:['wonder stages: yours + both neighbors','wonderfases: jij + beide buren']},
-  {k:'shipowners', n:['Shipowners Guild','Redersgilde'], m:1, of:['your own brown + grey + purple cards','je eigen bruine + grijze + paarse kaarten']},
+// Namen zoals op de Nederlandstalige kaarten (2020).
+const GUILDS = [
+  {k:'workers', n:'Arbeidersgilde', m:1, of:'bruine kaarten van je buren'},
+  {k:'craftsmen', n:'Ambachtsgilde', m:2, of:'grijze kaarten van je buren'},
+  {k:'magistrates', n:'Magistratengilde', m:1, of:'blauwe kaarten van je buren'},
+  {k:'traders', n:'Handelarengilde', m:1, of:'gele kaarten van je buren'},
+  {k:'spies', n:'Spionnengilde', m:1, of:'rode kaarten van je buren'},
+  {k:'philosophers', n:'Filosofengilde', m:1, of:'groene kaarten van je buren'},
+  {k:'builders', n:'Bouwersgilde', m:1, of:'wonderfases van jou + je buren'},
+  {k:'shipowners', n:'Redersgilde', m:1, of:'je eigen bruine + grijze + paarse kaarten'},
+  {k:'decorators', n:'Ontwerpersgilde', m:7, of:'vul 1 in als je hele wonder af is'},
 ];
-const COMMERCE1 = [
-  {k:'haven', n:['Haven','Haven'], m:1, of:['your brown cards','je bruine kaarten']},
-  {k:'lighthouse', n:['Lighthouse','Vuurtoren'], m:1, of:['your yellow cards (incl. itself)','je gele kaarten (inclusief deze)']},
-  {k:'chamber', n:['Chamber of Commerce','Kamer van Koophandel'], m:2, of:['your grey cards','je grijze kaarten']},
-  {k:'arena', n:['Arena','Arena'], m:1, of:['your built wonder stages','je gebouwde wonderfases']},
+const COMMERCE = [
+  {k:'haven', n:'Haven', m:1, of:'je bruine kaarten'},
+  {k:'lighthouse', n:'Vuurtoren', m:1, of:'je gele kaarten (deze meegeteld)'},
+  {k:'chamber', n:'Kamer van Koophandel', m:2, of:'je grijze kaarten'},
+  {k:'ludus', n:'Training voor gladiatoren', m:1, of:'je rode kaarten'},
+  {k:'arena', n:'Arena', m:1, of:'je gebouwde wonderfases'},
 ];
-const GUILDS2 = GUILDS1.filter(g=>g.k!=='strategists').concat([{k:'decorators', n:['Decorators Guild','Ontwerpersgilde'], m:7, of:['enter 1 if every stage of your wonder is built','vul 1 in als al je wonderfases gebouwd zijn']}]);
-const COMMERCE2 = [...COMMERCE1.slice(0,3), {k:'ludus', n:['Ludus','Training voor gladiatoren'], m:1, of:['your red cards','je rode kaarten']}, COMMERCE1[3]];
-const ED = e => e===1 ? 1 : 2;
-const W = e => ED(e)===1 ? WONDERS1 : WONDERS2;
-const GL = e => ED(e)===1 ? GUILDS1 : GUILDS2;
-const CL = e => ED(e)===1 ? COMMERCE1 : COMMERCE2;
-const SIDE = (e,s) => ED(e)===1 ? L('side ','kant ')+s : (s==='A'?L('Day','Dag'):L('Night','Nacht'));
-const SIDE_SHORT = (e,s) => ED(e)===1 ? s : SIDE(e,s);
-const ED_NAME = e => ED(e)===1 ? L('2010 (1st ed.)','2010 (1e ed.)') : L('2020 (2nd ed.)','2020 (2e ed.)');
-const stageText = s => s.t ? tx(s.t) : VP(s.vp);
+const SIDE = s => s==='A' ? 'Dag' : 'Nacht';
+const stageText = s => s.t || PT(s.vp);
 const MIL_VP = [1,3,5];
 const AGE = ['I','II','III'];
 const SYM = {
-  t:{n:['Tablet','Tablet'], pl:['Tablets','Tabletten'], svg:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm1 4v1.6h8V7zm0 4v1.6h8V11zm0 4v1.6h5V15z"/></svg>'},
-  c:{n:['Compass','Passer'], pl:['Compasses','Passers'], svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="4.5" r="1.6" fill="currentColor"/><path d="M11 6.5 5.5 20M13 6.5 18.5 20M7.5 14.5h9"/></svg>'},
-  g:{n:['Gear','Tandwiel'], pl:['Gears','Tandwielen'], svg:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.3 2h3.4l.5 2.6 1.8.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.8 2.6.5v3.4l-2.6.5-.8 1.8 1.5 2.2-2.4 2.4-2.2-1.5-1.8.8-.5 2.6h-3.4l-.5-2.6-1.8-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.8L2 13.7v-3.4l2.6-.5.8-1.8-1.5-2.2 2.4-2.4 2.2 1.5 1.8-.8zM12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"/></svg>'},
-  w:{n:['Wild','Joker'], pl:['Wilds','Jokers'], svg:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.6 6.4L21 9l-5 4.3L17.6 20 12 16.6 6.4 20 8 13.3 3 9l6.4-.6z"/></svg>'},
+  t:{n:'Tablet', pl:'Tabletten', svg:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm1 4v1.6h8V7zm0 4v1.6h8V11zm0 4v1.6h5V15z"/></svg>'},
+  c:{n:'Passer', pl:'Passers', svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="4.5" r="1.6" fill="currentColor"/><path d="M11 6.5 5.5 20M13 6.5 18.5 20M7.5 14.5h9"/></svg>'},
+  g:{n:'Tandwiel', pl:'Tandwielen', svg:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.3 2h3.4l.5 2.6 1.8.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.8 2.6.5v3.4l-2.6.5-.8 1.8 1.5 2.2-2.4 2.4-2.2-1.5-1.8.8-.5 2.6h-3.4l-.5-2.6-1.8-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.8L2 13.7v-3.4l2.6-.5.8-1.8-1.5-2.2 2.4-2.4 2.2 1.5 1.8-.8zM12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"/></svg>'},
+  w:{n:'Joker', pl:'Jokers', svg:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.6 6.4L21 9l-5 4.3L17.6 20 12 16.6 6.4 20 8 13.3 3 9l6.4-.6z"/></svg>'},
 };
 
-/* ============ STATE ============ */
+/* ============ TOESTAND ============ */
 let game = LS.get('game', null);
-if(game && !game.ed) game.ed = 1;   // games saved before editions existed were 1st edition
 let history = LS.get('history', []);
 let roster = LS.get('roster', []);
 let sciCalc = LS.get('sci', {t:0,c:0,g:0,w:0});
 let warAge = LS.get('warAge', 0);
 let wonderSide = 'A';
-let edition = LS.get('edition', 2);
-const save = () => { LS.set('game', game); LS.set('history', history); LS.set('roster', roster); LS.set('sci', sciCalc); LS.set('warAge', warAge); LS.set('edition', edition); };
+const save = () => { LS.set('game', game); LS.set('history', history); LS.set('roster', roster); LS.set('sci', sciCalc); LS.set('warAge', warAge); };
 
 function newPlayer(name){ return {name, wonder:'', side:'A', d:{coins:3, sci:{t:0,c:0,g:0,w:0}, mil:{p1:0,p3:0,p5:0,m1:0}, stages:[], guild:{}, com:{}, man:{}}}; }
-function newGame(names, exp){
-  return {id:Date.now(), ed:edition, date:new Date().toISOString(), exp:exp||{leaders:false,cities:false}, players:names.map(newPlayer), war:[null,null,null]};
-}
+function newGame(players){ return {id:Date.now(), date:new Date().toISOString(), players, war:[null,null,null]}; }
 
-/* ============ SCORING ============ */
+/* ============ PUNTEN ============ */
 function sciScore(s){
   const t=+s.t||0, c=+s.c||0, g=+s.g||0, w=Math.max(0,+s.w||0);
   let best={vp:-1, a:[t,c,g], add:[0,0,0]};
@@ -379,45 +296,42 @@ function catScore(g, pi, k, war){
     case 'coin': return Math.floor((+d.coins||0)/3)+man;
     case 'sci': return sciScore(d.sci).vp+man;
     case 'mil': { const m=d.mil; return (war||warTokens(g))[pi].vp + m.p1+3*m.p3+5*m.p5-m.m1 + man; }
-    case 'wonder': { let v=man; if(p.wonder){ const st=W(g.ed)[p.wonder][p.side]; (d.stages||[]).forEach((b,i)=>{ if(b&&st[i]) v+=st[i].vp; }); } return v; }
-    case 'guild': return GL(g.ed).reduce((s,x)=>s+(+d.guild[x.k]||0)*x.m,0)+man;
-    case 'com': return CL(g.ed).reduce((s,x)=>s+(+d.com[x.k]||0)*x.m,0)+man;
-    case 'debt': return -Math.abs(man);
+    case 'wonder': { let v=man; if(p.wonder&&WONDERS[p.wonder]){ const st=WONDERS[p.wonder][p.side]; (d.stages||[]).forEach((b,i)=>{ if(b&&st[i]) v+=st[i].vp; }); } return v; }
+    case 'guild': return GUILDS.reduce((s,x)=>s+(+d.guild[x.k]||0)*x.m,0)+man;
+    case 'com': return COMMERCE.reduce((s,x)=>s+(+d.com[x.k]||0)*x.m,0)+man;
     default: return man;
   }
 }
-function activeCats(g){ return CATS.filter(c=>!c.exp || g.exp[c.exp]); }
 function totals(g){
   const war=warTokens(g);
   return g.players.map((p,i)=>{
     const by={}; let tot=0;
-    activeCats(g).forEach(c=>{ by[c.k]=catScore(g,i,c.k,war); tot+=by[c.k]; });
+    CATS.forEach(c=>{ by[c.k]=catScore(g,i,c.k,war); tot+=by[c.k]; });
     return {i, name:p.name, tot, by, coins:+p.d.coins||0};
   });
 }
 function ranking(g){ return totals(g).sort((a,b)=> b.tot-a.tot || b.coins-a.coins); }
 
-/* ============ HELPERS ============ */
+/* ============ HULPJES ============ */
 const $ = s => document.querySelector(s);
 const esc = s => String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),1800); }
 function setPath(o,p,v){ const ks=p.split('.'); const last=ks.pop(); const t=ks.reduce((a,k)=>(a[k]??=( {} )),o); t[last]=v; }
-function stepper(path, val, min=0){ return `<div class="step" data-path="${path}" data-min="${min}"><button type="button" data-d="-1" aria-label="${L('minus','min')}">−</button><input type="number" inputmode="numeric" value="${val||0}" min="${min}"><button type="button" data-d="1" aria-label="${L('plus','plus')}">+</button></div>`; }
-function symIcon(k){ return `<span class="sym" title="${tx(SYM[k].n)}" ${k==='w'?'style="background:var(--accent);color:var(--accent-ink)"':''}>${SYM[k].svg}</span>`; }
-function ord(n){ return lang==='nl' ? n+'e' : (['1st','2nd','3rd'][n-1] || n+'th'); }
-const dateFmt = d => new Date(d).toLocaleDateString(lang==='nl'?'nl-BE':undefined);
-const defaultName = i => L('Player ','Speler ')+i;
+function stepper(path, val, min=0){ return `<div class="step" data-path="${path}" data-min="${min}"><button type="button" data-d="-1" aria-label="min">−</button><input type="number" inputmode="numeric" value="${val||0}" min="${min}"><button type="button" data-d="1" aria-label="plus">+</button></div>`; }
+function symIcon(k){ return `<span class="sym" title="${SYM[k].n}" ${k==='w'?'style="background:var(--accent);color:var(--accent-ink)"':''}>${SYM[k].svg}</span>`; }
+const dateFmt = d => new Date(d).toLocaleDateString('nl-BE');
+const defaultName = i => 'Speler '+i;
 const isDefaultName = n => /^(Player|Speler) \d+$/.test(n);
 
-/* ============ SHEET ============ */
+/* ============ ONDERSCHERM ============ */
 let sheetCtx=null;
 function openSheet(title, html, ctx){
   sheetCtx=ctx||{};
-  $('#sheet').innerHTML=`<div class="hd"><h2>${title}</h2><button class="btn small primary" data-close>${L('Done','Klaar')}</button></div>${html}`;
+  $('#sheet').innerHTML=`<div class="hd"><h2>${title}</h2><button class="btn small primary" data-close>Klaar</button></div>${html}`;
   $('#scrim').classList.add('on');
   sheetCtx.update?.();
 }
-function closeSheet(){ $('#scrim').classList.remove('on'); const cb=sheetCtx?.onClose; sheetCtx=null; save(); cb?.(); renderAll(); }
+function closeSheet(){ $('#scrim').classList.remove('on'); sheetCtx=null; save(); renderAll(); }
 $('#scrim').addEventListener('click', e=>{ if(e.target.id==='scrim' || e.target.closest('[data-close]')) closeSheet(); });
 document.addEventListener('click', e=>{
   const b=e.target.closest('.step button'); if(!b) return;
@@ -436,33 +350,33 @@ document.addEventListener('input', e=>{
 document.addEventListener('focusin', e=>{ if(e.target.matches('.step input')) e.target.select(); });
 const OBJS = { sci:()=>sciCalc, war:()=>game };
 
-/* ============ SCORE VIEW ============ */
+/* ============ SCORE ============ */
 function renderScore(){
   const v=$('#v-score');
   if(!game){
     v.innerHTML=`<div class="card empty">
       <svg class="seal" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="var(--accent)" stroke-width="3"/><path d="M50 18 22 78h56z" fill="none" stroke="var(--accent)" stroke-width="3"/><path d="M36 78l14-30 14 30" fill="none" stroke="var(--accent)" stroke-width="3"/></svg>
-      <h2 style="font-family:Georgia,serif">${L('Ready to build a wonder?','Klaar om een wereldwonder te bouwen?')}</h2>
-      <p class="muted">${L('Start a game to get the score pad and the war tracker. Enter players in seating order, going clockwise.','Start een spel voor het scoreblok en de veldslagteller. Geef de spelers in volgens de zitvolgorde, met de klok mee.')}</p>
-      <button class="btn primary" data-act="new">${L('New game','Nieuw spel')}</button></div>
+      <h2 style="font-family:Georgia,serif">Klaar om een wereldwonder te bouwen?</h2>
+      <p class="muted">Start een spel voor het scoreblok en de veldslagteller. Eerste keer? Lees eerst de <b>Gids</b>.</p>
+      <button class="btn primary" data-act="new">Nieuw spel</button></div>
       ${renderHistory()}`;
     return;
   }
-  const rk=ranking(game), byI=Object.fromEntries(rk.map(r=>[r.i,r])), cats=activeCats(game);
+  const rk=ranking(game), byI=Object.fromEntries(rk.map(r=>[r.i,r]));
   v.innerHTML=`
-    <div class="podium">${rk.map((r,ix)=>`<div class="p ${ix===0&&r.tot>0?'lead':''}"><div class="rank">${ix===0&&r.tot>0?'👑 ':''}${ord(ix+1)}</div><div class="tot">${r.tot}</div><div class="nm">${esc(r.name)}</div></div>`).join('')}</div>
+    <div class="podium">${rk.map((r,ix)=>`<div class="p ${ix===0&&r.tot>0?'lead':''}"><div class="rank">${ix===0&&r.tot>0?'👑 ':''}${ix+1}e</div><div class="tot">${r.tot}</div><div class="nm">${esc(r.name)}</div></div>`).join('')}</div>
     <div class="pad-wrap"><table class="pad">
-      <thead><tr><th class="cat"></th>${game.players.map(p=>`<th><button class="icon-btn" style="color:inherit;padding:0;font-weight:600" data-act="players">${esc(p.name)}</button><span class="w">${p.wonder?W(game.ed)[p.wonder].n+' '+SIDE_SHORT(game.ed,p.side):'&nbsp;'}</span></th>`).join('')}</tr></thead>
+      <thead><tr><th class="cat"></th>${game.players.map(p=>`<th><button class="icon-btn" style="color:inherit;padding:0;font-weight:600" data-act="players">${esc(p.name)}</button><span class="w">${WONDERS[p.wonder]?WONDERS[p.wonder].n+' '+SIDE(p.side):'&nbsp;'}</span></th>`).join('')}</tr></thead>
       <tbody>
-      ${cats.map(c=>`<tr><th class="cat"><span class="sw" style="background:${c.c}"></span>${tx(c.n)}</th>${game.players.map((p,i)=>{const s=byI[i].by[c.k];return `<td><button data-cell="${i}:${c.k}" class="${s===0?'zero':''}">${s}</button></td>`}).join('')}</tr>`).join('')}
-      <tr class="total"><th class="cat">${L('Total','Totaal')}</th>${game.players.map((p,i)=>`<td>${byI[i].tot}</td>`).join('')}</tr>
+      ${CATS.map(c=>`<tr><th class="cat"><span class="sw" style="background:${c.c}"></span>${c.n}</th>${game.players.map((p,i)=>{const s=byI[i].by[c.k];return `<td><button data-cell="${i}:${c.k}" class="${s===0?'zero':''}">${s}</button></td>`}).join('')}</tr>`).join('')}
+      <tr class="total"><th class="cat">Totaal</th>${game.players.map((p,i)=>`<td>${byI[i].tot}</td>`).join('')}</tr>
       </tbody></table></div>
-    <p class="hint">${L('Edition','Editie')}: ${ED_NAME(game.ed)}. ${L('Tap any cell to score it. The helpers do the maths: coins → VP, science sets, guild counts, wonder stages. Ties go to the player with the most coins.','Tik op een vakje om te scoren. De hulpjes rekenen voor je: munten → punten, wetenschapssets, gilden, wonderfases. Bij gelijkstand wint wie de meeste munten heeft.')}</p>
+    <p class="hint">Tik op een vakje om te scoren. De app rekent voor je: munten → punten, wetenschap, gilden, wonderfases. Bij gelijkstand wint wie de meeste munten heeft.</p>
     <div class="row wrap">
-      <button class="btn" data-act="players">${L('Players & wonders','Spelers & wonders')}</button>
-      <button class="btn primary grow" data-act="finish">${L('Finish & save','Afronden & bewaren')}</button>
+      <button class="btn" data-act="players">Spelers & wonders</button>
+      <button class="btn primary grow" data-act="finish">Afronden & bewaren</button>
     </div>
-    <div class="row" style="margin-top:8px"><button class="btn ghost small danger" data-act="discard">${L('Discard game','Spel verwijderen')}</button></div>
+    <div class="row" style="margin-top:8px"><button class="btn ghost small danger" data-act="discard">Spel verwijderen</button></div>
     ${renderHistory()}`;
 }
 function renderHistory(){
@@ -470,70 +384,68 @@ function renderHistory(){
   const wins={};
   history.forEach(h=>{ const w=h.results[0]; wins[w.name]=(wins[w.name]||0)+1; });
   const top=Object.entries(wins).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  return `<div class="sec-title">${L('History','Geschiedenis')}</div>
-  <div class="card">${top.length?`<div class="small muted" style="margin-bottom:6px">${L('Wins','Overwinningen')}: ${top.map(([n,c])=>`<b style="color:var(--text)">${esc(n)}</b> ${c}`).join(' · ')}</div>`:''}
-  ${history.slice(0,15).map((h,ix)=>`<div class="hist-item"><div class="grow"><b>${esc(h.results[0].name)}</b> ${L('won with','won met')} ${h.results[0].tot}<div class="small muted">${dateFmt(h.date)} · ${h.results.map(r=>esc(r.name)+' '+r.tot).join(', ')}</div></div><button class="icon-btn" data-hdel="${ix}" aria-label="${L('Delete','Verwijderen')}">✕</button></div>`).join('')}</div>`;
+  return `<div class="sec-title">Geschiedenis</div>
+  <div class="card"><div class="small muted" style="margin-bottom:6px">Overwinningen: ${top.map(([n,c])=>`<b style="color:var(--text)">${esc(n)}</b> ${c}`).join(' · ')}</div>
+  ${history.slice(0,15).map((h,ix)=>`<div class="hist-item"><div class="grow"><b>${esc(h.results[0].name)}</b> won met ${h.results[0].tot}<div class="small muted">${dateFmt(h.date)} · ${h.results.map(r=>esc(r.name)+' '+r.tot).join(', ')}</div></div><button class="icon-btn" data-hdel="${ix}" aria-label="Verwijderen">✕</button></div>`).join('')}</div>`;
 }
 $('#v-score').addEventListener('click', e=>{
   const cell=e.target.closest('[data-cell]');
   if(cell){ const [i,k]=cell.dataset.cell.split(':'); editCat(+i,k); return; }
   const hd=e.target.closest('[data-hdel]');
-  if(hd){ if(confirm(L('Delete this game from history?','Dit spel uit de geschiedenis verwijderen?'))){ history.splice(+hd.dataset.hdel,1); save(); renderScore(); } return; }
+  if(hd){ if(confirm('Dit spel uit de geschiedenis verwijderen?')){ history.splice(+hd.dataset.hdel,1); save(); renderScore(); } return; }
   const a=e.target.closest('[data-act]')?.dataset.act;
   if(a==='new') setupSheet();
   if(a==='players') setupSheet(true);
-  if(a==='discard' && confirm(L('Discard the current game?','Het huidige spel verwijderen?'))){ game=null; save(); renderAll(); }
+  if(a==='discard' && confirm('Het huidige spel verwijderen?')){ game=null; save(); renderAll(); }
   if(a==='finish'){
     const rk=ranking(game);
-    if(rk.every(r=>r.tot===0)){ toast(L('Enter some scores first','Vul eerst scores in')); return; }
+    if(rk.every(r=>r.tot===0)){ toast('Vul eerst scores in'); return; }
     history.unshift({date:game.date, results:rk.map(r=>({name:r.name, tot:r.tot, wonder:game.players[r.i].wonder}))});
-    const winner=rk[0].name; game=null; save(); renderAll(); toast(L(`🏆 ${winner} wins! Saved to history.`,`🏆 ${winner} wint! Bewaard in de geschiedenis.`));
+    const winner=rk[0].name; game=null; save(); renderAll(); toast(`🏆 ${winner} wint! Bewaard in de geschiedenis.`);
   }
 });
 
 function editCat(pi,k){
   const p=game.players[pi], d=p.d, c=CATS.find(x=>x.k===k);
-  const title=`<span style="color:${c.c}">●</span> ${esc(p.name)} · ${tx(c.n)}`;
-  const out=`<div class="out-row"><div class="big-out" id="o-vp">0</div><div class="muted">${VPshort}</div><div class="grow small muted" id="o-note" style="text-align:right"></div></div>`;
+  const title=`<span style="color:${c.c}">●</span> ${esc(p.name)} · ${c.n}`;
+  const out=`<div class="out-row"><div class="big-out" id="o-vp">0</div><div class="muted">punten</div><div class="grow small muted" id="o-note" style="text-align:right"></div></div>`;
   const manual=(lbl,sub)=>`<div class="field"><div class="lbl"><b>${lbl}</b>${sub?`<span>${sub}</span>`:''}</div>${stepper('man.'+k, d.man[k])}</div>`;
   let body='', upd=()=>{};
   const base=()=>{ $('#o-vp').textContent=catScore(game,pi,k); };
   if(k==='coin'){
-    body=`${out}<div class="card"><div class="field"><div class="lbl"><b>${L('Coins in treasury','Munten in de schatkist')}</b><span>${L('1 VP per 3 coins. Coins also break ties.','1 punt per 3 munten. Munten beslissen ook bij gelijkstand.')}</span></div>${stepper('coins', d.coins)}</div>${manual(L('Other VP','Andere punten'))}</div>`;
-    upd=()=>{ base(); const r=d.coins%3, m=3-r; $('#o-note').textContent= r? L(`${m} more coin${m>1?'s':''} for +1 VP`,`Nog ${m} munt${m>1?'en':''} voor +1 punt`):''; };
+    body=`${out}<div class="card"><div class="field"><div class="lbl"><b>Munten in de schatkist</b><span>1 punt per 3 munten. Munten beslissen ook bij gelijkstand.</span></div>${stepper('coins', d.coins)}</div></div>`;
+    upd=()=>{ base(); const r=d.coins%3, m=3-r; $('#o-note').textContent= r? `Nog ${m} munt${m>1?'en':''} voor +1 punt`:''; };
   } else if(k==='sci'){
-    body=`${out}<div class="card">${['t','c','g','w'].map(s=>`<div class="field">${symIcon(s)}<div class="lbl"><b>${tx(SYM[s].pl)}</b>${s==='w'?`<span>${L('Scientists Guild, Babylon, etc.','Wetenschappersgilde, Babylon, enz.')}</span>`:''}</div>${stepper('sci.'+s, d.sci[s])}</div>`).join('')}</div>
-      <div class="card"><b>${L('Next symbol worth','Volgend symbool waard')}</b><div class="advice" id="o-adv"></div><div class="small muted" id="o-wild" style="margin-top:8px"></div></div>`;
+    body=`${out}<div class="card">${['t','c','g','w'].map(s=>`<div class="field">${symIcon(s)}<div class="lbl"><b>${SYM[s].pl}</b>${s==='w'?'<span>Wetenschappersgilde, Babylon</span>':''}</div>${stepper('sci.'+s, d.sci[s])}</div>`).join('')}</div>
+      <div class="card"><b>Volgend symbool waard</b><div class="advice" id="o-adv"></div><div class="small muted" id="o-wild" style="margin-top:8px"></div></div>`;
     upd=()=>{ base(); sciAdvice(d.sci,'#o-adv','#o-wild','#o-note'); };
   } else if(k==='mil'){
     const wt=warTokens(game)[pi], any=game.war.some(Boolean);
-    body=`${out}<div class="card small">${any?`${L('From the War tab','Uit het tabblad Oorlog')}: <b>${wt.vp>=0?'+':''}${wt.vp} ${VPshort}</b> (${wt.p1}× +1, ${wt.p3}× +3, ${wt.p5}× +5, ${wt.m1}× −1)`:L('Tip: use the <b>War</b> tab at the end of each age and military is filled in automatically.','Tip: gebruik het tabblad <b>Oorlog</b> op het einde van elk tijdperk, dan wordt militair automatisch ingevuld.')}</div>
-      <div class="card"><div class="small muted" style="margin-bottom:4px">${any?L('Extra tokens (not recorded in War tab)','Extra fiches (niet in het tabblad Oorlog)'):L('Military tokens','Militaire fiches')}</div>
-      <div class="field"><div class="lbl"><b>${L('+1 tokens','+1-fiches')}</b><span>${L('Age I victories','Overwinningen tijdperk I')}</span></div>${stepper('mil.p1', d.mil.p1)}</div>
-      <div class="field"><div class="lbl"><b>${L('+3 tokens','+3-fiches')}</b><span>${L('Age II victories','Overwinningen tijdperk II')}</span></div>${stepper('mil.p3', d.mil.p3)}</div>
-      <div class="field"><div class="lbl"><b>${L('+5 tokens','+5-fiches')}</b><span>${L('Age III victories','Overwinningen tijdperk III')}</span></div>${stepper('mil.p5', d.mil.p5)}</div>
-      <div class="field"><div class="lbl"><b>${L('−1 tokens','−1-fiches')}</b><span>${L('Defeats','Nederlagen')}</span></div>${stepper('mil.m1', d.mil.m1)}</div></div>`;
+    body=`${out}<div class="card small">${any?`Uit het tabblad Oorlog: <b>${wt.vp>=0?'+':''}${wt.vp} punten</b> (${wt.p1}× +1, ${wt.p3}× +3, ${wt.p5}× +5, ${wt.m1}× −1)`:'Tip: gebruik het tabblad <b>Oorlog</b> op het einde van elk tijdperk, dan wordt dit automatisch ingevuld.'}</div>
+      <div class="card"><div class="small muted" style="margin-bottom:4px">${any?'Extra fiches (niet via het tabblad Oorlog)':'Militaire fiches'}</div>
+      <div class="field"><div class="lbl"><b>+1-fiches</b><span>Gewonnen in tijdperk I</span></div>${stepper('mil.p1', d.mil.p1)}</div>
+      <div class="field"><div class="lbl"><b>+3-fiches</b><span>Gewonnen in tijdperk II</span></div>${stepper('mil.p3', d.mil.p3)}</div>
+      <div class="field"><div class="lbl"><b>+5-fiches</b><span>Gewonnen in tijdperk III</span></div>${stepper('mil.p5', d.mil.p5)}</div>
+      <div class="field"><div class="lbl"><b>−1-fiches</b><span>Verloren veldslagen</span></div>${stepper('mil.m1', d.mil.m1)}</div></div>`;
     upd=base;
   } else if(k==='wonder'){
-    if(p.wonder){
-      const Wd=W(game.ed)[p.wonder], st=Wd[p.side];
-      body=`${out}<div class="card"><div class="small muted">${tx(Wd.full)} · ${SIDE(game.ed,p.side)}</div>${st.map((s,i)=>`<label class="check"><input type="checkbox" data-stage="${i}" ${d.stages[i]?'checked':''}><div class="grow"><b>${L('Stage','Fase')} ${i+1}</b> <span class="small muted">${stageText(s)}</span></div><b>${s.vp?'+'+s.vp:''}</b></label>`).join('')}
-      ${manual(L('Other wonder VP','Andere wonderpunten'),L('e.g. expansions','bv. uitbreidingen'))}</div>`;
-    } else body=`${out}<div class="card">${manual(L('Wonder VP','Wonderpunten'),L('Sum of VP on your built stages','Som van de punten op je gebouwde fases'))}<p class="small muted">${L('Set this player’s wonder in <b>Players & wonders</b> to just tick off built stages.','Kies het wonder van deze speler bij <b>Spelers & wonders</b>, dan vink je gewoon de gebouwde fases aan.')}</p></div>`;
+    if(WONDERS[p.wonder]){
+      const Wd=WONDERS[p.wonder], st=Wd[p.side];
+      body=`${out}<div class="card"><div class="small muted">${Wd.full} · ${SIDE(p.side)}</div>${st.map((s,i)=>`<label class="check"><input type="checkbox" data-stage="${i}" ${d.stages[i]?'checked':''}><div class="grow"><b>Fase ${i+1}</b> <span class="small muted">${stageText(s)}</span></div><b>${s.vp?'+'+s.vp:''}</b></label>`).join('')}</div>`;
+    } else body=`${out}<div class="card">${manual('Wonderpunten','Som van de punten op je gebouwde fases')}<p class="small muted">Kies het wonder van deze speler bij <b>Spelers & wonders</b>, dan vink je gewoon de gebouwde fases aan.</p></div>`;
     upd=base;
   } else if(k==='guild'||k==='com'){
-    const list=k==='guild'?GL(game.ed):CL(game.ed), key=k==='guild'?'guild':'com';
-    body=`${out}<div class="card"><div class="small muted" style="margin-bottom:4px">${k==='guild'?L('For each guild you own, enter the count it scores on.','Vul voor elke gilde die je hebt het aantal in waarop ze scoort.'):L('Age III yellow cards that score VP. Enter the count for each card you own.','Gele kaarten uit tijdperk III die punten opleveren. Vul het aantal in voor elke kaart die je hebt.')}</div>
-      ${list.map(x=>`<div class="field"><div class="lbl"><b>${tx(x.n)} <span style="display:inline;color:var(--muted);font-weight:400">${VP(x.m)} ${L('each','per stuk')}</span></b><span>${tx(x.of)}</span></div>${stepper(key+'.'+x.k, d[key][x.k])}</div>`).join('')}
-      ${k==='guild'?`<div class="field"><div class="lbl"><b>${L('Scientists Guild','Wetenschappersgilde')}</b><span>${L('No VP itself: add +1 wild in Science.','Zelf geen punten: tel +1 joker bij Wetenschap.')}</span></div></div>`:''}
-      ${manual(k==='guild'?L('Other guild VP','Andere gildepunten'):L('Other yellow-card VP','Andere punten van gele kaarten'), k==='guild'?L('Expansion guilds','Gilden uit uitbreidingen'):'')}</div>`;
+    const list=k==='guild'?GUILDS:COMMERCE, key=k==='guild'?'guild':'com';
+    body=`${out}<div class="card"><div class="small muted" style="margin-bottom:4px">${k==='guild'?'Vul voor elke gilde die je hebt het aantal in waarop ze scoort.':'Gele kaarten uit tijdperk III die punten geven. Vul het aantal in voor elke kaart die je hebt.'}</div>
+      ${list.map(x=>`<div class="field"><div class="lbl"><b>${x.n} <span style="display:inline;color:var(--muted);font-weight:400">${PT(x.m)} per stuk</span></b><span>${x.of}</span></div>${stepper(key+'.'+x.k, d[key][x.k])}</div>`).join('')}
+      ${k==='guild'?'<div class="field"><div class="lbl"><b>Wetenschappersgilde</b><span>Geeft zelf geen punten: tel +1 joker bij Wetenschap.</span></div></div>':''}</div>`;
     upd=base;
   } else {
-    body=`${out}<div class="card">${manual(tx(c.n)+(k==='debt'?L(' tokens',' (fiches)'):' '+VPshort), tx(CAT_HINT[k]))}</div>`;
+    body=`${out}<div class="card">${manual('Punten','Tel de punten op je blauwe kaarten op.')}</div>`;
     upd=base;
   }
-  const cats=activeCats(game).map(x=>x.k), ci=cats.indexOf(k), prev=cats[(ci-1+cats.length)%cats.length], nextP=(pi+1)%game.players.length;
-  body+=`<div class="row"><button class="btn grow" data-nav="${pi}:${prev}">‹ ${tx(CATS.find(x=>x.k===prev).n)}</button><button class="btn grow" data-nav="${nextP}:${k}">${esc(game.players[nextP].name)} ›</button></div>`;
+  const ks=CATS.map(x=>x.k), ci=ks.indexOf(k), prev=ks[(ci-1+ks.length)%ks.length], nextP=(pi+1)%game.players.length;
+  body+=`<div class="row"><button class="btn grow" data-nav="${pi}:${prev}">‹ ${CATS.find(x=>x.k===prev).n}</button><button class="btn grow" data-nav="${nextP}:${k}">${esc(game.players[nextP].name)} ›</button></div>`;
   openSheet(title, body, {obj:d, update:upd});
 }
 $('#sheet').addEventListener('change', e=>{
@@ -546,26 +458,24 @@ $('#sheet').addEventListener('click', e=>{
 });
 
 function setupSheet(edit){
-  const draft = edit ? JSON.parse(JSON.stringify(game)) : {players:(roster.slice(0,4).length>=3?roster.slice(0,4):['','','']).map(n=>newPlayer(n)), exp:{leaders:false,cities:false}, ed:edition};
+  const draft = edit ? JSON.parse(JSON.stringify(game)) : {players:(roster.slice(0,4).length>=3?roster.slice(0,4):['','','']).map(n=>newPlayer(n))};
   const draw=()=>{
-    const wopts=w=>`<option value="">${L('Wonder…','Wonder…')}</option>`+Object.entries(W(draft.ed)).map(([k,v])=>`<option value="${k}" ${w===k?'selected':''}>${v.n}</option>`).join('');
+    const wopts=w=>`<option value="">Wonder…</option>`+Object.entries(WONDERS).map(([k,v])=>`<option value="${k}" ${w===k?'selected':''}>${v.n}</option>`).join('');
     $('#setup-body').innerHTML=`
-      <div class="row" style="margin-bottom:10px"><div class="grow small muted">${draft.players.length} ${L('players · seating order, clockwise','spelers · zitvolgorde, met de klok mee')}</div>
+      <div class="row" style="margin-bottom:10px"><div class="grow small muted">${draft.players.length} spelers · in zitvolgorde, met de klok mee</div>
         <button class="btn small" data-pc="-1" ${draft.players.length<=3?'disabled':''}>−</button><button class="btn small" data-pc="1" ${draft.players.length>=7?'disabled':''}>+</button></div>
-      <div class="row" style="margin-bottom:10px"><span class="small muted grow">${L('Edition','Editie')}</span><div class="chips">${[2,1].map(e=>`<button class="chip" data-ed="${e}" aria-pressed="${ED(draft.ed)===e}">${ED_NAME(e)}</button>`).join('')}</div></div>
       ${draft.players.map((p,i)=>`<div class="card" style="padding:10px">
         <div class="row"><span class="muted small" style="width:16px">${i+1}</span><input type="text" list="roster" placeholder="${defaultName(i+1)}" value="${esc(p.name)}" data-pn="${i}" autocomplete="off">
-        ${i>0?`<button class="icon-btn" data-up="${i}" aria-label="${L('Move up','Omhoog')}">▲</button>`:'<span style="width:30px"></span>'}</div>
+        ${i>0?`<button class="icon-btn" data-up="${i}" aria-label="Omhoog">▲</button>`:'<span style="width:30px"></span>'}</div>
         <div class="row" style="margin-top:6px;padding-left:24px"><select data-pw="${i}">${wopts(p.wonder)}</select>
-        <div class="chips" style="flex:0 0 auto">${['A','B'].map(s=>`<button class="chip" data-ps="${i}:${s}" aria-pressed="${p.side===s}">${SIDE_SHORT(draft.ed,s)}</button>`).join('')}</div>
+        <div class="chips" style="flex:0 0 auto">${['A','B'].map(s=>`<button class="chip" data-ps="${i}:${s}" aria-pressed="${p.side===s}">${SIDE(s)}</button>`).join('')}</div>
         </div></div>`).join('')}
-      <button class="btn small" data-rand>🎲 ${L('Random wonders','Willekeurige wonders')}</button>
-      <div class="sec-title">${L('Expansions','Uitbreidingen')}</div>
-      <div class="chips"><button class="chip" data-exp="leaders" aria-pressed="${draft.exp.leaders}">${L('Leaders','Leaders')}</button><button class="chip" data-exp="cities" aria-pressed="${draft.exp.cities}">${L('Cities','Cities')}</button></div>
+      <button class="btn small" data-rand>🎲 Willekeurige wonders</button>
+      <p class="small muted">Eerste spel? Speel met de <b>Dag</b>-kant.</p>
       <datalist id="roster">${roster.map(n=>`<option value="${esc(n)}">`).join('')}</datalist>
-      <button class="btn primary block" style="margin-top:16px" data-start>${edit?L('Save','Bewaren'):L('Start game','Start spel')}</button>`;
+      <button class="btn primary block" style="margin-top:8px" data-start>${edit?'Bewaren':'Start spel'}</button>`;
   };
-  openSheet(edit?L('Players & wonders','Spelers & wonders'):L('New game','Nieuw spel'), '<div id="setup-body"></div>', {obj:draft});
+  openSheet(edit?'Spelers & wonders':'Nieuw spel', '<div id="setup-body"></div>', {obj:draft});
   draw();
   const body=$('#setup-body');
   body.oninput=e=>{ if(e.target.dataset.pn!=null) draft.players[+e.target.dataset.pn].name=e.target.value; };
@@ -575,83 +485,77 @@ function setupSheet(edit){
     if(t.dataset.pc){ if(+t.dataset.pc>0) draft.players.push(newPlayer('')); else draft.players.pop(); draw(); }
     else if(t.dataset.ps){ const [i,s]=t.dataset.ps.split(':'); draft.players[+i].side=s; draw(); }
     else if(t.dataset.up){ const i=+t.dataset.up; [draft.players[i-1],draft.players[i]]=[draft.players[i],draft.players[i-1]]; draw(); }
-    else if(t.dataset.ed){ draft.ed=+t.dataset.ed; draw(); }
-    else if(t.dataset.exp){ draft.exp[t.dataset.exp]=!draft.exp[t.dataset.exp]; draw(); }
-    else if(t.hasAttribute('data-rand')){ const ks=Object.keys(W(draft.ed)).sort(()=>Math.random()-.5); draft.players.forEach((p,i)=>{p.wonder=ks[i]; p.side=Math.random()<.5?'A':'B';}); draw(); }
+    else if(t.hasAttribute('data-rand')){ const ks=Object.keys(WONDERS).sort(()=>Math.random()-.5); draft.players.forEach((p,i)=>{p.wonder=ks[i];}); draw(); }
     else if(t.hasAttribute('data-start')){
       draft.players.forEach((p,i)=>{ p.name=p.name.trim()||defaultName(i+1); });
       const used=draft.players.map(p=>p.wonder).filter(Boolean);
-      if(new Set(used).size!==used.length){ toast(L('Each wonder can only be used once','Elk wonder kan maar één keer gekozen worden')); return; }
+      if(new Set(used).size!==used.length){ toast('Elk wonder kan maar één keer gekozen worden'); return; }
       roster=[...new Set([...draft.players.map(p=>p.name).filter(n=>!isDefaultName(n)), ...roster])].slice(0,20);
-      edition=ED(draft.ed);
       if(edit){
-        if(draft.players.length!==game.players.length) draft.war=[null,null,null];   // seating changed: war records no longer valid
+        if(draft.players.length!==game.players.length){ draft.war=[null,null,null]; draft.cur=null; }  // andere tafel: veldslagen opnieuw
         game=draft;
-      } else { game=newGame([], draft.exp); game.players=draft.players; game.ed=edition; }
+      } else game=newGame(draft.players);
       closeSheet();
     }
   };
 }
 
-/* ============ SCIENCE ============ */
+/* ============ WETENSCHAP ============ */
 function sciAdvice(s, advSel, wildSel, noteSel){
   const cur=sciScore(s);
   const deltas=['t','c','g'].map(k=>({k, d:sciScore({...s,[k]:(+s[k]||0)+1}).vp-cur.vp}));
   const max=Math.max(...deltas.map(x=>x.d)), allEq=deltas.every(x=>x.d===max);
-  $(advSel).innerHTML=deltas.map(x=>`<div class="${x.d===max&&!allEq?'best':''}">${symIcon(x.k)}<b>+${x.d}</b><span class="small muted">${tx(SYM[x.k].n)}</span></div>`).join('');
+  $(advSel).innerHTML=deltas.map(x=>`<div class="${x.d===max&&!allEq?'best':''}">${symIcon(x.k)}<b>+${x.d}</b><span class="small muted">${SYM[x.k].n}</span></div>`).join('');
   const wildD=sciScore({...s,w:(+s.w||0)+1}).vp-cur.vp;
-  const assigned=cur.add.map((n,i)=>n?`${n}× ${tx(SYM['tcg'[i]].n).toLowerCase()}`:'').filter(Boolean);
-  $(wildSel).innerHTML=`${(+s.w||0)?`${L('Wilds best used as','Jokers het best gebruikt als')}: <b>${assigned.join(', ')}</b>. `:''}${L(`An extra wild would be worth <b>+${wildD}</b>.`,`Een extra joker is <b>+${wildD}</b> waard.`)} ${L('Sets complete','Volledige sets')}: <b>${Math.min(...cur.a)}</b>.`;
+  const assigned=cur.add.map((n,i)=>n?`${n}× ${SYM['tcg'[i]].n.toLowerCase()}`:'').filter(Boolean);
+  $(wildSel).innerHTML=`${(+s.w||0)?`Jokers het best gebruikt als: <b>${assigned.join(', ')}</b>. `:''}Een extra joker is <b>+${wildD}</b> waard. Volledige sets: <b>${Math.min(...cur.a)}</b>.`;
   if(noteSel) $(noteSel).textContent=`${cur.a.join(' / ')} → ${cur.a.map(x=>x*x).join('+')} + ${7*Math.min(...cur.a)}`;
 }
 function renderSci(){
   const v=$('#v-sci');
   v.innerHTML=`<div data-obj="sci">
-    <div class="card"><div class="out-row"><div class="big-out" id="s-vp">0</div><div class="muted">${VPshort}</div><div class="grow small muted" id="s-note" style="text-align:right"></div></div>
-    ${['t','c','g','w'].map(s=>`<div class="field">${symIcon(s)}<div class="lbl"><b>${tx(SYM[s].pl)}</b>${s==='w'?`<span>${L('Scientists Guild, Babylon, etc.','Wetenschappersgilde, Babylon, enz.')}</span>`:''}</div>${stepper(s, sciCalc[s])}</div>`).join('')}
+    <div class="card"><div class="out-row"><div class="big-out" id="s-vp">0</div><div class="muted">punten</div><div class="grow small muted" id="s-note" style="text-align:right"></div></div>
+    ${['t','c','g','w'].map(s=>`<div class="field">${symIcon(s)}<div class="lbl"><b>${SYM[s].pl}</b>${s==='w'?'<span>Wetenschappersgilde, Babylon</span>':''}</div>${stepper(s, sciCalc[s])}</div>`).join('')}
     </div>
-    <div class="card"><b>${L('Take next','Neem hierna')}</b><div class="advice" id="s-adv"></div><div class="small muted" id="s-wild" style="margin-top:8px"></div></div>
-    <div class="row wrap" id="s-apply">${game?`<span class="small muted">${L('Copy to','Kopieer naar')}:</span>${game.players.map((p,i)=>`<button class="chip" data-apply="${i}">${esc(p.name)}</button>`).join('')}`:''}<button class="btn small ghost grow" style="text-align:right" data-sreset>${L('Reset','Wissen')}</button></div>
+    <div class="card"><b>Neem hierna</b><div class="advice" id="s-adv"></div><div class="small muted" id="s-wild" style="margin-top:8px"></div></div>
+    <div class="row wrap">${game?`<span class="small muted">Kopieer naar:</span>${game.players.map((p,i)=>`<button class="chip" data-apply="${i}">${esc(p.name)}</button>`).join('')}`:''}<button class="btn small ghost grow" style="text-align:right" data-sreset>Wissen</button></div>
     </div>
-    <div class="sec-title">${L('How science scores','Zo scoort wetenschap')}</div>
+    <div class="sec-title">Zo scoort wetenschap</div>
     <div class="card small">
-      <p style="margin-top:0">${L('Each symbol type scores <b>its count squared</b>, plus <b>7 VP for every complete set</b> of all three symbols.','Elk soort symbool scoort <b>het aantal in het kwadraat</b>, plus <b>7 punten per volledige set</b> van drie verschillende symbolen.')}</p>
-      <table class="mini"><tr><th>${L('Symbols','Symbolen')}</th><th>${VPshort}</th><th>${L('Symbols','Symbolen')}</th><th>${VPshort}</th></tr>
+      <p style="margin-top:0">Elk soort symbool scoort <b>het aantal × het aantal</b> (1→1, 2→4, 3→9, 4→16), plus <b>7 punten per set</b> van drie verschillende symbolen.</p>
+      <table class="mini"><tr><th>Symbolen</th><th>Punten</th><th>Symbolen</th><th>Punten</th></tr>
       ${[[1,1,1],[2,1,1],[2,2,1],[2,2,2],[3,2,2],[3,3,3],[4,4,4],[3,0,0],[4,0,0],[5,0,0]].reduce((rows,a,i,arr)=>{ if(i%2===0){ const b=arr[i+1]; rows.push(`<tr><td>${a.join('·')}</td><td><b>${sciScore({t:a[0],c:a[1],g:a[2]}).vp}</b></td><td>${b?b.join('·'):''}</td><td><b>${b?sciScore({t:b[0],c:b[1],g:b[2]}).vp:''}</b></td></tr>`);} return rows;},[]).join('')}
-      </table>
-      <p>${L('Spreading out (sets) wins early; stacking one symbol takes over at about 4+. The calculator always picks the best use of wild symbols.','Spreiden (sets) loont in het begin; vanaf ongeveer 4 van hetzelfde symbool wint stapelen. De rekenhulp kiest altijd het beste gebruik van jokers.')}</p></div>`;
+      </table></div>`;
   const wrap=v.querySelector('[data-obj]');
   wrap._upd=()=>{ $('#s-vp').textContent=sciScore(sciCalc).vp; sciAdvice(sciCalc,'#s-adv','#s-wild','#s-note'); };
   wrap._upd();
 }
 $('#v-sci').addEventListener('click', e=>{
   const a=e.target.closest('[data-apply]');
-  if(a){ const p=game.players[+a.dataset.apply]; p.d.sci={...sciCalc}; save(); renderScore(); toast(L(`Science copied to ${p.name}`,`Wetenschap gekopieerd naar ${p.name}`)); }
+  if(a){ const p=game.players[+a.dataset.apply]; p.d.sci={...sciCalc}; save(); toast(`Wetenschap gekopieerd naar ${p.name}`); }
   if(e.target.closest('[data-sreset]')){ sciCalc={t:0,c:0,g:0,w:0}; save(); renderSci(); }
 });
 
-/* ============ WAR ============ */
+/* ============ OORLOG ============ */
 function renderWar(){
   const v=$('#v-war');
-  if(!game){ v.innerHTML=`<div class="card empty"><h2 style="font-family:Georgia,serif">${L('No game in progress','Geen spel bezig')}</h2><p class="muted">${L('Military battles compare you with your two neighbors, so the tracker needs the seating order. Start a game first.','Veldslagen vergelijken je met je twee buren, dus de teller heeft de zitvolgorde nodig. Start eerst een spel.')}</p><button class="btn primary" data-act="new">${L('New game','Nieuw spel')}</button></div>${warExplainer()}`; return; }
+  if(!game){ v.innerHTML=`<div class="card empty"><h2 style="font-family:Georgia,serif">Geen spel bezig</h2><p class="muted">Een veldslag is tegen je twee buren, dus de app moet weten wie naast wie zit. Start eerst een spel.</p><button class="btn primary" data-act="new">Nieuw spel</button></div>${warExplainer()}`; return; }
   const n=game.players.length, age=warAge;
   if(!game.cur) game.cur=[null,null,null];
   if(!game.cur[age]) game.cur[age]= (game.war[age]||game.war[age-1]||game.cur[age-1]||game.players.map(()=>0)).slice();
   const sh=game.cur[age];
-  const recorded=!!game.war[age] && game.war[age].every((x,i)=>x===sh[i]);
-  const dir=[L('← Pass left','← Doorgeven naar links'),L('Pass right →','Doorgeven naar rechts →'),L('← Pass left','← Doorgeven naar links')][age];
-  const ageWord=L('Age','Tijdperk');
+  const dir=['← Kaarten doorgeven naar links','Kaarten doorgeven naar rechts →','← Kaarten doorgeven naar links'][age];
   v.innerHTML=`
-    <div class="chips" style="margin-bottom:12px">${[0,1,2].map(a=>`<button class="chip" data-age="${a}" aria-pressed="${a===age}">${ageWord} ${AGE[a]}${game.war[a]?' ✓':''}</button>`).join('')}</div>
-    <div class="card small"><div class="row"><span class="age-badge a${age+1}">${ageWord.toUpperCase()} ${AGE[age]}</span><span class="grow">${L('Win','Winst')} <b>+${MIL_VP[age]}</b> · ${L('Lose','Verlies')} <b>−1</b> · ${L('Tie 0, vs each neighbor','Gelijk 0, tegen elke buur')}</span></div><div class="muted" style="margin-top:6px">${dir}</div></div>
+    <div class="chips" style="margin-bottom:12px">${[0,1,2].map(a=>`<button class="chip" data-age="${a}" aria-pressed="${a===age}">Tijdperk ${AGE[a]}${game.war[a]?' ✓':''}</button>`).join('')}</div>
+    <div class="card small"><div class="row"><span class="age-badge a${age+1}">TIJDPERK ${AGE[age]}</span><span class="grow">Winnen <b>+${MIL_VP[age]}</b> · Verliezen <b>−1</b> · Gelijk 0, tegen elke buur</span></div><div class="muted" style="margin-top:6px">${dir}</div></div>
     <div class="card" data-obj="war">
-      <div class="small muted" style="margin-bottom:2px">${L('Total shields on each player’s red cards and wonder','Totaal aantal schilden op de rode kaarten en het wonder van elke speler')}</div>
+      <div class="small muted" style="margin-bottom:2px">Tel de schilden op de rode kaarten en het wonder van elke speler</div>
       ${game.players.map((p,i)=>`<div class="war-row"><div class="grow"><b>${esc(p.name)}</b><div class="vs" id="vs-${i}"></div></div>${stepper(`cur.${age}.${i}`, sh[i])}</div>`).join('')}
     </div>
-    <button class="btn ${recorded?'':'primary'} block" data-record></button>
-    ${game.war[age]?`<button class="btn ghost small block" style="margin-top:6px" data-unrecord>${L('Undo this age','Dit tijdperk ongedaan maken')}</button>`:''}
-    <div class="sec-title">${L('Running military total','Militaire tussenstand')}</div>
-    <div class="card"><table class="mini"><tr><th>${L('Player','Speler')}</th><th>I</th><th>II</th><th>III</th><th>${VPshort}</th></tr>
+    <button class="btn block" data-record></button>
+    ${game.war[age]?`<button class="btn ghost small block" style="margin-top:6px" data-unrecord>Dit tijdperk ongedaan maken</button>`:''}
+    <div class="sec-title">Militaire tussenstand</div>
+    <div class="card"><table class="mini"><tr><th>Speler</th><th>I</th><th>II</th><th>III</th><th>pt</th></tr>
       ${game.players.map((p,i)=>`<tr><td>${esc(p.name)}</td>${[0,1,2].map(a=>{ if(!game.war[a]) return '<td class="muted">–</td>'; const s=game.war[a]; let vp=0; neighbors(n,i).forEach(j=>{ if(s[i]>s[j]) vp+=MIL_VP[a]; else if(s[i]<s[j]) vp--; }); return `<td>${vp>0?'+':''}${vp}</td>`; }).join('')}<td><b>${warTokens(game)[i].vp}</b></td></tr>`).join('')}
     </table></div>
     ${warExplainer()}`;
@@ -661,220 +565,120 @@ function renderWar(){
     game.players.forEach((p,i)=>{
       $('#vs-'+i).innerHTML=neighbors(n,i).map(j=>{
         const r=s[i]>s[j]?'w':s[i]<s[j]?'l':'t';
-        const lbl=r==='w'?'+'+MIL_VP[age]:r==='l'?'−1':'0';
-        return `<span class="tok ${r}">${lbl} ${L('vs','tegen')} ${esc(game.players[j].name)}</span>`;
+        return `<span class="tok ${r}">${r==='w'?'+'+MIL_VP[age]:r==='l'?'−1':'0'} tegen ${esc(game.players[j].name)}</span>`;
       }).join('');
     });
     const btn=v.querySelector('[data-record]'), rec=!!game.war[age]&&game.war[age].every((x,i)=>x===s[i]);
     btn.className='btn block '+(rec?'':'primary');
-    btn.textContent=rec?L(`Age ${AGE[age]} recorded ✓`,`Tijdperk ${AGE[age]} genoteerd ✓`):(game.war[age]?L('Update recorded result','Genoteerd resultaat bijwerken'):L(`Record Age ${AGE[age]} battle`,`Veldslag tijdperk ${AGE[age]} noteren`));
+    btn.textContent=rec?`Tijdperk ${AGE[age]} genoteerd ✓`:(game.war[age]?'Genoteerd resultaat bijwerken':`Veldslag tijdperk ${AGE[age]} noteren`);
   };
   wrap._upd();
 }
 function warExplainer(){
-  return `<div class="sec-title">${L('How military works','Zo werkt militair')}</div><div class="card small">
-  <p style="margin-top:0">${L('At the end of each age, compare your shields with <b>each</b> of your two neighbors. More shields: take a victory token (+1 in Age I, +3 in Age II, +5 in Age III). Fewer: take a −1 defeat token. Tie: nothing.','Vergelijk op het einde van elk tijdperk je schilden met <b>elk</b> van je twee buren. Meer schilden: neem een overwinningsfiche (+1 in tijdperk I, +3 in tijdperk II, +5 in tijdperk III). Minder: neem een nederlaagfiche (−1). Gelijk: niets.')}</p>
-  <p style="margin-bottom:0">${L('Only your neighbors matter. If both of them ignore military, one cheap red card can win you both battles.','Alleen je buren tellen. Als ze allebei militair negeren, wint één goedkope rode kaart je beide veldslagen.')}</p></div>`;
+  return `<div class="sec-title">Zo werkt een veldslag</div><div class="card small">
+  <p style="margin-top:0">Op het einde van elk tijdperk vergelijk je je schilden met <b>elk</b> van je twee buren. Meer schilden: je krijgt een overwinningsfiche (+1, +3 of +5). Minder: een nederlaagfiche (−1). Gelijk: niets.</p>
+  <p style="margin-bottom:0">Alleen je buren tellen. Negeren ze allebei militair, dan wint één goedkope rode kaart je beide veldslagen.</p></div>`;
 }
 $('#v-war').addEventListener('click', e=>{
   const ag=e.target.closest('[data-age]');
   if(ag){ warAge=+ag.dataset.age; save(); renderWar(); return; }
-  if(e.target.closest('[data-record]')){ game.war[warAge]=game.cur[warAge].slice(); save(); toast(L(`Age ${AGE[warAge]} recorded`,`Tijdperk ${AGE[warAge]} genoteerd`)); if(warAge<2){ warAge++; } renderAll(); return; }
+  if(e.target.closest('[data-record]')){ game.war[warAge]=game.cur[warAge].slice(); save(); toast(`Tijdperk ${AGE[warAge]} genoteerd`); if(warAge<2) warAge++; renderAll(); return; }
   if(e.target.closest('[data-unrecord]')){ game.war[warAge]=null; save(); renderAll(); return; }
   if(e.target.closest('[data-act="new"]')) setupSheet();
 });
 
 /* ============ WONDERS ============ */
-function edChips(){ return `<div class="grow small muted">${L('Edition','Editie')}</div><div class="chips">${[2,1].map(e=>`<button class="chip" data-edition="${e}" aria-pressed="${ED(edition)===e}">${ED_NAME(e)}</button>`).join('')}</div>`; }
-document.addEventListener('click', e=>{ const b=e.target.closest('[data-edition]'); if(b){ edition=+b.dataset.edition; save(); renderAll(); } });
 function renderWonders(){
   const v=$('#v-wonders');
-  v.innerHTML=`<div class="row" style="margin-bottom:12px">${edChips()}</div>
-    <div class="chips" style="margin-bottom:12px">${['A','B'].map(s=>`<button class="chip" data-side="${s}" aria-pressed="${wonderSide===s}">${ED(edition)===1?L('Side ','Kant ')+s:SIDE(edition,s)}</button>`).join('')}</div>
-    ${Object.values(W(edition)).map(Wd=>{ const st=Wd[wonderSide]; const vp=st.reduce((a,s)=>a+s.vp,0); return `<div class="card wonder">
-      <div class="row"><h3 class="grow">${Wd.n}</h3><span class="tag">${L('starts with','start met')} ${tx(RES[Wd.res])}</span><span class="tag">${VP(vp)}</span></div>
-      <div class="small muted" style="margin-bottom:6px">${tx(Wd.full)}</div>
+  v.innerHTML=`<div class="chips" style="margin-bottom:12px">${['A','B'].map(s=>`<button class="chip" data-side="${s}" aria-pressed="${wonderSide===s}">${SIDE(s)}</button>`).join('')}</div>
+    ${Object.values(WONDERS).map(Wd=>{ const st=Wd[wonderSide]; const vp=st.reduce((a,s)=>a+s.vp,0); return `<div class="card wonder">
+      <div class="row"><h3 class="grow">${Wd.n}</h3><span class="tag">start met ${RES[Wd.res]}</span><span class="tag">${PT(vp)}</span></div>
+      <div class="small muted" style="margin-bottom:6px">${Wd.full}</div>
       ${st.map((s,i)=>`<div class="stage"><span class="n">${i+1}</span><span>${stageText(s)}</span></div>`).join('')}
-      <ul class="small" style="padding-left:18px;margin:10px 0 0">${Wd.tips.map(t=>`<li>${tx(t)}</li>`).join('')}</ul></div>`; }).join('')}`;
+      <ul class="small" style="padding-left:18px;margin:10px 0 0">${Wd.tips.map(t=>`<li>${t}</li>`).join('')}</ul></div>`; }).join('')}`;
 }
 $('#v-wonders').addEventListener('click', e=>{ const s=e.target.closest('[data-side]'); if(s){ wonderSide=s.dataset.side; renderWonders(); } });
 
-/* ============ GUIDE ============ */
+/* ============ GIDS ============ */
+const step = (n, title, html) => `<div class="gstep"><span class="gnum">${n}</span><div><b>${title}</b>${html}</div></div>`;
 const GUIDE = [
- {t:['The game in 60 seconds','Het spel in 60 seconden'], open:true, h:[`
-  <p>3–7 players each develop an ancient city over <b>3 Ages</b>. Each Age, everyone gets a hand of 7 cards. You <b>pick one card, play it, and pass the rest</b> (left in Ages I &amp; III, right in Age II). When 2 cards remain you play one, and the last one is discarded. Each player plays 6 cards per Age, 18 per game.</p>
-  <p>After every Age, you fight a <b>military battle</b> with both neighbors. After Age III, <b>most victory points wins</b>. Ties go to the player with more coins.</p>`, `
-  <p>3 tot 7 spelers bouwen elk een oude stad uit over <b>3 tijdperken</b>. Elk tijdperk krijgt iedereen 7 kaarten. Je <b>kiest één kaart, speelt ze en geeft de rest door</b> (naar links in tijdperk I en III, naar rechts in tijdperk II). Als er nog 2 kaarten over zijn, speel je er één en wordt de laatste afgelegd. Elke speler speelt 6 kaarten per tijdperk, 18 per spel.</p>
-  <p>Na elk tijdperk is er een <b>veldslag</b> met je twee buren. Na tijdperk III <b>wint wie de meeste punten heeft</b>. Bij gelijkstand wint wie de meeste munten heeft.</p>`]},
- {t:['Your turn: 3 options','Je beurt: 3 mogelijkheden'], h:[`<ul>
-  <li><b>Build the card</b>: pay its cost in resources (from your city, or bought from neighbors) and/or coins. Some cards are <b>free</b> if you already own the card it chains from (matching chain symbol on the card).</li>
-  <li><b>Build a wonder stage</b>: tuck the card face-down under your board and pay the stage’s cost. The card’s face doesn’t matter, so this is a great way to “bury” a card your neighbor wants.</li>
-  <li><b>Discard for 3 coins</b>.</li></ul>
-  <p>You can never build two identical cards.</p>`, `<ul>
-  <li><b>De kaart bouwen</b>: betaal de kosten in grondstoffen (uit je eigen stad of gekocht bij je buren) en/of munten. Sommige kaarten zijn <b>gratis</b> als je de kaart al hebt waaruit de keten vertrekt (zelfde ketensymbool op de kaart).</li>
-  <li><b>Een fase van je wereldwonder bouwen</b>: schuif de kaart gesloten onder je wonderbord en betaal de kosten van die fase. Wat er op de kaart staat maakt niet uit, dus zo “begraaf” je ook een kaart die je buur wil.</li>
-  <li><b>Afleggen voor 3 munten</b>.</li></ul>
-  <p>Je mag nooit twee identieke kaarten bouwen.</p>`]},
- {t:['Cards by color','Kaarten per kleur'], h:[`<ul>
-  <li><b style="color:var(--wonder)">Brown</b>: raw resources (wood, stone, clay, ore). <b style="color:var(--muted)">Grey</b>: manufactured goods (glass, textile, papyrus).</li>
-  <li><b style="color:var(--civ)">Blue</b>: straight victory points.</li>
-  <li><b style="color:var(--com)">Yellow</b>: coins, cheaper trading, and (in Age III) VP.</li>
-  <li><b style="color:var(--mil)">Red</b>: shields for military battles.</li>
-  <li><b style="color:var(--sci)">Green</b>: science symbols (tablet, compass, gear).</li>
-  <li><b style="color:var(--guild)">Purple</b> (Age III only): guilds that score off you and your neighbors.</li></ul>`, `<ul>
-  <li><b style="color:var(--wonder)">Bruin</b>: grondstoffen (hout, steen, klei, erts). <b style="color:var(--muted)">Grijs</b>: fabricaten (glas, textiel, papyrus).</li>
-  <li><b style="color:var(--civ)">Blauw</b>: rechtstreeks punten.</li>
-  <li><b style="color:var(--com)">Geel</b>: munten, goedkoper handelen en (in tijdperk III) punten.</li>
-  <li><b style="color:var(--mil)">Rood</b>: schilden voor veldslagen.</li>
-  <li><b style="color:var(--sci)">Groen</b>: wetenschapssymbolen (tablet, passer, tandwiel).</li>
-  <li><b style="color:var(--guild)">Paars</b> (alleen tijdperk III): gilden die punten geven voor jou en je buren.</li></ul>`]},
- {t:['Resources & trading','Grondstoffen & handel'], h:[`<ul>
-  <li>Resources are <b>never spent</b>: each brown/grey card produces its resource once every turn.</li>
-  <li>Missing something? Buy it from a <b>direct neighbor</b> for <b>2 coins each</b>, even if they’d rather you didn’t. They keep the coins, and their card stays theirs.</li>
-  <li>Trading Post and Marketplace (yellow) reduce this to 1 coin.</li>
-  <li>Everyone starts with 3 coins.</li></ul>`, `<ul>
-  <li>Grondstoffen worden <b>nooit verbruikt</b>: elke bruine/grijze kaart levert haar grondstof elke beurt opnieuw.</li>
-  <li>Mis je iets? Koop het bij een <b>directe buur</b> voor <b>2 munten per stuk</b>, ook als die dat liever niet heeft. De buur houdt de munten, en de kaart blijft van hem.</li>
-  <li>Handelspost en Marktplaats (geel) verlagen dat tot 1 munt.</li>
-  <li>Iedereen begint met 3 munten.</li></ul>`]},
- {t:['Scoring (7 categories)','Puntentelling (7 categorieën)'], h:[`<ul>
-  <li><b style="color:var(--mil)">Military</b>: sum of victory/defeat tokens.</li>
-  <li><b style="color:var(--coin)">Treasury</b>: 1 VP per 3 coins.</li>
-  <li><b style="color:var(--wonder)">Wonder</b>: VP on built stages.</li>
-  <li><b style="color:var(--civ)">Civilian</b>: VP on blue cards.</li>
-  <li><b style="color:var(--com)">Commerce</b>: VP from Age III yellow cards.</li>
-  <li><b style="color:var(--guild)">Guilds</b>: as printed on each guild.</li>
-  <li><b style="color:var(--sci)">Science</b>: count² per symbol type + 7 per complete set of three.</li></ul>
-  <p>The <b>Score</b> tab handles all of this. A typical winning score is in the 50s–70s.</p>`, `<ul>
-  <li><b style="color:var(--mil)">Militair</b>: som van je overwinnings- en nederlaagfiches.</li>
-  <li><b style="color:var(--coin)">Schatkist</b>: 1 punt per 3 munten.</li>
-  <li><b style="color:var(--wonder)">Wereldwonder</b>: punten op je gebouwde fases.</li>
-  <li><b style="color:var(--civ)">Burgerlijk</b>: punten op blauwe kaarten.</li>
-  <li><b style="color:var(--com)">Handel</b>: punten van gele kaarten uit tijdperk III.</li>
-  <li><b style="color:var(--guild)">Gilden</b>: zoals op elke gilde staat.</li>
-  <li><b style="color:var(--sci)">Wetenschap</b>: aantal² per soort symbool + 7 per volledige set van drie.</li></ul>
-  <p>Het tabblad <b>Score</b> rekent dit allemaal voor je uit. Een winnende score ligt meestal tussen 50 en 70.</p>`]},
- {t:['Winning strategy','Winnende strategie'], h:[`<ul>
-  <li><b>Pick 1–2 engines</b> early and lean in: science, military, blue cards, wonder, or guilds. Don’t try to do everything.</li>
-  <li><b>Watch your neighbors</b>, not the whole table. They’re who you trade with, fight, and pass cards to.</li>
-  <li><b>Read the hand you pass.</b> With 3–4 cards left in Age III, ask what each card is worth to your neighbor. Burying a 10-point card under your wonder often beats taking a 4-point card yourself.</li>
-  <li><b>Don’t build what you can buy.</b> If a neighbor has stone, paying 2 coins now and then is often cheaper than spending a whole turn on a stone card.</li>
-  <li><b>Double-resource brown cards</b> (e.g. “stone/clay”) are among the best Age I picks.</li>
-  <li><b>Chains are free turns.</b> An Age I card that makes two Age II/III cards free is worth more than its face value.</li>
-  <li><b>The last pick each age</b>: with 2 cards left, the other one is discarded. Plan around it.</li>
-  <li><b>Coins aren’t points.</b> 3 coins = 1 VP, so spend them, but keep a few for trading.</li></ul>`, `<ul>
-  <li><b>Kies vroeg 1 of 2 sporen</b> en ga ervoor: wetenschap, militair, blauwe kaarten, je wonder of gilden. Probeer niet alles te doen.</li>
-  <li><b>Let op je buren</b>, niet op de hele tafel. Met hen handel je, vecht je, en aan hen geef je kaarten door.</li>
-  <li><b>Kijk wat je doorgeeft.</b> Met nog 3–4 kaarten in tijdperk III: wat is elke kaart waard voor je buur? Een kaart van 10 punten onder je wonder begraven is vaak beter dan zelf een kaart van 4 punten nemen.</li>
-  <li><b>Bouw niet wat je kunt kopen.</b> Als je buur steen heeft, is af en toe 2 munten betalen vaak goedkoper dan een hele beurt aan een steenkaart besteden.</li>
-  <li><b>Bruine kaarten met twee grondstoffen</b> (bv. “steen/klei”) zijn top in tijdperk I.</li>
-  <li><b>Ketens zijn gratis beurten.</b> Een kaart uit tijdperk I die twee latere kaarten gratis maakt, is meer waard dan ze lijkt.</li>
-  <li><b>De laatste keuze per tijdperk</b>: met 2 kaarten over wordt de andere afgelegd. Hou daar rekening mee.</li>
-  <li><b>Munten zijn geen punten.</b> 3 munten = 1 punt, dus geef ze uit, maar hou er een paar over om te handelen.</li></ul>`]},
- {t:['Military, smartly','Slim militair spelen'], h:[`<ul>
-  <li>Age III battles swing <b>6 VP per neighbor</b> (+5 vs −1). Count shields before the last two turns of each age.</li>
-  <li>Winning by 1 shield is the same as winning by 10. Don’t overspend.</li>
-  <li>If a neighbor goes heavily military, sometimes it’s cheaper to <b>concede</b> (−1) and spend those turns on points.</li>
-  <li>In the 2010 edition, the Strategists Guild scores off neighbors’ defeat tokens.</li></ul>`, `<ul>
-  <li>Veldslagen in tijdperk III maken een verschil van <b>6 punten per buur</b> (+5 tegenover −1). Tel de schilden vóór de laatste twee beurten van elk tijdperk.</li>
-  <li>Winnen met 1 schild is evenveel waard als winnen met 10. Investeer niet te veel.</li>
-  <li>Gaat een buur helemaal voor militair, dan is het soms goedkoper om te <b>verliezen</b> (−1) en die beurten aan punten te besteden.</li>
-  <li>In de editie van 2010 scoort het Strategengilde op de nederlaagfiches van je buren.</li></ul>`]},
- {t:['Science, smartly','Slim wetenschap spelen'], h:[`<ul>
-  <li>Science explodes late: the 3rd tablet is worth +5, the 4th +7, the 5th +9.</li>
-  <li>It’s strongest when <b>neither neighbor</b> is also going science. Two scientists side by side starve each other.</li>
-  <li>Green cards chain heavily (Age I → II → III). Starting early makes later ones free.</li>
-  <li>Watch for neighbors feeding you green cards, and <b>deny green to a runaway scientist</b> by burying it.</li>
-  <li>Use the <b>Science</b> tab to see which symbol is worth most right now.</li></ul>`, `<ul>
-  <li>Wetenschap ontploft laat in het spel: de 3e tablet is +5 waard, de 4e +7, de 5e +9.</li>
-  <li>Het werkt het best als <b>geen van je buren</b> ook voor wetenschap gaat. Twee wetenschappers naast elkaar hongeren elkaar uit.</li>
-  <li>Groene kaarten vormen veel ketens (tijdperk I → II → III). Vroeg beginnen maakt latere kaarten gratis.</li>
-  <li>Let op buren die je groene kaarten toespelen, en <b>houd groen weg bij een wegloper</b> door het te begraven.</li>
-  <li>Gebruik het tabblad <b>Wetenschap</b> om te zien welk symbool nu het meest waard is.</li></ul>`]},
- {t:['Age-by-age plan','Plan per tijdperk'], h:[`<ul>
-  <li><span class="age-badge a1">I</span> Build economy: resources (especially doubles), a Trading Post if neighbors are resource-rich, and chain starters. Grab a cheap red card if neighbors don’t.</li>
-  <li><span class="age-badge a2">II</span> Grey goods if you lack them, mid-size blue and green cards, more chains. Build wonder stages when hands are weak.</li>
-  <li><span class="age-badge a3">III</span> Points only. Guilds, big blue cards, finish the wonder, win the military battle, and hate-draft what would win the game for someone else.</li></ul>`, `<ul>
-  <li><span class="age-badge a1">I</span> Bouw je economie: grondstoffen (vooral dubbele), een Handelspost als je buren veel grondstoffen hebben, en kaarten die ketens starten. Neem een goedkope rode kaart als je buren dat niet doen.</li>
-  <li><span class="age-badge a2">II</span> Grijze grondstoffen als je ze mist, middelgrote blauwe en groene kaarten, meer ketens. Bouw wonderfases als je hand zwak is.</li>
-  <li><span class="age-badge a3">III</span> Enkel nog punten. Gilden, grote blauwe kaarten, je wonder afwerken, de veldslag winnen, en kaarten wegnemen die iemand anders de overwinning zouden geven.</li></ul>`]},
- {t:['Free-build chains','Ketens (gratis bouwen)'], h:()=>chainsHtml(edition)},
- {t:['Common beginner mistakes','Veelgemaakte beginnersfouten'], h:[`<ul>
-  <li>Taking resources in Age III. They’re almost never worth a turn that late.</li>
-  <li>Forgetting that neighbors can buy your resources (it’s income for you!).</li>
-  <li>Ignoring the wonder. Every stage is points or power, and it’s a place to dump bad cards.</li>
-  <li>Passing a guild or science card that hands a neighbor 10+ VP.</li>
-  <li>Hoarding coins: 9 coins sitting idle is just 3 VP.</li></ul>`, `<ul>
-  <li>Grondstoffen nemen in tijdperk III. Zo laat zijn ze bijna nooit een beurt waard.</li>
-  <li>Vergeten dat buren jouw grondstoffen kunnen kopen (dat is inkomen voor jou!).</li>
-  <li>Je wonder negeren. Elke fase levert punten of voordeel op, en je kunt er slechte kaarten in kwijt.</li>
-  <li>Een gilde of wetenschapskaart doorgeven die je buur 10+ punten oplevert.</li>
-  <li>Munten oppotten: 9 munten die niets doen zijn maar 3 punten.</li></ul>`]},
+ {t:'🎯 Het doel', open:true, h:`
+  <p>Je bouwt een oude stad uit met kaarten. Na <b>3 rondes</b> (tijdperken) wint wie de <b>meeste punten</b> heeft.</p>
+  <p class="muted small" style="margin-bottom:0">Een spel duurt ongeveer 30 minuten, met 3 tot 7 spelers.</p>`},
+ {t:'📦 Klaarzetten', h:
+  step(1,'Wonderbord','<p>Iedereen krijgt een wonderbord. Leg het met de <b>Dag</b>-kant boven (de kant zonder maantje).</p>')
+ +step(2,'3 munten','<p>Iedereen krijgt 3 munten.</p>')
+ +step(3,'Kaarten sorteren','<p>Maak 3 stapels: tijdperk I, II en III (zie de achterkant). Onderaan elke kaart staat een getal zoals <b>3+</b> of <b>5+</b>. Leg alle kaarten met een getal <b>hoger dan het aantal spelers</b> terug in de doos.</p>')
+ +step(4,'Gilden (paars)','<p>Schud de paarse kaarten en neem er <b>aantal spelers + 2</b>. Schud die door de stapel van tijdperk III. De rest gaat terug in de doos.</p>')
+ +step(5,'Delen','<p>Schud tijdperk I en geef iedereen 7 kaarten.</p>')},
+ {t:'🔄 Een beurt', h:
+  step(1,'Kies één kaart','<p>Kies uit je hand één kaart en leg ze gesloten voor je. <b>Iedereen speelt tegelijk.</b></p>')
+ +step(2,'Doe er één ding mee','<ul><li><b>Bouwen</b>: betaal wat linksboven op de kaart staat en leg ze open naast je bord.</li><li><b>Wonderfase bouwen</b>: schuif de kaart gesloten onder je bord en betaal de kosten van die fase (van links naar rechts).</li><li><b>Afleggen</b>: gooi de kaart weg en neem 3 munten.</li></ul>')
+ +step(3,'Geef de rest door','<p>Geef je overige kaarten door aan je buur: <b>naar links</b> in tijdperk I en III, <b>naar rechts</b> in tijdperk II. Het tabblad Oorlog toont de richting.</p>')
+ +`<p class="small muted" style="margin-bottom:0">Je mag nooit twee keer dezelfde kaart bouwen.</p>`},
+ {t:'💰 Betalen', h:`<ul>
+  <li><b>Gratis kaarten</b>: niets linksboven? Dan is ze gratis.</li>
+  <li><b>Munten</b>: staat er een munt, betaal die aan de bank.</li>
+  <li><b>Grondstoffen</b>: je bruine en grijze kaarten (en je wonderbord) leveren elke beurt hun grondstof. Ze raken <b>nooit op</b>.</li>
+  <li><b>Kopen bij je buren</b>: mis je iets? Koop het bij je <b>linker- of rechterbuur</b> voor <b>2 munten</b>. Je buur mag niet weigeren en houdt zijn kaart.</li>
+  <li><b>Ketens</b>: staat bij de kosten (linksboven) een klein symbooltje dat ook <b>rechtsboven</b> op een kaart van jou staat? Dan bouw je ze <b>gratis</b>. Zie “Ketens” hieronder.</li></ul>`},
+ {t:'⚔️ Einde van een tijdperk', h:
+  step(1,'Laatste kaart','<p>Als iedereen 6 kaarten gespeeld heeft, blijft er 1 over. Die wordt afgelegd.</p>')
+ +step(2,'Veldslag','<p>Vergelijk je <b>schilden</b> (rode kaarten) met je twee buren. Meer = overwinningsfiche (+1 in I, +3 in II, +5 in III). Minder = −1. Gelijk = niets. Het tabblad <b>Oorlog</b> rekent dit uit.</p>')
+ +step(3,'Volgend tijdperk','<p>Deel 7 nieuwe kaarten uit de volgende stapel.</p>')},
+ {t:'🏆 Einde van het spel', h:`
+  <p>Na tijdperk III tel je de punten. Gebruik het tabblad <b>Score</b>: tik op een vakje en de app rekent voor je.</p>
+  <ul><li><b style="color:var(--mil)">Militair</b>: je fiches</li><li><b style="color:var(--coin)">Schatkist</b>: 1 punt per 3 munten</li><li><b style="color:var(--wonder)">Wereldwonder</b>: punten op je gebouwde fases</li><li><b style="color:var(--civ)">Burgerlijk</b>: blauwe kaarten</li><li><b style="color:var(--com)">Handel</b>: gele kaarten uit tijdperk III</li><li><b style="color:var(--guild)">Gilden</b>: paarse kaarten</li><li><b style="color:var(--sci)">Wetenschap</b>: groene kaarten</li></ul>
+  <p style="margin-bottom:0">Gelijkstand? Wie de meeste munten heeft, wint.</p>`},
+ {t:'🃏 Wat doen de kleuren?', h:`<ul>
+  <li><b style="color:var(--wonder)">Bruin</b>: grondstoffen (hout, steen, klei, erts).</li>
+  <li><b style="color:var(--muted)">Grijs</b>: grondstoffen (glas, textiel, papyrus).</li>
+  <li><b style="color:var(--civ)">Blauw</b>: gewoon punten.</li>
+  <li><b style="color:var(--com)">Geel</b>: munten, goedkoper kopen, en in tijdperk III punten.</li>
+  <li><b style="color:var(--mil)">Rood</b>: schilden voor de veldslagen.</li>
+  <li><b style="color:var(--sci)">Groen</b>: wetenschap. Hoe meer, hoe sneller het oploopt.</li>
+  <li><b style="color:var(--guild)">Paars</b>: gilden (alleen tijdperk III). Punten voor wat jij of je buren hebben.</li></ul>`},
+ {t:'⭐ 6 tips voor je eerste spel', h:`<ol>
+  <li><b>Tijdperk I: grondstoffen.</b> Neem bruine en grijze kaarten, vooral die met twee grondstoffen.</li>
+  <li><b>Tijdperk III: alleen punten.</b> Grondstoffen zijn dan bijna niets meer waard.</li>
+  <li><b>Kies 1 of 2 dingen</b> en ga ervoor, bv. blauw + wonder, of groen.</li>
+  <li><b>Let op je buren.</b> Met hen handel en vecht je. De rest van de tafel telt minder.</li>
+  <li><b>Kijk wat je doorgeeft.</b> Een kaart die je buur veel punten geeft, kun je onder je wonder schuiven.</li>
+  <li><b>Vergeet je wonder niet.</b> Elke fase is punten of voordeel.</li></ol>`},
+ {t:'🔗 Ketens (gratis bouwen)', h:()=>chainsHtml()},
 ];
-// Chain card names: [English, Dutch]
-const C = {
-  well:['Well','Bron'], baths:['Baths','Badhuis'], altar:['Altar','Altaar'], theater:['Theater','Theater'],
-  market:['Marketplace','Marktplaats'], posts:['East / West Trading Post','Handelspost Oost / West'],
-  apoth:['Apothecary','Apotheek'], workshop:['Workshop','Werkplaats'], script:['Scriptorium','Scriptorium'],
-  statue:['Statue','Beeld'], aqueduct:['Aqueduct','Aquaduct'], temple:['Temple','Tempel'], carav:['Caravansery','Karavanserai'], forum:['Forum','Forum'],
-  stables:['Stables','Stallen'], dispensary:['Dispensary','Hospitaal'], archery:['Archery Range','Schietbaan'], lab:['Laboratory','Laboratorium'],
-  court:['Courthouse','Rechtszaal'], library:['Library','Bibliotheek'], school:['School','School'], walls:['Walls','Muren'], training:['Training Ground','Trainingsplaats'],
-  pantheon:['Pantheon','Pantheon'], gardens:['Gardens','Tuinen'], haven:['Haven','Haven'], lighthouse:['Lighthouse','Vuurtoren'], arena:['Arena','Arena'], lodge:['Lodge','Herberg'],
-  siege:['Siege Workshop','Legerwerkplaats'], observ:['Observatory','Observatorium'], senate:['Senate','Senaat'], univ:['University','Universiteit'], academy:['Academy','Academie'], study:['Study','College'],
-  fort:['Fortifications','Vestingwerk'], circus:['Circus','Circus'],
-};
-function chainsHtml(e){
-  const nm = ks => ks.map(k=>tx(C[k])).join(', ');
-  const tbl=(head,rows)=>`<table class="mini" style="margin-top:10px"><tr><th>${head[0]}</th><th>${head[1]}</th></tr>${rows.map(([a,b])=>`<tr><td>${nm(a)}</td><td>${nm(b)}</td></tr>`).join('')}</table>`;
-  const A=L('Age','Tijdperk');
-  const intro=`<p class="small muted" style="margin:0">${L('Owning the left card lets you build the right one for free. Showing the','Wie de linkse kaart heeft, bouwt de rechtse gratis. Je ziet de editie')} <b>${ED_NAME(e)}</b>${L(' edition. Switch it at the top of this page.','. Wissel bovenaan deze pagina.')}${ED(e)===2?L(' On 2020 cards the link is shown as a symbol in the corner.',' Op de kaarten van 2020 staat de keten als symbool in de hoek.'):''}</p>`;
-  if(ED(e)===1) return intro
-    +tbl([`${A} I`,`→ ${A} II`],[[['baths'],['aqueduct']],[['altar'],['temple']],[['theater'],['statue']],[['posts'],['forum']],[['market'],['carav']],[['apoth'],['stables','dispensary']],[['workshop'],['archery','lab']],[['script'],['court','library']]])
-    +tbl([`${A} II`,`→ ${A} III`],[[['temple'],['pantheon']],[['statue'],['gardens']],[['forum'],['haven']],[['carav'],['lighthouse']],[['walls'],['fort']],[['training'],['circus']],[['dispensary'],['lodge','arena']],[['lab'],['observ','siege']],[['library'],['senate','univ']],[['school'],['academy','study']]]);
-  return intro
-    +tbl([`${A} I`,`→ ${A} II`],[[['well'],['statue']],[['baths'],['aqueduct']],[['posts'],['forum']],[['market'],['carav']],[['apoth'],['stables','dispensary']],[['workshop'],['archery','lab']],[['script'],['court','library']]])
-    +tbl([`${A} I`,`→ ${A} III ${L('(skips an age)','(slaat een tijdperk over)')}`],[[['altar'],['pantheon']],[['theater'],['gardens']]])
-    +tbl([`${A} II`,`→ ${A} III`],[[['forum'],['haven']],[['carav'],['lighthouse']],[['walls'],['fort']],[['training'],['circus']],[['dispensary'],['lodge','arena']],[['lab'],['observ','siege']],[['library'],['senate','univ']],[['school'],['academy','study']]]);
+function chainsHtml(){
+  const tbl=(head,rows)=>`<table class="mini" style="margin-top:10px"><tr><th>${head[0]}</th><th>${head[1]}</th></tr>${rows.map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join('')}</table>`;
+  return `<p class="small muted" style="margin:0">Heb je de linkse kaart, dan bouw je de rechtse <b>gratis</b>. Op de kaarten zie je dit als een klein symbooltje.</p>`
+    +tbl(['Tijdperk I','→ Tijdperk II'],[['Bron','Beeld'],['Badhuis','Aquaduct'],['Handelspost Oost / West','Forum'],['Marktplaats','Karavanserai'],['Apotheek','Stallen, Hospitaal'],['Werkplaats','Schietbaan, Laboratorium'],['Scriptorium','Rechtszaal, Bibliotheek']])
+    +tbl(['Tijdperk I','→ Tijdperk III'],[['Altaar','Pantheon'],['Theater','Tuinen']])
+    +tbl(['Tijdperk II','→ Tijdperk III'],[['Forum','Haven'],['Karavanserai','Vuurtoren'],['Muren','Vestingwerk'],['Trainingsplaats','Circus'],['Hospitaal','Herberg, Arena'],['Laboratorium','Observatorium, Legerwerkplaats'],['Bibliotheek','Senaat, Universiteit'],['School','Academie, College']]);
 }
 function renderGuide(){
-  $('#v-guide').innerHTML=`<div class="row" style="margin-bottom:12px">${edChips()}</div>`+GUIDE.map(g=>`<details ${g.open?'open':''}><summary>${tx(g.t)}</summary><div class="body">${typeof g.h==='function'?g.h():tx(g.h)}</div></details>`).join('')+
-  `<p class="small muted" style="text-align:center">${L('An unofficial fan companion. 7 Wonders is a game by Antoine Bauza, published by Repos Production.','Een onofficiële hulp-app door fans. 7 Wonders is een spel van Antoine Bauza, uitgegeven door Repos Production.')}</p>`;
+  $('#v-guide').innerHTML=GUIDE.map(g=>`<details ${g.open?'open':''}><summary>${g.t}</summary><div class="body">${typeof g.h==='function'?g.h():g.h}</div></details>`).join('')+
+  `<p class="small muted" style="text-align:center">Onofficiële hulp-app. 7 Wonders is een spel van Antoine Bauza, uitgegeven door Repos Production.</p>`;
 }
 
-/* ============ NAV / INIT ============ */
+/* ============ NAVIGATIE ============ */
 const TABS={score:renderScore, sci:renderSci, war:renderWar, wonders:renderWonders, guide:renderGuide};
-const TAB_NAME={score:['Score','Score'], sci:['Science','Wetenschap'], war:['War','Oorlog'], wonders:['Wonders','Wonders'], guide:['Guide','Gids']};
-const SUB={score:['Score pad','Scoreblok'], sci:['Science optimizer','Wetenschapshulp'], war:['Military tracker','Veldslagteller'], wonders:['Wonder boards','Wonderborden'], guide:['Rules & strategy','Regels & strategie']};
-let tab=LS.get('tab','score'); if(!TABS[tab]) tab='score';
-function applyLang(){
-  document.documentElement.lang=lang;
-  document.querySelectorAll('#tabs [data-tab] span').forEach(s=>s.textContent=tx(TAB_NAME[s.parentNode.dataset.tab]));
-  $('#langBtn').textContent=lang==='nl'?'EN':'NL';
-  $('#langBtn').setAttribute('aria-label', L('Switch to Dutch','Overschakelen naar Engels'));
-  $('#themeBtn').setAttribute('aria-label', L('Toggle theme','Thema wisselen'));
-  $('#subtitle').textContent=tx(SUB[tab]);
-}
+const SUB={score:'Scoreblok', sci:'Wetenschapshulp', war:'Veldslagteller', wonders:'Wonderborden', guide:'Spelregels'};
+let tab=LS.get('tab', LS.get('game',null)?'score':'guide'); if(!TABS[tab]) tab='score';
 function show(t){
   tab=t; LS.set('tab',t);
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on', v.id==='v-'+t));
   document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-current', b.dataset.tab===t?'page':'false'));
-  $('#subtitle').textContent=tx(SUB[t]);
+  $('#subtitle').textContent=SUB[t];
   TABS[t](); window.scrollTo(0,0);
 }
 function renderAll(){ TABS[tab](); }
 $('#tabs').addEventListener('click', e=>{ const b=e.target.closest('[data-tab]'); if(b) show(b.dataset.tab); });
-$('#langBtn').onclick=()=>{ lang=lang==='nl'?'en':'nl'; LS.set('lang',lang); applyLang(); renderAll(); };
-// Theme
 const applyTheme=t=>{ if(t) document.documentElement.dataset.theme=t; else delete document.documentElement.dataset.theme; };
 let theme=LS.get('theme',null); applyTheme(theme);
 $('#themeBtn').onclick=()=>{ const cur=theme||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'); theme=cur==='dark'?'light':'dark'; LS.set('theme',theme); applyTheme(theme); };
 if(!theme && matchMedia('(prefers-color-scheme: light)').matches) applyTheme('light');
-applyLang();
 show(tab);
-// Keep the screen on during a game, where supported
 async function wake(){ try{ if(game && 'wakeLock' in navigator && document.visibilityState==='visible') await navigator.wakeLock.request('screen'); }catch(e){} }
 document.addEventListener('visibilitychange', wake); wake();
-// PWA
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
   window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
 }

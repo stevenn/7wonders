@@ -1,7 +1,8 @@
 {
   "name": "Wonders Companion",
   "short_name": "Wonders",
-  "description": "Score pad, science optimizer, military tracker and strategy guide for 7 Wonders.",
+  "description": "Scoreblok, wetenschapshulp, veldslagteller en spelregels voor 7 Wonders (2020).",
+  "lang": "nl",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
