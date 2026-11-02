@@ -301,12 +301,12 @@ const WONDERS2 = {
 const GUILDS1 = [
   {k:'workers', n:['Workers Guild','Arbeidersgilde'], m:1, of:['brown cards of both neighbors','bruine kaarten van beide buren']},
   {k:'craftsmen', n:['Craftsmens Guild','Ambachtsgilde'], m:2, of:['grey cards of both neighbors','grijze kaarten van beide buren']},
-  {k:'traders', n:['Traders Guild','Handelarensgilde'], m:1, of:['yellow cards of both neighbors','gele kaarten van beide buren']},
+  {k:'traders', n:['Traders Guild','Handelarengilde'], m:1, of:['yellow cards of both neighbors','gele kaarten van beide buren']},
   {k:'philosophers', n:['Philosophers Guild','Filosofengilde'], m:1, of:['green cards of both neighbors','groene kaarten van beide buren']},
   {k:'spies', n:['Spies Guild','Spionnengilde'], m:1, of:['red cards of both neighbors','rode kaarten van beide buren']},
   {k:'magistrates', n:['Magistrates Guild','Magistratengilde'], m:1, of:['blue cards of both neighbors','blauwe kaarten van beide buren']},
   {k:'strategists', n:['Strategists Guild','Strategengilde'], m:1, of:['defeat tokens of both neighbors','nederlaagfiches van beide buren']},
-  {k:'builders', n:['Builders Guild','Bouwmeestersgilde'], m:1, of:['wonder stages: yours + both neighbors','wonderfases: jij + beide buren']},
+  {k:'builders', n:['Builders Guild','Bouwersgilde'], m:1, of:['wonder stages: yours + both neighbors','wonderfases: jij + beide buren']},
   {k:'shipowners', n:['Shipowners Guild','Redersgilde'], m:1, of:['your own brown + grey + purple cards','je eigen bruine + grijze + paarse kaarten']},
 ];
 const COMMERCE1 = [
@@ -315,7 +315,7 @@ const COMMERCE1 = [
   {k:'chamber', n:['Chamber of Commerce','Kamer van Koophandel'], m:2, of:['your grey cards','je grijze kaarten']},
   {k:'arena', n:['Arena','Arena'], m:1, of:['your built wonder stages','je gebouwde wonderfases']},
 ];
-const GUILDS2 = GUILDS1.filter(g=>g.k!=='strategists').concat([{k:'decorators', n:['Decorators Guild','Decorateursgilde'], m:7, of:['enter 1 if every stage of your wonder is built','vul 1 in als al je wonderfases gebouwd zijn']}]);
+const GUILDS2 = GUILDS1.filter(g=>g.k!=='strategists').concat([{k:'decorators', n:['Decorators Guild','Ontwerpersgilde'], m:7, of:['enter 1 if every stage of your wonder is built','vul 1 in als al je wonderfases gebouwd zijn']}]);
 const COMMERCE2 = [...COMMERCE1.slice(0,3), {k:'ludus', n:['Ludus','Training voor gladiatoren'], m:1, of:['your red cards','je rode kaarten']}, COMMERCE1[3]];
 const ED = e => e===1 ? 1 : 2;
 const W = e => ED(e)===1 ? WONDERS1 : WONDERS2;
