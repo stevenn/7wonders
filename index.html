@@ -180,15 +180,16 @@ const PT = n => `${n} ${n===1?'punt':'punten'}`;
 
 /* ============ GEGEVENS ============ */
 const CATS = [
+  // Volgorde en kleuren zoals het scoreblok in de spelregels (p. 8)
+  {k:'wonder', n:'Wonder', c:'var(--wonder)'},
+  {k:'coin', n:'Munten', c:'var(--coin)'},
   {k:'mil', n:'Militair', c:'var(--mil)'},
-  {k:'coin', n:'Schatkist', c:'var(--coin)'},
-  {k:'wonder', n:'Wereldwonder', c:'var(--wonder)'},
-  {k:'civ', n:'Burgerlijk', c:'var(--civ)'},
-  {k:'com', n:'Handel', c:'var(--com)'},
-  {k:'guild', n:'Gilden', c:'var(--guild)'},
-  {k:'sci', n:'Wetenschap', c:'var(--sci)'},
+  {k:'civ', n:'Blauw', c:'var(--civ)'},
+  {k:'com', n:'Geel', c:'var(--com)'},
+  {k:'sci', n:'Groen', c:'var(--sci)'},
+  {k:'guild', n:'Paars', c:'var(--guild)'},
 ];
-const RES = {ore:'Erts', glass:'Glas', papyrus:'Papyrus', clay:'Klei', wood:'Hout', loom:'Textiel', stone:'Steen'};
+const RES = {ore:'Erts', glass:'Glas', papyrus:'Papyrus', clay:'Klei', wood:'Hout', loom:'Stof', stone:'Steen'};
 // Wonderborden. vp = punten van die fase. 'A' = Dag, 'B' = Nacht. Nagekeken met de eigen borden.
 const E = {
   raw:'Elke beurt 1 bruine grondstof naar keuze',
@@ -310,7 +311,13 @@ function totals(g){
     return {i, name:p.name, tot, by, coins:+p.d.coins||0};
   });
 }
-function ranking(g){ return totals(g).sort((a,b)=> b.tot-a.tot || b.coins-a.coins); }
+function ranking(g){
+  const rk=totals(g).sort((a,b)=> b.tot-a.tot || b.coins-a.coins);
+  // Gelijk aantal punten én munten = gedeelde plaats
+  rk.forEach(r=>{ r.rank=1+rk.filter(o=>o.tot>r.tot||(o.tot===r.tot&&o.coins>r.coins)).length; });
+  return rk;
+}
+const winnersOf = results => results.filter((r,ix)=> r.rank ? r.rank===1 : ix===0);
 
 /* ============ HULPJES ============ */
 const $ = s => document.querySelector(s);
@@ -364,14 +371,14 @@ function renderScore(){
   }
   const rk=ranking(game), byI=Object.fromEntries(rk.map(r=>[r.i,r]));
   v.innerHTML=`
-    <div class="podium">${rk.map((r,ix)=>`<div class="p ${ix===0&&r.tot>0?'lead':''}"><div class="rank">${ix===0&&r.tot>0?'👑 ':''}${ix+1}e</div><div class="tot">${r.tot}</div><div class="nm">${esc(r.name)}</div></div>`).join('')}</div>
+    <div class="podium">${rk.map(r=>`<div class="p ${r.rank===1&&r.tot>0?'lead':''}"><div class="rank">${r.rank===1&&r.tot>0?'👑 ':''}${r.rank}e</div><div class="tot">${r.tot}</div><div class="nm">${esc(r.name)}</div></div>`).join('')}</div>
     <div class="pad-wrap"><table class="pad">
       <thead><tr><th class="cat"></th>${game.players.map(p=>`<th><button class="icon-btn" style="color:inherit;padding:0;font-weight:600" data-act="players">${esc(p.name)}</button><span class="w">${WONDERS[p.wonder]?WONDERS[p.wonder].n+' '+SIDE(p.side):'&nbsp;'}</span></th>`).join('')}</tr></thead>
       <tbody>
       ${CATS.map(c=>`<tr><th class="cat"><span class="sw" style="background:${c.c}"></span>${c.n}</th>${game.players.map((p,i)=>{const s=byI[i].by[c.k];return `<td><button data-cell="${i}:${c.k}" class="${s===0?'zero':''}">${s}</button></td>`}).join('')}</tr>`).join('')}
       <tr class="total"><th class="cat">Totaal</th>${game.players.map((p,i)=>`<td>${byI[i].tot}</td>`).join('')}</tr>
       </tbody></table></div>
-    <p class="hint">Tik op een vakje om te scoren. De app rekent voor je: munten → punten, wetenschap, gilden, wonderfases. Bij gelijkstand wint wie de meeste munten heeft.</p>
+    <p class="hint">Tik op een vakje om te scoren. De app rekent voor je: munten → punten, wetenschap, gilden, wonderfases. Bij gelijkstand wint wie de meeste munten heeft; is het dan nog gelijk, dan delen jullie de winst.</p>
     <div class="row wrap">
       <button class="btn" data-act="players">Spelers & wonders</button>
       <button class="btn primary grow" data-act="finish">Afronden & bewaren</button>
@@ -382,11 +389,11 @@ function renderScore(){
 function renderHistory(){
   if(!history.length) return '';
   const wins={};
-  history.forEach(h=>{ const w=h.results[0]; wins[w.name]=(wins[w.name]||0)+1; });
+  history.forEach(h=>{ winnersOf(h.results).forEach(w=>{ wins[w.name]=(wins[w.name]||0)+1; }); });
   const top=Object.entries(wins).sort((a,b)=>b[1]-a[1]).slice(0,5);
   return `<div class="sec-title">Geschiedenis</div>
   <div class="card"><div class="small muted" style="margin-bottom:6px">Overwinningen: ${top.map(([n,c])=>`<b style="color:var(--text)">${esc(n)}</b> ${c}`).join(' · ')}</div>
-  ${history.slice(0,15).map((h,ix)=>`<div class="hist-item"><div class="grow"><b>${esc(h.results[0].name)}</b> won met ${h.results[0].tot}<div class="small muted">${dateFmt(h.date)} · ${h.results.map(r=>esc(r.name)+' '+r.tot).join(', ')}</div></div><button class="icon-btn" data-hdel="${ix}" aria-label="Verwijderen">✕</button></div>`).join('')}</div>`;
+  ${history.slice(0,15).map((h,ix)=>`<div class="hist-item"><div class="grow"><b>${winnersOf(h.results).map(w=>esc(w.name)).join(' & ')}</b> ${winnersOf(h.results).length>1?'delen de winst met':'won met'} ${h.results[0].tot}<div class="small muted">${dateFmt(h.date)} · ${h.results.map(r=>esc(r.name)+' '+r.tot).join(', ')}</div></div><button class="icon-btn" data-hdel="${ix}" aria-label="Verwijderen">✕</button></div>`).join('')}</div>`;
 }
 $('#v-score').addEventListener('click', e=>{
   const cell=e.target.closest('[data-cell]');
@@ -400,8 +407,8 @@ $('#v-score').addEventListener('click', e=>{
   if(a==='finish'){
     const rk=ranking(game);
     if(rk.every(r=>r.tot===0)){ toast('Vul eerst scores in'); return; }
-    history.unshift({date:game.date, results:rk.map(r=>({name:r.name, tot:r.tot, wonder:game.players[r.i].wonder}))});
-    const winner=rk[0].name; game=null; save(); renderAll(); toast(`🏆 ${winner} wint! Bewaard in de geschiedenis.`);
+    history.unshift({date:game.date, results:rk.map(r=>({name:r.name, tot:r.tot, rank:r.rank, wonder:game.players[r.i].wonder}))});
+    const w=rk.filter(r=>r.rank===1).map(r=>r.name); game=null; save(); renderAll(); toast(w.length>1?`🏆 Gedeelde overwinning: ${w.join(' & ')}!`:`🏆 ${w[0]} wint! Bewaard in de geschiedenis.`);
   }
 });
 
@@ -603,46 +610,59 @@ $('#v-wonders').addEventListener('click', e=>{ const s=e.target.closest('[data-s
 const step = (n, title, html) => `<div class="gstep"><span class="gnum">${n}</span><div><b>${title}</b>${html}</div></div>`;
 const GUIDE = [
  {t:'🎯 Het doel', open:true, h:`
-  <p>Je bouwt een oude stad uit met kaarten. Na <b>3 rondes</b> (tijdperken) wint wie de <b>meeste punten</b> heeft.</p>
-  <p class="muted small" style="margin-bottom:0">Een spel duurt ongeveer 30 minuten, met 3 tot 7 spelers.</p>`},
+  <p>Je bouwt een stad met kaarten, in <b>3 rondes</b> (tijdperk I, II en III). Na tijdperk III wint wie de <b>meeste punten</b> heeft.</p>
+  <p class="muted small" style="margin-bottom:0">3 tot 7 spelers · ongeveer 30 minuten.</p>`},
  {t:'📦 Klaarzetten', h:
-  step(1,'Wonderbord','<p>Iedereen krijgt een wonderbord. Leg het met de <b>Dag</b>-kant boven (de kant zonder maantje).</p>')
- +step(2,'3 munten','<p>Iedereen krijgt 3 munten.</p>')
- +step(3,'Kaarten sorteren','<p>Maak 3 stapels: tijdperk I, II en III (zie de achterkant). Onderaan elke kaart staat een getal zoals <b>3+</b> of <b>5+</b>. Leg alle kaarten met een getal <b>hoger dan het aantal spelers</b> terug in de doos.</p>')
- +step(4,'Gilden (paars)','<p>Schud de paarse kaarten en neem er <b>aantal spelers + 2</b>. Schud die door de stapel van tijdperk III. De rest gaat terug in de doos.</p>')
- +step(5,'Delen','<p>Schud tijdperk I en geef iedereen 7 kaarten.</p>')},
- {t:'🔄 Een beurt', h:
-  step(1,'Kies één kaart','<p>Kies uit je hand één kaart en leg ze gesloten voor je. <b>Iedereen speelt tegelijk.</b></p>')
- +step(2,'Doe er één ding mee','<ul><li><b>Bouwen</b>: betaal wat linksboven op de kaart staat en leg ze open naast je bord.</li><li><b>Wonderfase bouwen</b>: schuif de kaart gesloten onder je bord en betaal de kosten van die fase (van links naar rechts).</li><li><b>Afleggen</b>: gooi de kaart weg en neem 3 munten.</li></ul>')
- +step(3,'Geef de rest door','<p>Geef je overige kaarten door aan je buur: <b>naar links</b> in tijdperk I en III, <b>naar rechts</b> in tijdperk II. Het tabblad Oorlog toont de richting.</p>')
- +`<p class="small muted" style="margin-bottom:0">Je mag nooit twee keer dezelfde kaart bouwen.</p>`},
- {t:'💰 Betalen', h:`<ul>
-  <li><b>Gratis kaarten</b>: niets linksboven? Dan is ze gratis.</li>
-  <li><b>Munten</b>: staat er een munt, betaal die aan de bank.</li>
-  <li><b>Grondstoffen</b>: je bruine en grijze kaarten (en je wonderbord) leveren elke beurt hun grondstof. Ze raken <b>nooit op</b>.</li>
-  <li><b>Kopen bij je buren</b>: mis je iets? Koop het bij je <b>linker- of rechterbuur</b> voor <b>2 munten</b>. Je buur mag niet weigeren en houdt zijn kaart.</li>
-  <li><b>Ketens</b>: staat bij de kosten (linksboven) een klein symbooltje dat ook <b>rechtsboven</b> op een kaart van jou staat? Dan bouw je ze <b>gratis</b>. Zie “Ketens” hieronder.</li></ul>`},
+  step(1,'Kaarten sorteren','<p>Maak 3 stapels: I, II en III (zie achterkant). Onderaan op elke kaart staat <b>3+</b>, <b>4+</b>, … Hou alleen de kaarten met een getal <b>tot en met</b> jullie aantal spelers. De rest gaat terug in de doos.</p><p class="small muted">Met 4 spelers: hou 3+ en 4+.</p>')
+ +step(2,'Paarse kaarten','<p>Trek willekeurig <b>aantal spelers + 2</b> paarse kaarten en stop ze in stapel III. De rest gaat in de doos.</p><p class="small muted">Met 4 spelers: 6 paarse kaarten.</p>')
+ +step(3,'Schudden','<p>Schud de drie stapels en leg ze gedekt in het midden.</p>')
+ +step(4,'Wonderbord','<p>Iedereen krijgt een willekeurig wonderbord. Eerste spel: <b>Dagzijde</b> ☀ boven.</p>')
+ +step(5,'Munten','<p>Iedereen legt <b>3 munten</b> op zijn bord. De rest is de <b>bank</b>. Leg de militaire fiches in het midden.</p>')
+ +step(6,'Starten','<p>Geef iedereen <b>7 kaarten</b> van stapel I.</p>')},
+ {t:'🔄 Een beurt', h:`<p style="margin-top:0">Iedereen speelt <b>tegelijk</b>. Een tijdperk duurt <b>6 beurten</b>.</p>`
+ +step(1,'Kies','<p>Kies 1 kaart uit je hand en leg ze gedekt voor je.</p>')
+ +step(2,'Speel','<p>Iedereen draait tegelijk om en doet <b>één</b> van deze drie:</p><ul><li><b>Bouwen</b>: betaal de bouwkosten en leg de kaart open boven je wonderbord. Leg kaarten van dezelfde kleur op elkaar (symbolen zichtbaar).</li><li><b>Wonderfase bouwen</b>: schuif de kaart gedekt half onder je bord en betaal alleen de kosten van die fase. Altijd van links naar rechts. Niet verplicht.</li><li><b>Verkopen</b>: leg de kaart gedekt in het afleggebied en neem <b>3 munten</b> van de bank.</li></ul>')
+ +step(3,'Doorgeven','<p>Geef je overige kaarten door: <b>naar links</b> in tijdperk I en III, <b>naar rechts</b> in tijdperk II. De pijl staat op de achterkant.</p>')
+ +`<p class="small" style="margin-bottom:0">❗ Je mag nooit twee kaarten met <b>dezelfde naam</b> bouwen.<br>💡 Eerste spel? Voer de acties om de beurt uit, dan ziet iedereen wat er gebeurt.</p>`},
+ {t:'💰 Bouwkosten betalen', h:`
+  <p style="margin-top:0">De bouwkosten staan <b>linksboven</b> op de kaart. Er zijn 4 mogelijkheden:</p><ul>
+  <li><b>Niets</b>: gratis bouwen.</li>
+  <li><b>Munt</b>: betaal die aan de bank.</li>
+  <li><b>Grondstoffen</b>: je stad moet ze maken (je bord, bruine, grijze en gele kaarten, sommige wonderfases). Elk symbool telt <b>1 keer per beurt</b> en raakt <b>nooit op</b>.</li>
+  <li><b>Ketensymbool</b> (tijdperk II en III, naast de kosten): heb je al een kaart met hetzelfde symbool <b>rechtsboven</b>? Dan is ze <b>gratis</b>. Bv. Theater (I) → Tuinen (III).</li></ul>`},
+ {t:'🛒 Kopen bij je buren', h:`<ul style="margin-top:0">
+  <li>Mis je een grondstof? Koop ze bij je <b>linker- of rechterbuur</b> voor <b>2 munten</b>, die je aan die buur geeft.</li>
+  <li>Je buur houdt zijn kaart en kan ze zelf ook nog gebruiken. Weigeren mag niet.</li>
+  <li>Je kunt alleen kopen wat op het <b>wonderbord</b> (basisgrondstof), de <b>bruine</b> en de <b>grijze</b> kaarten van je buur staat. <b>Niet</b> van gele kaarten of wonderfases.</li>
+  <li>Kaart met twee grondstoffen (bv. steen/klei)? <b>Jij</b> kiest welke je koopt.</li>
+  <li>Betaal met munten die je al had, niet met munten die je in dezelfde beurt krijgt.</li></ul>`},
  {t:'⚔️ Einde van een tijdperk', h:
-  step(1,'Laatste kaart','<p>Als iedereen 6 kaarten gespeeld heeft, blijft er 1 over. Die wordt afgelegd.</p>')
- +step(2,'Veldslag','<p>Vergelijk je <b>schilden</b> (rode kaarten) met je twee buren. Meer = overwinningsfiche (+1 in I, +3 in II, +5 in III). Minder = −1. Gelijk = niets. Het tabblad <b>Oorlog</b> rekent dit uit.</p>')
- +step(3,'Volgend tijdperk','<p>Deel 7 nieuwe kaarten uit de volgende stapel.</p>')},
+  step(1,'Laatste beurt','<p>In de 6e beurt heb je nog 2 kaarten. Speel er 1, de andere gaat gedekt naar het afleggebied (je krijgt er <b>geen munten</b> voor).</p>')
+ +step(2,'Veldslag','<p>Tel je <b>schilden</b> (rode kaarten + wonder). Vergelijk met <b>elke</b> buur apart:</p><ul><li>Meer: overwinningsfiche (<b>+1</b> in I, <b>+3</b> in II, <b>+5</b> in III)</li><li>Minder: nederlaagfiche (<b>−1</b>)</li><li>Gelijk: niets</li></ul><p class="small muted">Het tabblad <b>Oorlog</b> rekent dit uit.</p>')
+ +step(3,'Volgend tijdperk','<p>Iedereen krijgt 7 kaarten van de volgende stapel.</p>')},
  {t:'🏆 Einde van het spel', h:`
-  <p>Na tijdperk III tel je de punten. Gebruik het tabblad <b>Score</b>: tik op een vakje en de app rekent voor je.</p>
-  <ul><li><b style="color:var(--mil)">Militair</b>: je fiches</li><li><b style="color:var(--coin)">Schatkist</b>: 1 punt per 3 munten</li><li><b style="color:var(--wonder)">Wereldwonder</b>: punten op je gebouwde fases</li><li><b style="color:var(--civ)">Burgerlijk</b>: blauwe kaarten</li><li><b style="color:var(--com)">Handel</b>: gele kaarten uit tijdperk III</li><li><b style="color:var(--guild)">Gilden</b>: paarse kaarten</li><li><b style="color:var(--sci)">Wetenschap</b>: groene kaarten</li></ul>
-  <p style="margin-bottom:0">Gelijkstand? Wie de meeste munten heeft, wint.</p>`},
+  <p style="margin-top:0">Na de veldslag van tijdperk III tel je de punten met het tabblad <b>Score</b>, in dezelfde volgorde als het scoreblok:</p><ol>
+  <li><b style="color:var(--wonder)">Wonder</b>: punten op je gebouwde fases</li>
+  <li><b style="color:var(--coin)">Munten</b>: 1 punt per 3 munten</li>
+  <li><b style="color:var(--mil)">Militair</b>: je fiches (kan negatief zijn)</li>
+  <li><b style="color:var(--civ)">Blauw</b>: punten op je blauwe kaarten</li>
+  <li><b style="color:var(--com)">Geel</b>: zoals op de kaart</li>
+  <li><b style="color:var(--sci)">Groen</b>: zie tabblad Wetenschap</li>
+  <li><b style="color:var(--guild)">Paars</b>: zoals op de kaart</li></ol>
+  <p style="margin-bottom:0">Gelijk? Meeste munten wint. Nog gelijk? Dan delen jullie de overwinning.</p>`},
  {t:'🃏 Wat doen de kleuren?', h:`<ul>
-  <li><b style="color:var(--wonder)">Bruin</b>: grondstoffen (hout, steen, klei, erts).</li>
-  <li><b style="color:var(--muted)">Grijs</b>: grondstoffen (glas, textiel, papyrus).</li>
-  <li><b style="color:var(--civ)">Blauw</b>: gewoon punten.</li>
-  <li><b style="color:var(--com)">Geel</b>: munten, goedkoper kopen, en in tijdperk III punten.</li>
-  <li><b style="color:var(--mil)">Rood</b>: schilden voor de veldslagen.</li>
-  <li><b style="color:var(--sci)">Groen</b>: wetenschap. Hoe meer, hoe sneller het oploopt.</li>
-  <li><b style="color:var(--guild)">Paars</b>: gilden (alleen tijdperk III). Punten voor wat jij of je buren hebben.</li></ul>`},
+  <li><b style="color:var(--wonder)">Bruin</b>: klei, steen, erts, hout</li>
+  <li><b style="color:var(--muted)">Grijs</b>: glas, stof, papyrus</li>
+  <li><b style="color:var(--civ)">Blauw</b>: punten</li>
+  <li><b style="color:var(--com)">Geel</b>: munten, goedkoper kopen, punten (tijdperk III)</li>
+  <li><b style="color:var(--mil)">Rood</b>: schilden voor de veldslagen</li>
+  <li><b style="color:var(--sci)">Groen</b>: wetenschapssymbolen</li>
+  <li><b style="color:var(--guild)">Paars</b>: gilden, punten onder voorwaarden (tijdperk III)</li></ul>`},
  {t:'⭐ 6 tips voor je eerste spel', h:`<ol>
   <li><b>Tijdperk I: grondstoffen.</b> Neem bruine en grijze kaarten, vooral die met twee grondstoffen.</li>
   <li><b>Tijdperk III: alleen punten.</b> Grondstoffen zijn dan bijna niets meer waard.</li>
   <li><b>Kies 1 of 2 dingen</b> en ga ervoor, bv. blauw + wonder, of groen.</li>
-  <li><b>Let op je buren.</b> Met hen handel en vecht je. De rest van de tafel telt minder.</li>
+  <li><b>Let op je buren.</b> Met hen handel en vecht je.</li>
   <li><b>Kijk wat je doorgeeft.</b> Een kaart die je buur veel punten geeft, kun je onder je wonder schuiven.</li>
   <li><b>Vergeet je wonder niet.</b> Elke fase is punten of voordeel.</li></ol>`},
  {t:'🔗 Ketens (gratis bouwen)', h:()=>chainsHtml()},
