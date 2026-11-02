@@ -523,7 +523,7 @@ function setupSheet(edit){
   const draw=()=>{
     const wopts=w=>`<option value="">Wonder…</option>`+Object.entries(WONDERS).map(([k,v])=>`<option value="${k}" ${w===k?'selected':''}>${v.n}</option>`).join('');
     $('#setup-body').innerHTML=`
-      <div class="row" style="margin-bottom:10px"><div class="grow small muted">${draft.players.length} spelers · in zitvolgorde, met de klok mee</div>
+      <div class="row" style="margin-bottom:10px"><div class="grow small muted">${draft.players.length} spelers · in zitvolgorde, met de klok mee: speler 2 zit <b>links</b> van speler 1</div>
         <button class="btn small" data-pc="-1" ${draft.players.length<=3?'disabled':''}>−</button><button class="btn small" data-pc="1" ${draft.players.length>=7?'disabled':''}>+</button></div>
       ${draft.players.map((p,i)=>`<div class="card" style="padding:10px">
         <div class="row"><span class="muted small" style="width:16px">${i+1}</span><input type="text" list="roster" placeholder="${defaultName(i+1)}" value="${esc(p.name)}" data-pn="${i}" autocomplete="off">
@@ -639,7 +639,8 @@ function countCol(p,col){ return cityOf(p).filter(c=>c.col===col).length; }
 function pickCtx(){
   const mi=meIdx(), p=game.players[mi], n=game.players.length;
   const age=Math.min(3,Math.max(1, game.pickAge || (phase()>=1&&phase()<=3?phase():3)));
-  const [L,R]=neighbors(n,mi);
+  // Spelers staan met de klok mee: de volgende in de lijst zit links van je, de vorige rechts.
+  let L=(mi+1)%n, R=(mi-1+n)%n; if(game.flip) [L,R]=[R,L];
   const cur=(game.cur&&game.cur[age-1])||[];
   const nb=[cur[L],cur[R]].map(x=> (x==null||x==='')?null:+x);
   return {mi, p, n, age, ai:age-1, coins:+p.d.coins||0, L, R, nb, ids:new Set(p.city||[])};
@@ -830,6 +831,7 @@ function renderPick(){
       <div class="chips" style="margin:8px 0">${[1,2,3].map(a=>`<button class="chip" data-page="${a}" aria-pressed="${ctx.age===a}">Tijdperk ${AGE[a-1]}</button>`).join('')}</div>
       <div data-obj="pick">
         <div class="field"><div class="lbl"><b>Mijn munten</b></div>${stepper(`players.${ctx.mi}.d.coins`, p.d.coins)}</div>
+        <div class="field"><div class="lbl"><b>⬅️ Links: ${esc(game.players[ctx.L].name)} · Rechts: ${esc(game.players[ctx.R].name)} ➡️</b><span>Klopt dit niet met jullie tafel?</span></div><button class="btn small" data-flip>Wissel</button></div>
         <div class="field"><div class="lbl"><b>Schilden ${esc(game.players[ctx.L].name)}</b><span>linkerbuur</span></div>${stepper(`cur.${ctx.ai}.${ctx.L}`, ctx.nb[0]??0)}</div>
         ${ctx.L!==ctx.R?`<div class="field"><div class="lbl"><b>Schilden ${esc(game.players[ctx.R].name)}</b><span>rechterbuur</span></div>${stepper(`cur.${ctx.ai}.${ctx.R}`, ctx.nb[1]??0)}</div>`:''}
       </div>
@@ -849,6 +851,7 @@ $('#v-pick').addEventListener('click', e=>{
   if(t.dataset.me!=null){ game.me=+t.dataset.me; save(); renderPick(); return; }
   if(t.hasAttribute('data-me-change')){ game.me=null; save(); renderPick(); return; }
   if(t.dataset.page){ game.pickAge=+t.dataset.page; save(); renderPick(); return; }
+  if(t.hasAttribute('data-flip')){ game.flip=!game.flip; save(); renderPick(); toast('Links en rechts gewisseld'); return; }
   const ctx=meIdx()!=null?pickCtx():null; if(!ctx) return;
   const p=ctx.p;
   if(t.hasAttribute('data-hand')){
