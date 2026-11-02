@@ -16,8 +16,15 @@ python3 -m http.server 8000
 ```
 Open http://localhost:8000.
 
+## Deploy
+Live at https://wonders-companion.stevenn-a65.workers.dev (Cloudflare Workers static assets; config in `wrangler.jsonc`, excluded files in `.assetsignore`).
+```bash
+npx wrangler deploy
+```
+Needs `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+
 ## Install on a phone
-Host the folder on any HTTPS static host (GitHub Pages, Netlify, Cloudflare Pages), open it on the phone, then:
+Open the live URL on the phone, then:
 - iOS Safari: Share → Add to Home Screen
 - Android Chrome: menu → Install app
 
