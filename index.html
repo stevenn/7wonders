@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wonders Companion</title>
+<meta name="description" content="Score pad, science optimizer, military tracker and strategy guide for 7 Wonders.">
+<meta name="theme-color" content="#1b1712">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Wonders">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+:root{
+  --bg:#1b1712; --bg2:#241f18; --card:#2c261d; --line:#3d3528; --text:#f3ead8; --muted:#b4a68b; --accent:#e3b04b; --accent-ink:#1b1712;
+  --mil:#d9534a; --coin:#e8c040; --wonder:#b08f62; --civ:#4b8ee0; --com:#e8902f; --guild:#a466d6; --sci:#47b26b; --leaders:#e9e4da; --cities:#6c6c6c; --debt:#9a3b34;
+  --win:#47b26b; --lose:#d9534a; --tie:#8a7f6a;
+  --radius:14px; --safe-b:env(safe-area-inset-bottom,0px); --safe-t:env(safe-area-inset-top,0px);
+}
+:root[data-theme="light"]{
+  --bg:#f5efe2; --bg2:#ece3d0; --card:#fffaf0; --line:#dccfb4; --text:#2a2318; --muted:#7a6c52; --accent:#a8741a; --accent-ink:#fffaf0;
+  --cities:#555; --leaders:#9b927f;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{min-height:100dvh;padding-bottom:calc(72px + var(--safe-b))}
+button,input,select{font:inherit;color:inherit}
+h1,h2,h3{margin:0;line-height:1.2}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:calc(10px + var(--safe-t)) 16px 10px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+header.top h1{font-size:19px;font-family:Georgia,"Times New Roman",serif;letter-spacing:.5px;flex:1}
+header.top .sub{font-size:12px;color:var(--muted);font-family:system-ui}
+main{padding:14px 16px 24px;max-width:860px;margin:0 auto}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;background:var(--bg2);border-top:1px solid var(--line);padding-bottom:var(--safe-b)}
+nav.tabs button{flex:1;background:none;border:0;padding:8px 2px 9px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--muted);cursor:pointer}
+nav.tabs button svg{width:24px;height:24px}
+nav.tabs button[aria-current="page"]{color:var(--accent)}
+.view{display:none}.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:12px}
+.muted{color:var(--muted)} .small{font-size:13px}
+.row{display:flex;gap:8px;align-items:center}
+.wrap{flex-wrap:wrap}
+.grow{flex:1}
+.btn{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:600}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:none}
+.btn.small{padding:6px 10px;font-size:13px}
+.btn.block{width:100%}
+.btn.danger{color:var(--lose)}
+.icon-btn{background:none;border:0;padding:6px;cursor:pointer;color:var(--muted)}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--bg2);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+/* Score pad */
+.podium{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px}
+.podium .p{flex:0 0 auto;min-width:92px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px;text-align:center}
+.podium .p.lead{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.podium .rank{font-size:12px;color:var(--muted)}
+.podium .tot{font-size:26px;font-weight:700;font-variant-numeric:tabular-nums}
+.podium .nm{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
+.pad-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--card)}
+table.pad{border-collapse:separate;border-spacing:0;width:100%;font-variant-numeric:tabular-nums}
+table.pad th,table.pad td{padding:0;border-bottom:1px solid var(--line);text-align:center}
+table.pad thead th{font-size:13px;padding:8px 4px;font-weight:600;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+table.pad thead th .w{display:block;font-size:11px;color:var(--muted);font-weight:400}
+table.pad th.cat{position:sticky;left:0;background:var(--card);text-align:left;padding:0 8px;min-width:96px;font-size:13px;font-weight:600;z-index:1}
+table.pad th.cat .sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+table.pad td button{width:100%;min-width:52px;height:44px;background:none;border:0;font-size:17px;cursor:pointer}
+table.pad td button.zero{color:var(--muted);opacity:.55}
+table.pad tr.total td,table.pad tr.total th{border-bottom:0;font-weight:800;font-size:19px;padding:10px 4px;background:var(--bg2)}
+table.pad tr.total th.cat{background:var(--bg2)}
+.hint{font-size:13px;color:var(--muted);margin:8px 2px 12px}
+/* Sheet */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20;display:none;align-items:flex-end;justify-content:center}
+.scrim.on{display:flex}
+.sheet{background:var(--bg);width:100%;max-width:560px;max-height:88dvh;overflow:auto;border-radius:18px 18px 0 0;padding:16px 16px calc(18px + var(--safe-b));border-top:1px solid var(--line)}
+.sheet .hd{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.sheet .hd h2{font-size:18px;flex:1}
+.big-out{font-size:40px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.out-row{display:flex;align-items:baseline;gap:10px;margin:6px 0 14px}
+.field{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
+.field:last-child{border-bottom:0}
+.field .lbl{flex:1;min-width:0}
+.field .lbl b{display:block;font-size:15px}
+.field .lbl span{display:block;font-size:12px;color:var(--muted)}
+.step{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card);flex:0 0 auto}
+.step button{width:40px;height:40px;border:0;background:none;font-size:20px;cursor:pointer}
+.step input{width:46px;height:40px;border:0;background:none;text-align:center;font-size:17px;font-weight:700;-moz-appearance:textfield}
+.step input::-webkit-outer-spin-button,.step input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type=text],select{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 10px;width:100%}
+.check{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.check input{width:22px;height:22px;accent-color:var(--accent)}
+/* Science */
+.sym{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--sci);color:#fff;flex:0 0 auto}
+.sym svg{width:20px;height:20px}
+.advice{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.advice div{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}
+.advice div.best{border-color:var(--sci);box-shadow:0 0 0 1px var(--sci) inset}
+.advice b{display:block;font-size:20px}
+table.mini{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+table.mini th,table.mini td{border-bottom:1px solid var(--line);padding:6px 4px;text-align:center}
+table.mini th{color:var(--muted);font-weight:600}
+table.mini td:first-child,table.mini th:first-child{text-align:left}
+/* War */
+.war-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.war-row:last-child{border-bottom:0}
+.vs{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.tok{font-size:12px;border-radius:6px;padding:2px 6px;font-weight:700;font-variant-numeric:tabular-nums}
+.tok.w{background:color-mix(in srgb,var(--win) 25%,transparent);color:var(--win)}
+.tok.l{background:color-mix(in srgb,var(--lose) 25%,transparent);color:var(--lose)}
+.tok.t{background:color-mix(in srgb,var(--tie) 25%,transparent);color:var(--muted)}
+.age-badge{display:inline-block;border-radius:6px;padding:1px 7px;font-size:12px;font-weight:700;color:#fff}
+.a1{background:#8a5a2b}.a2{background:#5b6f87}.a3{background:#7a4a8f}
+/* Guide */
+details{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:10px}
+details summary{padding:14px;font-weight:700;cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";margin-left:auto;color:var(--muted);font-size:20px}
+details[open] summary::after{content:"–"}
+details .body{padding:0 14px 14px}
+details .body p,details .body li{font-size:15px}
+details .body ul{padding-left:20px;margin:6px 0}
+.wonder h3{font-family:Georgia,serif;font-size:18px}
+.stage{display:flex;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.stage:last-child{border-bottom:0}
+.stage .n{flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:var(--wonder);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--muted);margin-right:4px}
+.empty{text-align:center;padding:30px 10px}
+.empty .seal{width:84px;height:84px;margin:0 auto 12px}
+.hist-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.hist-item:last-child{border-bottom:0}
+.toast{position:fixed;left:50%;bottom:calc(84px + var(--safe-b));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:30;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.sec-title{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:18px 2px 8px;font-weight:700}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="grow"><h1>Wonders Companion</h1><div class="sub" id="subtitle">Score · Science · War · Strategy</div></div>
+  <button class="icon-btn" id="themeBtn" aria-label="Toggle theme"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+</header>
+
+<main>
+  <section class="view on" id="v-score"></section>
+  <section class="view" id="v-sci"></section>
+  <section class="view" id="v-war"></section>
+  <section class="view" id="v-wonders"></section>
+  <section class="view" id="v-guide"></section>
+</main>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="score" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Score</button>
+  <button data-tab="sci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>Science</button>
+  <button data-tab="war"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg>War</button>
+  <button data-tab="wonders"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 3 20h18z"/><path d="M8 20l4-8 4 8"/></svg>Wonders</button>
+  <button data-tab="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/></svg>Guide</button>
+</nav>
+
+<div class="scrim" id="scrim"><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+/* ============ DATA ============ */
+const CATS = [
+  {k:'mil', n:'Military', c:'var(--mil)'},
+  {k:'coin', n:'Treasury', c:'var(--coin)'},
+  {k:'wonder', n:'Wonder', c:'var(--wonder)'},
+  {k:'civ', n:'Civilian', c:'var(--civ)'},
+  {k:'com', n:'Commerce', c:'var(--com)'},
+  {k:'guild', n:'Guilds', c:'var(--guild)'},
+  {k:'sci', n:'Science', c:'var(--sci)'},
+  {k:'leaders', n:'Leaders', c:'var(--leaders)', exp:'leaders'},
+  {k:'cities', n:'Cities', c:'var(--cities)', exp:'cities'},
+  {k:'debt', n:'Debt', c:'var(--debt)', exp:'cities', neg:true},
+];
+const CAT_HINT = {
+  civ:'Sum the VP printed on your blue cards.',
+  leaders:'Sum the VP from your Leader cards.',
+  cities:'Sum the VP from your black City cards.',
+  debt:'Number of debt tokens (each is −1 VP).',
+};
+// Wonders — 1st edition boards. vp = direct victory points per stage.
+const WONDERS = {
+  rhodes:{n:'Rhodes', full:'The Colossus of Rhodes', res:'Ore',
+    A:[{vp:3,t:'3 VP'},{vp:0,t:'2 shields'},{vp:7,t:'7 VP'}],
+    B:[{vp:3,t:'1 shield, 3 VP, 3 coins'},{vp:4,t:'1 shield, 4 VP, 4 coins'}],
+    tips:['The military wonder: shields from stages are “free” red cards, so you can win most battles while buying fewer red cards.','Ore start makes red cards and Age II weapons cheap. Make your neighbors pay to keep up.','Side B is fast (2 stages) and gives coins — good for a flexible game.']},
+  alexandria:{n:'Alexandria', full:'The Lighthouse of Alexandria', res:'Glass',
+    A:[{vp:3,t:'3 VP'},{vp:0,t:'1 raw resource of your choice each turn'},{vp:7,t:'7 VP'}],
+    B:[{vp:0,t:'1 raw resource of your choice each turn'},{vp:0,t:'1 manufactured good of your choice each turn'},{vp:7,t:'7 VP'}],
+    tips:['Resource flexibility means you can skip many brown/grey cards and draft points instead.','Build the resource stages early — they pay off every remaining turn.','Glass start pairs naturally with science (green cards often need glass).']},
+  ephesus:{n:'Ephesus', full:'The Temple of Artemis in Ephesus', res:'Papyrus',
+    A:[{vp:3,t:'3 VP'},{vp:0,t:'9 coins'},{vp:7,t:'7 VP'}],
+    B:[{vp:2,t:'2 VP, 4 coins'},{vp:3,t:'3 VP, 4 coins'},{vp:5,t:'5 VP, 4 coins'}],
+    tips:['Coins buy whatever you lack from neighbors, so play the flexible “buy, don’t build” game.','Papyrus is used by science and some blue cards — both are good fits.','Left-over coins still score 1 VP per 3 at the end.']},
+  babylon:{n:'Babylon', full:'The Hanging Gardens of Babylon', res:'Clay',
+    A:[{vp:3,t:'3 VP'},{vp:0,t:'1 science symbol of your choice (wild)'},{vp:7,t:'7 VP'}],
+    B:[{vp:3,t:'3 VP'},{vp:0,t:'Play the 7th (last) card of each age instead of discarding it'},{vp:0,t:'1 science symbol of your choice (wild)'}],
+    tips:['The science wonder: the wild symbol is often worth 10+ VP late in the game.','Commit to green cards in Age I so their chains make Age II/III science free.','Side B stage 2 lets you play an extra card every age — build it early.']},
+  olympia:{n:'Olympia', full:'The Statue of Zeus in Olympia', res:'Wood',
+    A:[{vp:3,t:'3 VP'},{vp:0,t:'Once per age, build a structure for free'},{vp:7,t:'7 VP'}],
+    B:[{vp:0,t:'Buy raw resources from both neighbors for 1 coin'},{vp:5,t:'5 VP'},{vp:0,t:'Copy one guild built by a neighbor at game end'}],
+    tips:['Side A: save the free build for the most expensive card of each age (Palace, Pantheon, guilds).','Side B: watch both neighbors’ guilds in Age III — copy the best one.','Very flexible; adapts to whatever strategy the cards offer.']},
+  halicarnassus:{n:'Halicarnassus', full:'The Mausoleum of Halicarnassus', res:'Loom (textile)',
+    A:[{vp:3,t:'3 VP'},{vp:0,t:'Build one card from the discard pile for free'},{vp:7,t:'7 VP'}],
+    B:[{vp:2,t:'2 VP + build a discarded card free'},{vp:1,t:'1 VP + build a discarded card free'},{vp:0,t:'Build a discarded card free'}],
+    tips:['Time the discard-build for the end of an age, when the pile holds the most cards (including the end-of-age discards).','Everyone hate-discards in Age III — great guilds and science often end up in the pile.','Side B gives three free cards; pick your best synergy each time.']},
+  giza:{n:'Giza', full:'The Pyramids of Giza', res:'Stone',
+    A:[{vp:3,t:'3 VP'},{vp:5,t:'5 VP'},{vp:7,t:'7 VP'}],
+    B:[{vp:3,t:'3 VP'},{vp:5,t:'5 VP'},{vp:5,t:'5 VP'},{vp:7,t:'7 VP'}],
+    tips:['Pure points: 15 VP (A) or 20 VP (B) from the wonder alone.','Stone is plentiful for you; trade for the rest and pair with blue civilian cards.','Building stages also buries cards your neighbors want (hate-drafting for free).']},
+};
+const GUILDS = [
+  {k:'workers', n:'Workers Guild', m:1, of:'brown cards of both neighbors'},
+  {k:'craftsmen', n:'Craftsmens Guild', m:2, of:'grey cards of both neighbors'},
+  {k:'traders', n:'Traders Guild', m:1, of:'yellow cards of both neighbors'},
+  {k:'philosophers', n:'Philosophers Guild', m:1, of:'green cards of both neighbors'},
+  {k:'spies', n:'Spies Guild', m:1, of:'red cards of both neighbors'},
+  {k:'magistrates', n:'Magistrates Guild', m:1, of:'blue cards of both neighbors'},
+  {k:'strategists', n:'Strategists Guild', m:1, of:'defeat tokens of both neighbors'},
+  {k:'builders', n:'Builders Guild', m:1, of:'wonder stages: yours + both neighbors'},
+  {k:'shipowners', n:'Shipowners Guild', m:1, of:'your own brown + grey + purple cards'},
+];
+const COMMERCE = [
+  {k:'haven', n:'Haven', m:1, of:'your brown cards'},
+  {k:'lighthouse', n:'Lighthouse', m:1, of:'your yellow cards (incl. itself)'},
+  {k:'chamber', n:'Chamber of Commerce', m:2, of:'your grey cards'},
+  {k:'arena', n:'Arena', m:1, of:'your built wonder stages'},
+];
+const MIL_VP = [1,3,5];
+const SYM = {
+  t:{n:'Tablet', svg:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm1 4v1.6h8V7zm0 4v1.6h8V11zm0 4v1.6h5V15z"/></svg>'},
+  c:{n:'Compass', svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="4.5" r="1.6" fill="currentColor"/><path d="M11 6.5 5.5 20M13 6.5 18.5 20M7.5 14.5h9"/></svg>'},
+  g:{n:'Gear', svg:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10.3 2h3.4l.5 2.6 1.8.8 2.2-1.5 2.4 2.4-1.5 2.2.8 1.8 2.6.5v3.4l-2.6.5-.8 1.8 1.5 2.2-2.4 2.4-2.2-1.5-1.8.8-.5 2.6h-3.4l-.5-2.6-1.8-.8-2.2 1.5-2.4-2.4 1.5-2.2-.8-1.8L2 13.7v-3.4l2.6-.5.8-1.8-1.5-2.2 2.4-2.4 2.2 1.5 1.8-.8zM12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"/></svg>'},
+  w:{n:'Wild', svg:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.6 6.4L21 9l-5 4.3L17.6 20 12 16.6 6.4 20 8 13.3 3 9l6.4-.6z"/></svg>'},
+};
+
+/* ============ STATE ============ */
+const LS = {
+  get(k, d){ try{ const v = localStorage.getItem('7wc.'+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('7wc.'+k, JSON.stringify(v)); }catch(e){} },
+};
+let game = LS.get('game', null);
+let history = LS.get('history', []);
+let roster = LS.get('roster', []);
+let sciCalc = LS.get('sci', {t:0,c:0,g:0,w:0});
+let warAge = LS.get('warAge', 0);
+let wonderSide = 'A';
+const save = () => { LS.set('game', game); LS.set('history', history); LS.set('roster', roster); LS.set('sci', sciCalc); LS.set('warAge', warAge); };
+
+function newPlayer(name){ return {name, wonder:'', side:'A', d:{coins:3, sci:{t:0,c:0,g:0,w:0}, mil:{p1:0,p3:0,p5:0,m1:0}, stages:[], guild:{}, com:{}, man:{}}}; }
+function newGame(names, exp){
+  return {id:Date.now(), date:new Date().toISOString(), exp:exp||{leaders:false,cities:false}, players:names.map(newPlayer), war:[null,null,null]};
+}
+
+/* ============ SCORING ============ */
+function sciScore(s){
+  const t=+s.t||0, c=+s.c||0, g=+s.g||0, w=Math.max(0,+s.w||0);
+  let best={vp:-1, a:[t,c,g], add:[0,0,0]};
+  for(let i=0;i<=w;i++) for(let j=0;j<=w-i;j++){
+    const k=w-i-j, a=[t+i,c+j,g+k];
+    const vp=a[0]*a[0]+a[1]*a[1]+a[2]*a[2]+7*Math.min(...a);
+    if(vp>best.vp) best={vp, a, add:[i,j,k]};
+  }
+  return best;
+}
+function warTokens(g){
+  // returns per player [{age, vs:[{j, r}] , vp}] and totals
+  const n=g.players.length, res=g.players.map(()=>({p1:0,p3:0,p5:0,m1:0,vp:0}));
+  g.war.forEach((sh,age)=>{
+    if(!sh) return;
+    for(let i=0;i<n;i++){
+      for(const j of neighbors(n,i)){
+        if(sh[i]>sh[j]){ res[i]['p'+MIL_VP[age]]++; res[i].vp+=MIL_VP[age]; }
+        else if(sh[i]<sh[j]){ res[i].m1++; res[i].vp--; }
+      }
+    }
+  });
+  return res;
+}
+function neighbors(n,i){ return [(i-1+n)%n, (i+1)%n]; }
+function catScore(g, pi, k, war){
+  const p=g.players[pi], d=p.d, man=+d.man[k]||0;
+  switch(k){
+    case 'coin': return Math.floor((+d.coins||0)/3)+man;
+    case 'sci': return sciScore(d.sci).vp+man;
+    case 'mil': { const m=d.mil; return (war||warTokens(g))[pi].vp + m.p1+3*m.p3+5*m.p5-m.m1 + man; }
+    case 'wonder': { let v=man; if(p.wonder){ const st=WONDERS[p.wonder][p.side]; (d.stages||[]).forEach((b,i)=>{ if(b&&st[i]) v+=st[i].vp; }); } return v; }
+    case 'guild': return GUILDS.reduce((s,x)=>s+(+d.guild[x.k]||0)*x.m,0)+man;
+    case 'com': return COMMERCE.reduce((s,x)=>s+(+d.com[x.k]||0)*x.m,0)+man;
+    case 'debt': return -Math.abs(man);
+    default: return man;
+  }
+}
+function activeCats(g){ return CATS.filter(c=>!c.exp || g.exp[c.exp]); }
+function totals(g){
+  const war=warTokens(g);
+  return g.players.map((p,i)=>{
+    const by={}; let tot=0;
+    activeCats(g).forEach(c=>{ by[c.k]=catScore(g,i,c.k,war); tot+=by[c.k]; });
+    return {i, name:p.name, tot, by, coins:+p.d.coins||0};
+  });
+}
+function ranking(g){
+  return totals(g).sort((a,b)=> b.tot-a.tot || b.coins-a.coins);
+}
+
+/* ============ HELPERS ============ */
+const $ = s => document.querySelector(s);
+const esc = s => String(s??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('on'),1800); }
+function getPath(o,p){ return p.split('.').reduce((a,k)=>a==null?a:a[k], o); }
+function setPath(o,p,v){ const ks=p.split('.'); const last=ks.pop(); const t=ks.reduce((a,k)=>(a[k]??=( {} )),o); t[last]=v; }
+function stepper(path, val, min=0){ return `<div class="step" data-path="${path}" data-min="${min}"><button type="button" data-d="-1" aria-label="minus">−</button><input type="number" inputmode="numeric" value="${val||0}" min="${min}"><button type="button" data-d="1" aria-label="plus">+</button></div>`; }
+function symIcon(k){ return `<span class="sym" title="${SYM[k].n}" ${k==='w'?'style="background:var(--accent);color:var(--accent-ink)"':''}>${SYM[k].svg}</span>`; }
+function plural(k){ return k==='c'?'Compasses':SYM[k].n+'s'; }
+function ord(n){ return ['1st','2nd','3rd'][n-1] || n+'th'; }
+
+/* ============ SHEET ============ */
+let sheetCtx=null;
+function openSheet(title, html, ctx){
+  sheetCtx=ctx||{};
+  $('#sheet').innerHTML=`<div class="hd"><h2>${title}</h2><button class="btn small primary" data-close>Done</button></div>${html}`;
+  $('#scrim').classList.add('on');
+  sheetCtx.update?.();
+}
+function closeSheet(){ $('#scrim').classList.remove('on'); const cb=sheetCtx?.onClose; sheetCtx=null; save(); cb?.(); renderAll(); }
+$('#scrim').addEventListener('click', e=>{ if(e.target.id==='scrim' || e.target.closest('[data-close]')) closeSheet(); });
+// Generic stepper binding (works in sheets and views)
+document.addEventListener('click', e=>{
+  const b=e.target.closest('.step button'); if(!b) return;
+  const st=b.closest('.step'), inp=st.querySelector('input'), min=+st.dataset.min;
+  inp.value=Math.max(min,(+inp.value||0)+(+b.dataset.d)); inp.dispatchEvent(new Event('input',{bubbles:true}));
+});
+document.addEventListener('input', e=>{
+  const st=e.target.closest('.step'); if(!st) return;
+  const root = st.closest('#sheet') ? sheetCtx?.obj : st.closest('[data-obj]') ? OBJS[st.closest('[data-obj]').dataset.obj]() : null;
+  if(!root) return;
+  let v=parseInt(e.target.value,10); if(isNaN(v)) v=0;
+  setPath(root, st.dataset.path, v);
+  save();
+  if(st.closest('#sheet')) sheetCtx.update?.(); else (st.closest('[data-obj]')._upd||(()=>{}))();
+});
+document.addEventListener('focusin', e=>{ if(e.target.matches('.step input')) e.target.select(); });
+const OBJS = { sci:()=>sciCalc, war:()=>game };
+
+/* ============ SCORE VIEW ============ */
+function renderScore(){
+  const v=$('#v-score');
+  if(!game){
+    v.innerHTML=`<div class="card empty">
+      <svg class="seal" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="var(--accent)" stroke-width="3"/><path d="M50 18 22 78h56z" fill="none" stroke="var(--accent)" stroke-width="3"/><path d="M36 78l14-30 14 30" fill="none" stroke="var(--accent)" stroke-width="3"/></svg>
+      <h2 style="font-family:Georgia,serif">Ready to build a wonder?</h2>
+      <p class="muted">Start a game to get the score pad and the war tracker. Enter players in seating order, going clockwise.</p>
+      <button class="btn primary" data-act="new">New game</button></div>
+      ${renderHistory()}`;
+    return;
+  }
+  const rk=ranking(game), byI=Object.fromEntries(rk.map(r=>[r.i,r])), cats=activeCats(game);
+  const lead=rk[0];
+  v.innerHTML=`
+    <div class="podium">${rk.map((r,ix)=>`<div class="p ${ix===0&&r.tot>0?'lead':''}"><div class="rank">${ix===0&&r.tot>0?'👑 ':''}${ord(ix+1)}</div><div class="tot">${r.tot}</div><div class="nm">${esc(r.name)}</div></div>`).join('')}</div>
+    <div class="pad-wrap"><table class="pad">
+      <thead><tr><th class="cat"></th>${game.players.map((p,i)=>`<th><button class="icon-btn" style="color:inherit;padding:0;font-weight:600" data-act="players">${esc(p.name)}</button><span class="w">${p.wonder?WONDERS[p.wonder].n+' '+p.side:'&nbsp;'}</span></th>`).join('')}</tr></thead>
+      <tbody>
+      ${cats.map(c=>`<tr><th class="cat"><span class="sw" style="background:${c.c}"></span>${c.n}</th>${game.players.map((p,i)=>{const s=byI[i].by[c.k];return `<td><button data-cell="${i}:${c.k}" class="${s===0?'zero':''}">${s}</button></td>`}).join('')}</tr>`).join('')}
+      <tr class="total"><th class="cat">Total</th>${game.players.map((p,i)=>`<td>${byI[i].tot}</td>`).join('')}</tr>
+      </tbody></table></div>
+    <p class="hint">Tap any cell to score it. The helpers do the maths: coins → VP, science sets, guild counts, wonder stages. Ties go to the player with the most coins.</p>
+    <div class="row wrap">
+      <button class="btn" data-act="players">Players & wonders</button>
+      <button class="btn primary grow" data-act="finish">Finish & save</button>
+    </div>
+    <div class="row" style="margin-top:8px"><button class="btn ghost small danger" data-act="discard">Discard game</button></div>
+    ${renderHistory()}`;
+}
+function renderHistory(){
+  if(!history.length) return '';
+  const wins={};
+  history.forEach(h=>{ const w=h.results[0]; wins[w.name]=(wins[w.name]||0)+1; });
+  const top=Object.entries(wins).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  return `<div class="sec-title">History</div>
+  <div class="card">${top.length?`<div class="small muted" style="margin-bottom:6px">Wins: ${top.map(([n,c])=>`<b style="color:var(--text)">${esc(n)}</b> ${c}`).join(' · ')}</div>`:''}
+  ${history.slice(0,15).map((h,ix)=>`<div class="hist-item"><div class="grow"><b>${esc(h.results[0].name)}</b> won with ${h.results[0].tot}<div class="small muted">${new Date(h.date).toLocaleDateString()} · ${h.results.map(r=>esc(r.name)+' '+r.tot).join(', ')}</div></div><button class="icon-btn" data-hdel="${ix}" aria-label="Delete">✕</button></div>`).join('')}</div>`;
+}
+$('#v-score').addEventListener('click', e=>{
+  const cell=e.target.closest('[data-cell]');
+  if(cell){ const [i,k]=cell.dataset.cell.split(':'); editCat(+i,k); return; }
+  const hd=e.target.closest('[data-hdel]');
+  if(hd){ if(confirm('Delete this game from history?')){ history.splice(+hd.dataset.hdel,1); save(); renderScore(); } return; }
+  const a=e.target.closest('[data-act]')?.dataset.act;
+  if(a==='new') setupSheet();
+  if(a==='players') setupSheet(true);
+  if(a==='discard' && confirm('Discard the current game?')){ game=null; save(); renderAll(); }
+  if(a==='finish'){
+    const rk=ranking(game);
+    if(rk.every(r=>r.tot===0)){ toast('Enter some scores first'); return; }
+    history.unshift({date:game.date, results:rk.map(r=>({name:r.name, tot:r.tot, wonder:game.players[r.i].wonder}))});
+    const winner=rk[0].name; game=null; save(); renderAll(); toast(`🏆 ${winner} wins! Saved to history.`);
+  }
+});
+
+function editCat(pi,k){
+  const p=game.players[pi], d=p.d, c=CATS.find(x=>x.k===k);
+  const title=`<span style="color:${c.c}">●</span> ${esc(p.name)} · ${c.n}`;
+  const out=`<div class="out-row"><div class="big-out" id="o-vp">0</div><div class="muted">VP</div><div class="grow small muted" id="o-note" style="text-align:right"></div></div>`;
+  const manual=(lbl,sub)=>`<div class="field"><div class="lbl"><b>${lbl}</b>${sub?`<span>${sub}</span>`:''}</div>${stepper('man.'+k, d.man[k])}</div>`;
+  let body='', upd=()=>{};
+  const base=()=>{ $('#o-vp').textContent=catScore(game,pi,k); };
+  if(k==='coin'){
+    body=`${out}<div class="card"><div class="field"><div class="lbl"><b>Coins in treasury</b><span>1 VP per 3 coins. Coins also break ties.</span></div>${stepper('coins', d.coins)}</div>${manual('Other VP')}</div>`;
+    upd=()=>{ base(); const r=d.coins%3; $('#o-note').textContent= r? `${3-r} more coin${3-r>1?'s':''} for +1 VP`:''; };
+  } else if(k==='sci'){
+    body=`${out}<div class="card">${['t','c','g','w'].map(s=>`<div class="field">${symIcon(s)}<div class="lbl"><b>${plural(s)}</b>${s==='w'?'<span>Scientists Guild, Babylon, etc.</span>':''}</div>${stepper('sci.'+s, d.sci[s])}</div>`).join('')}</div>
+      <div class="card"><b>Next symbol worth</b><div class="advice" id="o-adv"></div><div class="small muted" id="o-wild" style="margin-top:8px"></div></div>`;
+    upd=()=>{ base(); sciAdvice(d.sci,'#o-adv','#o-wild','#o-note'); };
+  } else if(k==='mil'){
+    const wt=warTokens(game)[pi], any=game.war.some(Boolean);
+    body=`${out}<div class="card small">${any?`From the War tab: <b>${wt.vp>=0?'+':''}${wt.vp} VP</b> (${wt.p1}× +1, ${wt.p3}× +3, ${wt.p5}× +5, ${wt.m1}× −1)`:'Tip: use the <b>War</b> tab at the end of each age and military is filled in automatically.'}</div>
+      <div class="card"><div class="small muted" style="margin-bottom:4px">${any?'Extra tokens (not recorded in War tab)':'Military tokens'}</div>
+      <div class="field"><div class="lbl"><b>+1 tokens</b><span>Age I victories</span></div>${stepper('mil.p1', d.mil.p1)}</div>
+      <div class="field"><div class="lbl"><b>+3 tokens</b><span>Age II victories</span></div>${stepper('mil.p3', d.mil.p3)}</div>
+      <div class="field"><div class="lbl"><b>+5 tokens</b><span>Age III victories</span></div>${stepper('mil.p5', d.mil.p5)}</div>
+      <div class="field"><div class="lbl"><b>−1 tokens</b><span>Defeats</span></div>${stepper('mil.m1', d.mil.m1)}</div></div>`;
+    upd=base;
+  } else if(k==='wonder'){
+    if(p.wonder){
+      const W=WONDERS[p.wonder], st=W[p.side];
+      body=`${out}<div class="card"><div class="small muted">${W.full} · side ${p.side}</div>${st.map((s,i)=>`<label class="check"><input type="checkbox" data-stage="${i}" ${d.stages[i]?'checked':''}><div class="grow"><b>Stage ${i+1}</b> <span class="small muted">${s.t}</span></div><b>${s.vp?'+'+s.vp:''}</b></label>`).join('')}
+      ${manual('Other wonder VP','e.g. 2nd-edition boards or expansions')}</div>`;
+    } else body=`${out}<div class="card">${manual('Wonder VP','Sum of VP on your built stages')}<p class="small muted">Set this player’s wonder in <b>Players & wonders</b> to just tick off built stages.</p></div>`;
+    upd=base;
+  } else if(k==='guild'||k==='com'){
+    const list=k==='guild'?GUILDS:COMMERCE, key=k==='guild'?'guild':'com';
+    body=`${out}<div class="card"><div class="small muted" style="margin-bottom:4px">${k==='guild'?'For each guild you own, enter the count it scores on.':'Age III yellow cards that score VP. Enter the count for each card you own.'}</div>
+      ${list.map(x=>`<div class="field"><div class="lbl"><b>${x.n} <span style="display:inline;color:var(--muted);font-weight:400">${x.m>1?x.m+' VP':'1 VP'} each</span></b><span>${x.of}</span></div>${stepper(key+'.'+x.k, d[key][x.k])}</div>`).join('')}
+      ${k==='guild'?'<div class="field"><div class="lbl"><b>Scientists Guild</b><span>No VP itself: add +1 wild in Science.</span></div></div>':''}
+      ${manual(k==='guild'?'Other guild VP':'Other yellow-card VP', k==='guild'?'Expansion or 2nd-edition guilds':'')}</div>`;
+    upd=base;
+  } else {
+    body=`${out}<div class="card">${manual(c.n+(k==='debt'?' tokens':' VP'), CAT_HINT[k])}</div>`;
+    upd=base;
+  }
+  // Previous/next navigation
+  const cats=activeCats(game).map(x=>x.k), ci=cats.indexOf(k);
+  body+=`<div class="row"><button class="btn grow" data-nav="${pi}:${cats[(ci-1+cats.length)%cats.length]}">‹ ${CATS.find(x=>x.k===cats[(ci-1+cats.length)%cats.length]).n}</button><button class="btn grow" data-nav="${(pi+1)%game.players.length}:${k}">${esc(game.players[(pi+1)%game.players.length].name)} ›</button></div>`;
+  openSheet(title, body, {obj:d, update:upd});
+}
+$('#sheet').addEventListener('change', e=>{
+  const s=e.target.closest('[data-stage]'); if(!s||!sheetCtx) return;
+  sheetCtx.obj.stages[+s.dataset.stage]=s.checked; save(); sheetCtx.update();
+});
+$('#sheet').addEventListener('click', e=>{
+  const n=e.target.closest('[data-nav]'); if(!n) return;
+  save(); const [i,k]=n.dataset.nav.split(':'); renderScore(); editCat(+i,k);
+});
+
+function setupSheet(edit){
+  const draft = edit ? JSON.parse(JSON.stringify(game)) : {players:(roster.slice(0,4).length>=3?roster.slice(0,4):['','','']).map(n=>newPlayer(n)), exp:{leaders:false,cities:false}};
+  const draw=()=>{
+    const wopts=w=>`<option value="">Wonder…</option>`+Object.entries(WONDERS).map(([k,v])=>`<option value="${k}" ${w===k?'selected':''}>${v.n}</option>`).join('');
+    $('#setup-body').innerHTML=`
+      <div class="row" style="margin-bottom:10px"><div class="grow small muted">${draft.players.length} players · seating order, clockwise</div>
+        <button class="btn small" data-pc="-1" ${draft.players.length<=3?'disabled':''}>−</button><button class="btn small" data-pc="1" ${draft.players.length>=7?'disabled':''}>+</button></div>
+      ${draft.players.map((p,i)=>`<div class="card" style="padding:10px">
+        <div class="row"><span class="muted small" style="width:16px">${i+1}</span><input type="text" list="roster" placeholder="Player ${i+1}" value="${esc(p.name)}" data-pn="${i}" autocomplete="off">
+        ${i>0?`<button class="icon-btn" data-up="${i}" aria-label="Move up">▲</button>`:'<span style="width:30px"></span>'}</div>
+        <div class="row" style="margin-top:6px;padding-left:24px"><select data-pw="${i}">${wopts(p.wonder)}</select>
+        <div class="chips" style="flex:0 0 auto">${['A','B'].map(s=>`<button class="chip" data-ps="${i}:${s}" aria-pressed="${p.side===s}">${s}</button>`).join('')}</div>
+        </div></div>`).join('')}
+      <button class="btn small" data-rand>🎲 Random wonders</button>
+      <div class="sec-title">Expansions</div>
+      <div class="chips"><button class="chip" data-exp="leaders" aria-pressed="${draft.exp.leaders}">Leaders</button><button class="chip" data-exp="cities" aria-pressed="${draft.exp.cities}">Cities</button></div>
+      <datalist id="roster">${roster.map(n=>`<option value="${esc(n)}">`).join('')}</datalist>
+      <button class="btn primary block" style="margin-top:16px" data-start>${edit?'Save':'Start game'}</button>`;
+  };
+  openSheet(edit?'Players & wonders':'New game', '<div id="setup-body"></div>', {obj:draft});
+  draw();
+  const body=$('#setup-body');
+  body.oninput=e=>{ if(e.target.dataset.pn!=null) draft.players[+e.target.dataset.pn].name=e.target.value; };
+  body.onchange=e=>{ if(e.target.dataset.pw!=null) draft.players[+e.target.dataset.pw].wonder=e.target.value; };
+  body.onclick=e=>{
+    const t=e.target.closest('button'); if(!t) return;
+    if(t.dataset.pc){ if(+t.dataset.pc>0) draft.players.push(newPlayer('')); else draft.players.pop(); draw(); }
+    else if(t.dataset.ps){ const [i,s]=t.dataset.ps.split(':'); draft.players[+i].side=s; draw(); }
+    else if(t.dataset.up){ const i=+t.dataset.up; [draft.players[i-1],draft.players[i]]=[draft.players[i],draft.players[i-1]]; draw(); }
+    else if(t.dataset.exp){ draft.exp[t.dataset.exp]=!draft.exp[t.dataset.exp]; draw(); }
+    else if(t.hasAttribute('data-rand')){ const ks=Object.keys(WONDERS).sort(()=>Math.random()-.5); draft.players.forEach((p,i)=>{p.wonder=ks[i]; p.side=Math.random()<.5?'A':'B';}); draw(); }
+    else if(t.hasAttribute('data-start')){
+      draft.players.forEach((p,i)=>{ p.name=p.name.trim()||`Player ${i+1}`; });
+      const used=draft.players.map(p=>p.wonder).filter(Boolean);
+      if(new Set(used).size!==used.length){ toast('Each wonder can only be used once'); return; }
+      roster=[...new Set([...draft.players.map(p=>p.name).filter(n=>!/^Player \d+$/.test(n)), ...roster])].slice(0,20);
+      if(edit){
+        // keep war records only if player count unchanged
+        if(draft.players.length!==game.players.length) draft.war=[null,null,null];
+        draft.players.forEach(p=>{ if(game.players.length && !p.d) p.d=newPlayer('').d; });
+        game=draft;
+      } else game=newGame([], draft.exp), game.players=draft.players;
+      closeSheet();
+    }
+  };
+}
+
+/* ============ SCIENCE ============ */
+function sciAdvice(s, advSel, wildSel, noteSel){
+  const cur=sciScore(s);
+  const deltas=['t','c','g'].map(k=>({k, d:sciScore({...s,[k]:(+s[k]||0)+1}).vp-cur.vp}));
+  const max=Math.max(...deltas.map(x=>x.d)), allEq=deltas.every(x=>x.d===max);
+  $(advSel).innerHTML=deltas.map(x=>`<div class="${x.d===max&&!allEq?'best':''}">${symIcon(x.k)}<b>+${x.d}</b><span class="small muted">${SYM[x.k].n}</span></div>`).join('');
+  const wildD=sciScore({...s,w:(+s.w||0)+1}).vp-cur.vp;
+  const assigned=cur.add.map((n,i)=>n?`${n}× ${SYM['tcg'[i]].n.toLowerCase()}`:'').filter(Boolean);
+  $(wildSel).innerHTML=`${(+s.w||0)?`Wilds best used as: <b>${assigned.join(', ')}</b>. `:''}An extra wild would be worth <b>+${wildD}</b>. Sets complete: <b>${Math.min(...cur.a)}</b>.`;
+  if(noteSel) $(noteSel).textContent=`${cur.a.join(' / ')} → ${cur.a.map(x=>x*x).join('+')} + ${7*Math.min(...cur.a)}`;
+}
+function renderSci(){
+  const v=$('#v-sci');
+  v.innerHTML=`<div data-obj="sci">
+    <div class="card"><div class="out-row"><div class="big-out" id="s-vp">0</div><div class="muted">VP</div><div class="grow small muted" id="s-note" style="text-align:right"></div></div>
+    ${['t','c','g','w'].map(s=>`<div class="field">${symIcon(s)}<div class="lbl"><b>${plural(s)}</b>${s==='w'?'<span>Scientists Guild, Babylon, etc.</span>':''}</div>${stepper(s, sciCalc[s])}</div>`).join('')}
+    </div>
+    <div class="card"><b>Take next</b><div class="advice" id="s-adv"></div><div class="small muted" id="s-wild" style="margin-top:8px"></div></div>
+    <div class="row wrap" id="s-apply">${game?`<span class="small muted">Copy to:</span>${game.players.map((p,i)=>`<button class="chip" data-apply="${i}">${esc(p.name)}</button>`).join('')}`:''}<button class="btn small ghost grow" style="text-align:right" data-sreset>Reset</button></div>
+    </div>
+    <div class="sec-title">How science scores</div>
+    <div class="card small">
+      <p style="margin-top:0">Each symbol type scores <b>its count squared</b>, plus <b>7 VP for every complete set</b> of all three symbols.</p>
+      <table class="mini"><tr><th>Symbols</th><th>VP</th><th>Symbols</th><th>VP</th></tr>
+      ${[[1,1,1],[2,1,1],[2,2,1],[2,2,2],[3,2,2],[3,3,3],[4,4,4],[3,0,0],[4,0,0],[5,0,0]].reduce((rows,a,i,arr)=>{ if(i%2===0){ const b=arr[i+1]; rows.push(`<tr><td>${a.join('·')}</td><td><b>${sciScore({t:a[0],c:a[1],g:a[2]}).vp}</b></td><td>${b?b.join('·'):''}</td><td><b>${b?sciScore({t:b[0],c:b[1],g:b[2]}).vp:''}</b></td></tr>`);} return rows;},[]).join('')}
+      </table>
+      <p>Spreading out (sets) wins early; stacking one symbol takes over at about 4+. The calculator always picks the best use of wild symbols.</p></div>`;
+  const wrap=v.querySelector('[data-obj]');
+  wrap._upd=()=>{ $('#s-vp').textContent=sciScore(sciCalc).vp; sciAdvice(sciCalc,'#s-adv','#s-wild','#s-note'); };
+  wrap._upd();
+}
+$('#v-sci').addEventListener('click', e=>{
+  const a=e.target.closest('[data-apply]');
+  if(a){ const p=game.players[+a.dataset.apply]; p.d.sci={...sciCalc}; save(); renderScore(); toast(`Science copied to ${p.name}`); }
+  if(e.target.closest('[data-sreset]')){ sciCalc={t:0,c:0,g:0,w:0}; save(); renderSci(); }
+});
+
+/* ============ WAR ============ */
+function renderWar(){
+  const v=$('#v-war');
+  if(!game){ v.innerHTML=`<div class="card empty"><h2 style="font-family:Georgia,serif">No game in progress</h2><p class="muted">Military battles compare you with your two neighbors, so the tracker needs the seating order. Start a game first.</p><button class="btn primary" data-act="new">New game</button></div>${warExplainer()}`; return; }
+  const n=game.players.length, age=warAge;
+  if(!game.cur) game.cur=[null,null,null];
+  if(!game.cur[age]) game.cur[age]= (game.war[age]||game.war[age-1]||game.cur[age-1]||game.players.map(()=>0)).slice();
+  const sh=game.cur[age];
+  const recorded=!!game.war[age] && game.war[age].every((x,i)=>x===sh[i]);
+  const dir=['← Pass left','Pass right →','← Pass left'][age];
+  v.innerHTML=`
+    <div class="chips" style="margin-bottom:12px">${[0,1,2].map(a=>`<button class="chip" data-age="${a}" aria-pressed="${a===age}">Age ${'I'.repeat(a+1).replace('III','III')}${game.war[a]?' ✓':''}</button>`).join('')}</div>
+    <div class="card small row"><span class="age-badge a${age+1}">AGE ${['I','II','III'][age]}</span><span class="grow">Win <b>+${MIL_VP[age]}</b> · Lose <b>−1</b> · Tie 0, vs each neighbor</span><span class="muted">${dir}</span></div>
+    <div class="card" data-obj="war">
+      <div class="small muted" style="margin-bottom:2px">Total shields on each player’s red cards and wonder</div>
+      ${game.players.map((p,i)=>`<div class="war-row"><div class="grow"><b>${esc(p.name)}</b><div class="vs" id="vs-${i}"></div></div>${stepper(`cur.${age}.${i}`, sh[i])}</div>`).join('')}
+    </div>
+    <button class="btn ${recorded?'':'primary'} block" data-record>${recorded?`Age ${['I','II','III'][age]} recorded ✓`:`Record Age ${['I','II','III'][age]} battle`}</button>
+    ${game.war[age]?`<button class="btn ghost small block" style="margin-top:6px" data-unrecord>Undo this age</button>`:''}
+    <div class="sec-title">Running military total</div>
+    <div class="card"><table class="mini"><tr><th>Player</th><th>I</th><th>II</th><th>III</th><th>VP</th></tr>
+      ${(()=>{ return game.players.map((p,i)=>`<tr><td>${esc(p.name)}</td>${[0,1,2].map(a=>{ if(!game.war[a]) return '<td class="muted">–</td>'; const s=game.war[a]; let vp=0; neighbors(n,i).forEach(j=>{ if(s[i]>s[j]) vp+=MIL_VP[a]; else if(s[i]<s[j]) vp--; }); return `<td>${vp>0?'+':''}${vp}</td>`; }).join('')}<td><b>${warTokens(game)[i].vp}</b></td></tr>`).join(''); })()}
+    </table></div>
+    ${warExplainer()}`;
+  const wrap=v.querySelector('[data-obj]');
+  wrap._upd=()=>{
+    const s=game.cur[age];
+    game.players.forEach((p,i)=>{
+      const parts=neighbors(n,i).map((j,side)=>{
+        const r=s[i]>s[j]?'w':s[i]<s[j]?'l':'t';
+        const lbl=r==='w'?'+'+MIL_VP[age]:r==='l'?'−1':'0';
+        return `<span class="tok ${r}">${lbl} vs ${esc(game.players[j].name)}</span>`;
+      });
+      // with 3 players both neighbors differ; dedupe not needed
+      $('#vs-'+i).innerHTML=parts.join('');
+    });
+    const btn=v.querySelector('[data-record]'); const rec=!!game.war[age]&&game.war[age].every((x,i)=>x===s[i]);
+    btn.className='btn block '+(rec?'':'primary'); btn.textContent=rec?`Age ${['I','II','III'][age]} recorded ✓`:(game.war[age]?'Update recorded result':`Record Age ${['I','II','III'][age]} battle`);
+  };
+  wrap._upd();
+}
+function warExplainer(){
+  return `<div class="sec-title">How military works</div><div class="card small">
+  <p style="margin-top:0">At the end of each age, compare your shields with <b>each</b> of your two neighbors. More shields: take a victory token (+1 in Age I, +3 in Age II, +5 in Age III). Fewer: take a −1 defeat token. Tie: nothing.</p>
+  <p style="margin-bottom:0">Only your neighbors matter. If both of them ignore military, one cheap red card can win you both battles.</p></div>`;
+}
+$('#v-war').addEventListener('click', e=>{
+  const ag=e.target.closest('[data-age]');
+  if(ag){ warAge=+ag.dataset.age; save(); renderWar(); return; }
+  if(e.target.closest('[data-record]')){ game.war[warAge]=game.cur[warAge].slice(); save(); toast(`Age ${['I','II','III'][warAge]} recorded`); if(warAge<2){ warAge++; } renderAll(); return; }
+  if(e.target.closest('[data-unrecord]')){ game.war[warAge]=null; save(); renderAll(); return; }
+  if(e.target.closest('[data-act="new"]')) setupSheet();
+});
+
+/* ============ WONDERS ============ */
+function renderWonders(){
+  const v=$('#v-wonders');
+  v.innerHTML=`<div class="row" style="margin-bottom:12px"><div class="grow small muted">Wonder boards (1st edition). 2nd-edition boards differ slightly; check yours.</div>
+    <div class="chips">${['A','B'].map(s=>`<button class="chip" data-side="${s}" aria-pressed="${wonderSide===s}">Side ${s}</button>`).join('')}</div></div>
+    ${Object.values(WONDERS).map(W=>{ const st=W[wonderSide]; const vp=st.reduce((a,s)=>a+s.vp,0); return `<div class="card wonder">
+      <div class="row"><h3 class="grow">${W.n}</h3><span class="tag">starts with ${W.res}</span><span class="tag">${vp} VP</span></div>
+      <div class="small muted" style="margin-bottom:6px">${W.full}</div>
+      ${st.map((s,i)=>`<div class="stage"><span class="n">${i+1}</span><span>${s.t}</span></div>`).join('')}
+      <ul class="small" style="padding-left:18px;margin:10px 0 0">${W.tips.map(t=>`<li>${t}</li>`).join('')}</ul></div>`; }).join('')}`;
+}
+$('#v-wonders').addEventListener('click', e=>{ const s=e.target.closest('[data-side]'); if(s){ wonderSide=s.dataset.side; renderWonders(); } });
+
+/* ============ GUIDE ============ */
+const GUIDE = [
+ {t:'The game in 60 seconds', open:true, h:`
+  <p>3–7 players each develop an ancient city over <b>3 Ages</b>. Each Age, everyone gets a hand of 7 cards. You <b>pick one card, play it, and pass the rest</b> (left in Ages I &amp; III, right in Age II). When 2 cards remain you play one, and the last one is discarded. Each player plays 6 cards per Age, 18 per game.</p>
+  <p>After every Age, you fight a <b>military battle</b> with both neighbors. After Age III, <b>most victory points wins</b>. Ties go to the player with more coins.</p>`},
+ {t:'Your turn: 3 options', h:`<ul>
+  <li><b>Build the card</b>: pay its cost in resources (from your city, or bought from neighbors) and/or coins. Some cards are <b>free</b> if you already own the card it chains from (matching name/symbol on the card).</li>
+  <li><b>Build a wonder stage</b>: tuck the card face-down under your board and pay the stage’s cost. The card’s face doesn’t matter, so this is a great way to “bury” a card your neighbor wants.</li>
+  <li><b>Discard for 3 coins</b>.</li></ul>
+  <p>You can never build two identical cards.</p>`},
+ {t:'Cards by color', h:`<ul>
+  <li><b style="color:var(--wonder)">Brown</b>: raw resources (wood, stone, clay, ore). <b style="color:var(--muted)">Grey</b>: manufactured goods (glass, loom, papyrus).</li>
+  <li><b style="color:var(--civ)">Blue</b>: straight victory points.</li>
+  <li><b style="color:var(--com)">Yellow</b>: coins, cheaper trading, and (in Age III) VP.</li>
+  <li><b style="color:var(--mil)">Red</b>: shields for military battles.</li>
+  <li><b style="color:var(--sci)">Green</b>: science symbols (tablet, compass, gear).</li>
+  <li><b style="color:var(--guild)">Purple</b> (Age III only): guilds that score off you and your neighbors.</li></ul>`},
+ {t:'Resources & trading', h:`<ul>
+  <li>Resources are <b>never spent</b>: each brown/grey card produces its resource once every turn.</li>
+  <li>Missing something? Buy it from a <b>direct neighbor</b> for <b>2 coins each</b>, even if they’d rather you didn’t. They keep the coins, and their card stays theirs.</li>
+  <li>Trading-post and marketplace yellow cards reduce this to 1 coin.</li>
+  <li>Everyone starts with 3 coins.</li></ul>`},
+ {t:'Scoring (7 categories)', h:`<ul>
+  <li><b style="color:var(--mil)">Military</b>: sum of victory/defeat tokens.</li>
+  <li><b style="color:var(--coin)">Treasury</b>: 1 VP per 3 coins.</li>
+  <li><b style="color:var(--wonder)">Wonder</b>: VP on built stages.</li>
+  <li><b style="color:var(--civ)">Civilian</b>: VP on blue cards.</li>
+  <li><b style="color:var(--com)">Commerce</b>: VP from Age III yellow cards.</li>
+  <li><b style="color:var(--guild)">Guilds</b>: as printed on each guild.</li>
+  <li><b style="color:var(--sci)">Science</b>: count² per symbol type + 7 per complete set of three.</li></ul>
+  <p>The <b>Score</b> tab handles all of this. A typical winning score is in the 50s–70s.</p>`},
+ {t:'Winning strategy', h:`<ul>
+  <li><b>Pick 1–2 engines</b> early and lean in: science, military, blue cards, wonder, or guilds. Don’t try to do everything.</li>
+  <li><b>Watch your neighbors</b>, not the whole table. They’re who you trade with, fight, and pass cards to.</li>
+  <li><b>Read the hand you pass.</b> With 3–4 cards left in Age III, ask what each card is worth to your neighbor. Burying a 10-point card under your wonder often beats taking a 4-point card yourself.</li>
+  <li><b>Don’t build what you can buy.</b> If a neighbor has stone, paying 2 coins now and then is often cheaper than spending a whole turn on a stone card.</li>
+  <li><b>Double-resource brown cards</b> (e.g. “stone/clay”) are among the best Age I picks.</li>
+  <li><b>Chains are free turns.</b> An Age I card that makes two Age II/III cards free is worth more than its face value.</li>
+  <li><b>The last pick each age</b>: with 2 cards left, the other one is discarded. Plan around it.</li>
+  <li><b>Coins aren’t points.</b> 3 coins = 1 VP, so spend them, but keep a few for trading.</li></ul>`},
+ {t:'Military, smartly', h:`<ul>
+  <li>Age III battles swing <b>6 VP per neighbor</b> (+5 vs −1). Count shields before the last two turns of each age.</li>
+  <li>Winning by 1 shield is the same as winning by 10. Don’t overspend.</li>
+  <li>If a neighbor goes heavily military, sometimes it’s cheaper to <b>concede</b> (−1) and spend those turns on points.</li>
+  <li>The Strategists Guild punishes neighbors who take defeats.</li></ul>`},
+ {t:'Science, smartly', h:`<ul>
+  <li>Science explodes late: the 3rd tablet is worth +5, the 4th +7, the 5th +9.</li>
+  <li>It’s strongest when <b>neither neighbor</b> is also going science. Two scientists side by side starve each other.</li>
+  <li>Green cards chain heavily (Age I → II → III). Starting early makes later ones free.</li>
+  <li>Watch for neighbors feeding you green cards, and <b>deny green to a runaway scientist</b> by burying it.</li>
+  <li>Use the <b>Science</b> tab to see which symbol is worth most right now.</li></ul>`},
+ {t:'Age-by-age plan', h:`<ul>
+  <li><span class="age-badge a1">I</span> Build economy: resources (especially doubles), a trading post if neighbors are resource-rich, and chain starters. Grab a cheap red card if neighbors don’t.</li>
+  <li><span class="age-badge a2">II</span> Grey goods if you lack them, mid-size blue and green cards, more chains. Build wonder stages when hands are weak.</li>
+  <li><span class="age-badge a3">III</span> Points only. Guilds, big blue cards, finish the wonder, win the military battle, and hate-draft what would win the game for someone else.</li></ul>`},
+ {t:'Free-build chains (1st edition)', h:`<p class="small muted">Owning the left card lets you build the right one for free. Cards show the chain as a name or symbol (2nd edition uses symbols and some links differ).</p>
+  <table class="mini"><tr><th>Age I</th><th>→ Age II</th></tr>
+  <tr><td>Baths</td><td>Aqueduct</td></tr><tr><td>Altar</td><td>Temple</td></tr><tr><td>Theater</td><td>Statue</td></tr>
+  <tr><td>East / West Trading Post</td><td>Forum</td></tr><tr><td>Marketplace</td><td>Caravansery</td></tr>
+  <tr><td>Apothecary</td><td>Stables, Dispensary</td></tr><tr><td>Workshop</td><td>Archery Range, Laboratory</td></tr><tr><td>Scriptorium</td><td>Courthouse, Library</td></tr></table>
+  <table class="mini" style="margin-top:10px"><tr><th>Age II</th><th>→ Age III</th></tr>
+  <tr><td>Temple</td><td>Pantheon</td></tr><tr><td>Statue</td><td>Gardens</td></tr><tr><td>Forum</td><td>Haven</td></tr><tr><td>Caravansery</td><td>Lighthouse</td></tr>
+  <tr><td>Walls</td><td>Fortifications</td></tr><tr><td>Training Ground</td><td>Circus</td></tr><tr><td>Dispensary</td><td>Lodge, Arena</td></tr>
+  <tr><td>Laboratory</td><td>Observatory, Siege Workshop</td></tr><tr><td>Library</td><td>Senate, University</td></tr><tr><td>School</td><td>Academy, Study</td></tr></table>`},
+ {t:'Common beginner mistakes', h:`<ul>
+  <li>Taking resources in Age III. They’re almost never worth a turn that late.</li>
+  <li>Forgetting that neighbors can buy your resources (it’s income for you!).</li>
+  <li>Ignoring the wonder. Every stage is points or power, and it’s a place to dump bad cards.</li>
+  <li>Passing a guild or science card that hands a neighbor 10+ VP.</li>
+  <li>Hoarding coins: 9 coins sitting idle is just 3 VP.</li></ul>`},
+];
+function renderGuide(){
+  $('#v-guide').innerHTML=GUIDE.map(g=>`<details ${g.open?'open':''}><summary>${g.t}</summary><div class="body">${g.h}</div></details>`).join('')+
+  `<p class="small muted" style="text-align:center">An unofficial fan companion. 7 Wonders is a game by Antoine Bauza, published by Repos Production.</p>`;
+}
+
+/* ============ NAV / INIT ============ */
+const TABS={score:renderScore, sci:renderSci, war:renderWar, wonders:renderWonders, guide:renderGuide};
+const SUB={score:'Score pad', sci:'Science optimizer', war:'Military tracker', wonders:'Wonder boards', guide:'Rules & strategy'};
+let tab=LS.get('tab','score'); if(!TABS[tab]) tab='score';
+function show(t){
+  tab=t; LS.set('tab',t);
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on', v.id==='v-'+t));
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-current', b.dataset.tab===t?'page':'false'));
+  $('#subtitle').textContent=SUB[t];
+  TABS[t](); window.scrollTo(0,0);
+}
+function renderAll(){ TABS[tab](); }
+$('#tabs').addEventListener('click', e=>{ const b=e.target.closest('[data-tab]'); if(b) show(b.dataset.tab); });
+// Theme
+const applyTheme=t=>{ if(t) document.documentElement.dataset.theme=t; else delete document.documentElement.dataset.theme; };
+let theme=LS.get('theme',null); applyTheme(theme);
+$('#themeBtn').onclick=()=>{ const cur=theme||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'); theme=cur==='dark'?'light':'dark'; LS.set('theme',theme); applyTheme(theme); };
+if(!theme && matchMedia('(prefers-color-scheme: light)').matches) applyTheme('light');
+show(tab);
+// Keep the screen on during a game, where supported
+async function wake(){ try{ if(game && 'wakeLock' in navigator && document.visibilityState==='visible') await navigator.wakeLock.request('screen'); }catch(e){} }
+document.addEventListener('visibilitychange', wake); wake();
+// PWA
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+}
+</script>
+</body>
+</html>
