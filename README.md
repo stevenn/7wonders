@@ -5,7 +5,7 @@ An unofficial, offline-capable PWA companion for the board game *7 Wonders*.
 Dutch-only, for the 2020 (2nd) edition. All data was checked against a physical Dutch 2020 copy (wonder boards, card overview, guilds).
 
 - **Score**: tap-to-score pad for 3–7 players with helpers (coins, science with wilds, guilds, Age III yellow cards, wonder stages). Ties go to most coins. Local history with win tally.
-- **Wetenschap**: best use of wild symbols and how much each next symbol is worth.
+- **Kiezen**: tap the cards in your hand; the app ranks them (points, cost incl. buying, chains, battle, science, guild estimates) and compares with building a wonder stage or selling. Gebouwd/Onder wonder/Verkocht keeps track of your city for the next turn. Card data: 7 Wonders wiki (counts verified: 49/49/50 cards), Dutch names from the Dutch card overview.
 - **Oorlog**: enter shields per age to get every player's military tokens; feeds the score pad.
 - **Wonders**: Day/Night stages for all 7 wonders, with tips.
 - **Gids**: step-by-step rules for a first game, colour overview, beginner tips, free-build chains.

@@ -146,6 +146,17 @@ details .body li{margin-bottom:4px}
 .flow-steps span.now{background:var(--accent);color:var(--accent-ink)}
 .flow-title{font-weight:800;font-size:16px;margin-bottom:2px}
 .flow-text{font-size:14px;margin:0 0 10px}
+.cardchip{display:inline-flex;align-items:center;gap:6px;text-align:left}
+.cardchip[disabled]{opacity:1;cursor:default}
+.cardchip .cx{font-size:12px;opacity:.75}
+.cdot{display:inline-block;width:10px;height:10px;border-radius:3px;flex:0 0 auto}
+.cdot.big{width:14px;height:14px;border-radius:4px}
+.best-card{border-color:var(--win);box-shadow:0 0 0 1px var(--win) inset}
+.rec{font-size:19px;margin-top:2px}
+.cardrow ul{margin:6px 0 8px;padding-left:18px}
+.cardrow.top{border-color:var(--win)}
+.cardrow.dim{opacity:.6}
+.cardrow .val{font-weight:800;font-size:18px;font-variant-numeric:tabular-nums}
 .sec-title{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:18px 2px 8px;font-weight:700}
 </style>
 </head>
@@ -157,7 +168,7 @@ details .body li{margin-bottom:4px}
 
 <main>
   <section class="view on" id="v-score"></section>
-  <section class="view" id="v-sci"></section>
+  <section class="view" id="v-pick"></section>
   <section class="view" id="v-war"></section>
   <section class="view" id="v-wonders"></section>
   <section class="view" id="v-guide"></section>
@@ -165,7 +176,7 @@ details .body li{margin-bottom:4px}
 
 <nav class="tabs" id="tabs">
   <button data-tab="score" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>Score</span></button>
-  <button data-tab="sci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg><span>Wetenschap</span></button>
+  <button data-tab="pick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="6" width="10" height="14" rx="2" transform="rotate(-10 8 13)"/><rect x="11" y="4" width="10" height="14" rx="2" transform="rotate(8 16 11)"/></svg><span>Kiezen</span></button>
   <button data-tab="war"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg><span>Oorlog</span></button>
   <button data-tab="wonders"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 3 20h18z"/><path d="M8 20l4-8 4 8"/></svg><span>Wonders</span></button>
   <button data-tab="guide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h6a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4zM20 4h-6a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h7z"/></svg><span>Gids</span></button>
@@ -362,7 +373,7 @@ document.addEventListener('input', e=>{
   if(st.closest('#sheet')) sheetCtx.update?.(); else (st.closest('[data-obj]')._upd||(()=>{}))();
 });
 document.addEventListener('focusin', e=>{ if(e.target.matches('.step input')) e.target.select(); });
-const OBJS = { sci:()=>sciCalc, war:()=>game };
+const OBJS = { sci:()=>sciCalc, war:()=>game, pick:()=>game };
 
 /* ============ SPELVERLOOP ============ */
 // Fase: 0 = klaarzetten, 1..3 = tijdperk I..III bezig, 4 = eindtelling
@@ -382,8 +393,8 @@ function flowBar(where){
   } else if(ph<4){
     const a=AGE[ph-1], dir=ph===2?'naar rechts →':'← naar links';
     title=`Tijdperk ${a} · speel 6 beurten`;
-    text=`Kies een kaart, speel ze, geef de rest door <b>${dir}</b>. Na de 6e beurt: tel de schilden in <b>Oorlog</b>.<br><span class="muted small">Twijfel je over een groene kaart? Kijk in <b>Wetenschap</b>.</span>`;
-    btns = where==='war' ? '' : `<button class="btn" data-flow="sci">🔬 Wetenschap</button><button class="btn primary grow" data-flow="war">⚔️ Veldslag tijdperk ${a}</button>`;
+    text=`Kies een kaart, speel ze, geef de rest door <b>${dir}</b>. Na de 6e beurt: tel de schilden in <b>Oorlog</b>.<br><span class="muted small">Twijfel je welke kaart je legt? Kijk in <b>Kiezen</b>.</span>`;
+    btns = where==='war' ? '' : where==='pick' ? `<button class="btn grow" data-flow="war">⚔️ Na 6 beurten: veldslag tijdperk ${a}</button>` : `<button class="btn" data-flow="pick">🃏 Kiezen</button><button class="btn primary grow" data-flow="war">⚔️ Veldslag tijdperk ${a}</button>`;
   } else {
     title='Eindscore · tel de punten';
     text='Alle veldslagen zijn genoteerd. Tik in <b>Score</b> op elk vakje en vul in wat iedereen heeft. Tik daarna op <b>Afronden & bewaren</b>.';
@@ -561,29 +572,311 @@ function sciAdvice(s, advSel, wildSel, noteSel){
   $(wildSel).innerHTML=`${(+s.w||0)?`Jokers het best gebruikt als: <b>${assigned.join(', ')}</b>. `:''}Een extra joker is <b>+${wildD}</b> waard. Volledige sets: <b>${Math.min(...cur.a)}</b>.`;
   if(noteSel) $(noteSel).textContent=`${cur.a.join(' / ')} → ${cur.a.map(x=>x*x).join('+')} + ${7*Math.min(...cur.a)}`;
 }
-function renderSci(){
-  const v=$('#v-sci');
-  v.innerHTML=`<div data-obj="sci">
-    <div class="card"><div class="out-row"><div class="big-out" id="s-vp">0</div><div class="muted">punten</div><div class="grow small muted" id="s-note" style="text-align:right"></div></div>
-    ${['t','c','g','w'].map(s=>`<div class="field">${symIcon(s)}<div class="lbl"><b>${SYM[s].pl}</b>${s==='w'?'<span>Wetenschappersgilde, Babylon</span>':''}</div>${stepper(s, sciCalc[s])}</div>`).join('')}
-    </div>
-    <div class="card"><b>Neem hierna</b><div class="advice" id="s-adv"></div><div class="small muted" id="s-wild" style="margin-top:8px"></div></div>
-    <div class="row wrap">${game?`<span class="small muted">Kopieer naar:</span>${game.players.map((p,i)=>`<button class="chip" data-apply="${i}">${esc(p.name)}</button>`).join('')}`:''}<button class="btn small ghost grow" style="text-align:right" data-sreset>Wissen</button></div>
-    </div>
-    <div class="sec-title">Zo scoort wetenschap</div>
-    <div class="card small">
-      <p style="margin-top:0">Elk soort symbool scoort <b>het aantal × het aantal</b> (1→1, 2→4, 3→9, 4→16), plus <b>7 punten per set</b> van drie verschillende symbolen.</p>
-      <table class="mini"><tr><th>Symbolen</th><th>Punten</th><th>Symbolen</th><th>Punten</th></tr>
-      ${[[1,1,1],[2,1,1],[2,2,1],[2,2,2],[3,2,2],[3,3,3],[4,4,4],[3,0,0],[4,0,0],[5,0,0]].reduce((rows,a,i,arr)=>{ if(i%2===0){ const b=arr[i+1]; rows.push(`<tr><td>${a.join('·')}</td><td><b>${sciScore({t:a[0],c:a[1],g:a[2]}).vp}</b></td><td>${b?b.join('·'):''}</td><td><b>${b?sciScore({t:b[0],c:b[1],g:b[2]}).vp:''}</b></td></tr>`);} return rows;},[]).join('')}
-      </table></div>`;
-  const wrap=v.querySelector('[data-obj]');
-  wrap._upd=()=>{ $('#s-vp').textContent=sciScore(sciCalc).vp; sciAdvice(sciCalc,'#s-adv','#s-wild','#s-note'); };
-  wrap._upd();
+/* ============ KIEZEN: welke kaart leg je best? ============ */
+// Kaartgegevens (2020): kosten, effecten en aantallen per spelersaantal uit de 7 Wonders-wiki,
+// namen en ketens volgens het Nederlandstalige kaartenoverzicht. Kostnamen: hout, steen, klei, erts, glas, papyrus, stof.
+const CARDS=[{"id":"lumberyard","n":"Houtwerf","age":1,"col":"brown","coins":0,"cost":[],"min":3,"prod":[["hout"]]},{"id":"orevein","n":"Ertsader","age":1,"col":"brown","coins":0,"cost":[],"min":3,"prod":[["erts"]]},{"id":"stonepit","n":"Steenput","age":1,"col":"brown","coins":0,"cost":[],"min":3,"prod":[["steen"]]},{"id":"claypool","n":"Kleigroeve","age":1,"col":"brown","coins":0,"cost":[],"min":3,"prod":[["klei"]]},{"id":"timberyard","n":"Houtgroeve","age":1,"col":"brown","coins":1,"cost":[],"min":3,"prod":[["hout","steen"]]},{"id":"claypit","n":"Kleiput","age":1,"col":"brown","coins":1,"cost":[],"min":3,"prod":[["erts","klei"]]},{"id":"excavation","n":"Uitgraving","age":1,"col":"brown","coins":1,"cost":[],"min":4,"prod":[["steen","klei"]]},{"id":"forestcave","n":"Bosgrot","age":1,"col":"brown","coins":1,"cost":[],"min":5,"prod":[["hout","erts"]]},{"id":"treefarm","n":"Plantage","age":1,"col":"brown","coins":1,"cost":[],"min":6,"prod":[["hout","klei"]]},{"id":"mine","n":"Mijn","age":1,"col":"brown","coins":1,"cost":[],"min":6,"prod":[["steen","erts"]]},{"id":"sawmill","n":"Houtzagerij","age":2,"col":"brown","coins":1,"cost":[],"min":3,"prod":[["hout"],["hout"]]},{"id":"foundry","n":"Gieterij","age":2,"col":"brown","coins":1,"cost":[],"min":3,"prod":[["erts"],["erts"]]},{"id":"quarry","n":"Steengroeve","age":2,"col":"brown","coins":1,"cost":[],"min":3,"prod":[["steen"],["steen"]]},{"id":"brickyard","n":"Steenbakkerij","age":2,"col":"brown","coins":1,"cost":[],"min":3,"prod":[["klei"],["klei"]]},{"id":"glassworks","n":"Glasblazerij","age":1,"col":"grey","coins":0,"cost":[],"min":3,"prod":[["glas"]]},{"id":"glassworks","n":"Glasblazerij","age":2,"col":"grey","coins":0,"cost":[],"min":3,"prod":[["glas"]]},{"id":"press","n":"Drukkerij","age":1,"col":"grey","coins":0,"cost":[],"min":3,"prod":[["papyrus"]]},{"id":"press","n":"Drukkerij","age":2,"col":"grey","coins":0,"cost":[],"min":3,"prod":[["papyrus"]]},{"id":"loom","n":"Weverij","age":1,"col":"grey","coins":0,"cost":[],"min":3,"prod":[["stof"]]},{"id":"loom","n":"Weverij","age":2,"col":"grey","coins":0,"cost":[],"min":3,"prod":[["stof"]]},{"id":"altar","n":"Altaar","age":1,"col":"blue","coins":0,"cost":[],"min":3,"vp":3},{"id":"theater","n":"Theater","age":1,"col":"blue","coins":0,"cost":[],"min":3,"vp":3},{"id":"well","n":"Bron","age":1,"col":"blue","coins":0,"cost":[],"min":4,"vp":3},{"id":"baths","n":"Badhuis","age":1,"col":"blue","coins":0,"cost":["steen"],"min":3,"vp":3},{"id":"courthouse","n":"Rechtszaal","age":2,"col":"blue","coins":0,"cost":["klei","klei","stof"],"min":3,"vp":4,"from":["scriptorium"]},{"id":"temple","n":"Tempel","age":2,"col":"blue","coins":0,"cost":["hout","klei","glas"],"min":3,"vp":4},{"id":"statue","n":"Beeld","age":2,"col":"blue","coins":0,"cost":["erts","erts","hout"],"min":3,"vp":4,"from":["well"]},{"id":"aqueduct","n":"Aquaduct","age":2,"col":"blue","coins":0,"cost":["steen","steen","steen"],"min":3,"vp":5,"from":["baths"]},{"id":"gardens","n":"Tuinen","age":3,"col":"blue","coins":0,"cost":["klei","klei","hout"],"min":3,"vp":5,"from":["theater"]},{"id":"senate","n":"Senaat","age":3,"col":"blue","coins":0,"cost":["hout","hout","steen","erts"],"min":3,"vp":6,"from":["library"]},{"id":"townhall","n":"Gemeentehuis","age":3,"col":"blue","coins":0,"cost":["steen","steen","steen","glas"],"min":3,"vp":6},{"id":"pantheon","n":"Pantheon","age":3,"col":"blue","coins":0,"cost":["klei","klei","erts","glas","papyrus","stof"],"min":3,"vp":7,"from":["altar"]},{"id":"palace","n":"Paleis","age":3,"col":"blue","coins":0,"cost":["hout","steen","erts","klei","glas","papyrus","stof"],"min":3,"vp":8},{"id":"tavern","n":"Taverne","age":1,"col":"yellow","coins":0,"cost":[],"min":4},{"id":"westtradingpost","n":"Handelspost West","age":1,"col":"yellow","coins":0,"cost":[],"min":3},{"id":"easttradingpost","n":"Handelspost Oost","age":1,"col":"yellow","coins":0,"cost":[],"min":3},{"id":"marketplace","n":"Marktplaats","age":1,"col":"yellow","coins":0,"cost":[],"min":3},{"id":"caravansery","n":"Karavanserai","age":2,"col":"yellow","coins":0,"cost":["hout","hout"],"min":3,"from":["marketplace"]},{"id":"forum","n":"Forum","age":2,"col":"yellow","coins":0,"cost":["klei","klei"],"min":3,"from":["easttradingpost","westtradingpost"]},{"id":"vineyard","n":"Wijngaard","age":2,"col":"yellow","coins":0,"cost":[],"min":3},{"id":"bazaar","n":"Bazaar","age":2,"col":"yellow","coins":0,"cost":[],"min":4},{"id":"lighthouse","n":"Vuurtoren","age":3,"col":"yellow","coins":0,"cost":["steen","glas"],"min":3,"from":["caravansery"]},{"id":"haven","n":"Haven","age":3,"col":"yellow","coins":0,"cost":["hout","erts","stof"],"min":3,"from":["forum"]},{"id":"chamberofcommerce","n":"Kamer van Koophandel","age":3,"col":"yellow","coins":0,"cost":["klei","klei","papyrus"],"min":4},{"id":"ludus","n":"Training voor gladiatoren","age":3,"col":"yellow","coins":0,"cost":["steen","erts"],"min":5},{"id":"arena","n":"Arena","age":3,"col":"yellow","coins":0,"cost":["klei","klei","erts"],"min":3,"from":["dispensary"]},{"id":"guardtower","n":"Wachttoren","age":1,"col":"red","coins":0,"cost":["klei"],"min":3,"sh":1},{"id":"barracks","n":"Barakken","age":1,"col":"red","coins":0,"cost":["erts"],"min":3,"sh":1},{"id":"stockade","n":"Palissade","age":1,"col":"red","coins":0,"cost":["hout"],"min":3,"sh":1},{"id":"stables","n":"Stallen","age":2,"col":"red","coins":0,"cost":["hout","erts","klei"],"min":3,"sh":2,"from":["apothecary"]},{"id":"archeryrange","n":"Schietbaan","age":2,"col":"red","coins":0,"cost":["hout","hout","erts"],"min":3,"sh":2,"from":["workshop"]},{"id":"walls","n":"Muren","age":2,"col":"red","coins":0,"cost":["steen","steen","steen"],"min":3,"sh":2},{"id":"trainingground","n":"Trainingsplaats","age":2,"col":"red","coins":0,"cost":["erts","erts","hout"],"min":4,"sh":2},{"id":"arsenal","n":"Arsenaal","age":3,"col":"red","coins":0,"cost":["hout","hout","erts","stof"],"min":3,"sh":3},{"id":"siegeworkshop","n":"Legerwerkplaats","age":3,"col":"red","coins":0,"cost":["klei","klei","klei","hout"],"min":3,"sh":3,"from":["laboratory"]},{"id":"fortifications","n":"Vestingwerk","age":3,"col":"red","coins":0,"cost":["erts","erts","erts","klei"],"min":3,"sh":3,"from":["walls"]},{"id":"circus","n":"Circus","age":3,"col":"red","coins":0,"cost":["klei","klei","klei","erts"],"min":4,"sh":3,"from":["trainingground"]},{"id":"castrum","n":"Legerkamp","age":3,"col":"red","coins":0,"cost":["klei","klei","hout","papyrus"],"min":4,"sh":3},{"id":"scriptorium","n":"Scriptorium","age":1,"col":"green","coins":0,"cost":["papyrus"],"min":3,"sym":"t"},{"id":"apothecary","n":"Apotheek","age":1,"col":"green","coins":0,"cost":["stof"],"min":3,"sym":"c"},{"id":"workshop","n":"Werkplaats","age":1,"col":"green","coins":0,"cost":["glas"],"min":3,"sym":"g"},{"id":"dispensary","n":"Hospitaal","age":2,"col":"green","coins":0,"cost":["erts","erts","glas"],"min":3,"sym":"c","from":["apothecary"]},{"id":"laboratory","n":"Laboratorium","age":2,"col":"green","coins":0,"cost":["klei","klei","papyrus"],"min":3,"sym":"g","from":["workshop"]},{"id":"library","n":"Bibliotheek","age":2,"col":"green","coins":0,"cost":["steen","steen","stof"],"min":3,"sym":"t","from":["scriptorium"]},{"id":"school","n":"School","age":2,"col":"green","coins":0,"cost":["hout","papyrus"],"min":3,"sym":"t"},{"id":"univeristy","n":"Universiteit","age":3,"col":"green","coins":0,"cost":["hout","hout","glas","papyrus"],"min":3,"sym":"t","from":["library"]},{"id":"study","n":"College","age":3,"col":"green","coins":0,"cost":["hout","papyrus","stof"],"min":3,"sym":"g","from":["school"]},{"id":"lodge","n":"Herberg","age":3,"col":"green","coins":0,"cost":["klei","klei","papyrus","stof"],"min":3,"sym":"c","from":["dispensary"]},{"id":"academy","n":"Academie","age":3,"col":"green","coins":0,"cost":["steen","steen","steen","glas"],"min":3,"sym":"c","from":["school"]},{"id":"observatory","n":"Observatorium","age":3,"col":"green","coins":0,"cost":["erts","erts","glas","stof"],"min":3,"sym":"g","from":["laboratory"]},{"id":"workers","n":"Arbeidersgilde","age":3,"col":"purple","coins":0,"cost":["erts","erts","hout","steen","klei"],"min":3,"guild":1},{"id":"craftsmen","n":"Ambachtsgilde","age":3,"col":"purple","coins":0,"cost":["steen","steen","erts"],"min":3,"guild":1},{"id":"magistrates","n":"Magistratengilde","age":3,"col":"purple","coins":0,"cost":["hout","hout","hout","steen","stof"],"min":3,"guild":1},{"id":"traders","n":"Handelarengilde","age":3,"col":"purple","coins":0,"cost":["glas","papyrus","stof"],"min":3,"guild":1},{"id":"spies","n":"Spionnengilde","age":3,"col":"purple","coins":0,"cost":["klei","klei","glas"],"min":3,"guild":1},{"id":"philosophers","n":"Filosofengilde","age":3,"col":"purple","coins":0,"cost":["klei","klei","klei","papyrus","stof"],"min":3,"guild":1},{"id":"shipowners","n":"Redersgilde","age":3,"col":"purple","coins":0,"cost":["hout","hout","hout","glas","papyrus"],"min":3,"guild":1},{"id":"scientists","n":"Wetenschappersgilde","age":3,"col":"purple","coins":0,"cost":["hout","hout","erts","erts","papyrus"],"min":3,"guild":1},{"id":"decorators","n":"Ontwerpersgilde","age":3,"col":"purple","coins":0,"cost":["erts","erts","steen","stof"],"min":3,"guild":1},{"id":"builders","n":"Bouwersgilde","age":3,"col":"purple","coins":0,"cost":["steen","steen","steen","klei","klei","glas"],"min":3,"guild":1}];
+const STAGE_COST={"rhodes":{"A":[["hout","hout"],["klei","klei","klei"],["erts","erts","erts","erts"]],"B":[["steen","steen","steen"],["erts","erts","erts","erts"]]},"alexandria":{"A":[["steen","steen"],["erts","erts"],["papyrus","stof"]],"B":[["klei","klei"],["erts","erts","erts"],["hout","hout","hout","hout"]]},"ephesus":{"A":[["klei","klei"],["hout","hout"],["erts","erts","glas"]],"B":[["steen","steen"],["hout","hout"],["erts","erts","stof"]]},"babylon":{"A":[["klei","klei"],["erts","erts","stof"],["hout","hout","hout","hout"]],"B":[["steen","steen"],["klei","klei","klei","glas"]]},"olympia":{"A":[["steen","steen"],["hout","hout"],["klei","klei","klei"]],"B":[["erts","erts"],["klei","klei","klei"],["glas","papyrus","stof"]]},"halicarnassus":{"A":[["erts","erts"],["glas","papyrus"],["steen","steen","steen"]],"B":[["klei","klei"],["glas","papyrus"],["hout","hout","hout"]]},"giza":{"A":[["hout","hout"],["klei","klei","stof"],["steen","steen","steen","steen"]],"B":[["hout","hout"],["steen","steen","steen"],["klei","klei","klei"],["steen","steen","steen","steen","papyrus"]]}};
+
+const CARD = {}; CARDS.forEach(c=>{ if(!CARD[c.id]) CARD[c.id]=c; });
+const KIDS = {}; Object.values(CARD).forEach(c=>(c.from||[]).forEach(f=>{ (KIDS[f]=KIDS[f]||[]).push(c.id); }));
+const RESKEY={ore:'erts',glass:'glas',papyrus:'papyrus',clay:'klei',wood:'hout',loom:'stof',stone:'steen'};
+const BROWN=['hout','steen','klei','erts'], GREY=['glas','papyrus','stof'];
+const FX={  // effecten van wonderfases die meetellen voor het advies (index = fase-1)
+  alexandria:{A:[{},{prod:BROWN},{}],B:[{prod:BROWN},{prod:GREY},{}]},
+  babylon:{A:[{},{wild:1},{}],B:[{lastCard:1},{wild:1}]},
+  rhodes:{A:[{},{sh:2},{}],B:[{sh:1,coins:3},{sh:1,coins:4}]},
+  ephesus:{A:[{},{coins:9},{}],B:[{coins:4},{coins:4},{coins:4}]},
+  olympia:{A:[{},{freeColor:1},{}],B:[{freeFirst:1},{freeLast:1},{}]},
+  halicarnassus:{A:[{},{discard:1},{}],B:[{discard:1},{discard:1},{discard:1}]},
+  giza:{A:[{},{},{}],B:[{},{},{},{}]},
+};
+const COLNAME={brown:'bruin',grey:'grijs',blue:'blauw',yellow:'geel',red:'rood',green:'groen',purple:'paars'};
+const COLVAR={brown:'var(--wonder)',grey:'#8d8d8d',blue:'var(--civ)',yellow:'var(--com)',red:'var(--mil)',green:'var(--sci)',purple:'var(--guild)'};
+const COLORDER=['brown','grey','blue','yellow','red','green','purple'];
+const SYMNAME={t:'tablet',c:'passer',g:'tandwiel'};
+const uniq = a => [...new Set(a)];
+const r1 = x => Math.round(x*10)/10;
+
+function meIdx(){ return game && game.me!=null && game.players[game.me] ? game.me : null; }
+function cityOf(p){ return (p.city||[]).map(id=>CARD[id]).filter(Boolean); }
+function stagesBuilt(p){ let n=0; while(p.d.stages && p.d.stages[n]) n++; return n; }
+function stageList(p){ return WONDERS[p.wonder] ? WONDERS[p.wonder][p.side] : []; }
+function stageFx(p,i){ return (FX[p.wonder]&&FX[p.wonder][p.side]&&FX[p.wonder][p.side][i])||{}; }
+function builtFx(p){ const n=stagesBuilt(p), out=[]; for(let i=0;i<n;i++) out.push(stageFx(p,i)); return out; }
+function producers(p){
+  const pr=[];
+  if(WONDERS[p.wonder]) pr.push([RESKEY[WONDERS[p.wonder].res]]);
+  cityOf(p).forEach(c=>{ (c.prod||[]).forEach(o=>pr.push(o)); if(c.id==='caravansery') pr.push(BROWN); if(c.id==='forum') pr.push(GREY); });
+  builtFx(p).forEach(f=>{ if(f.prod) pr.push(f.prod); });
+  return pr;
 }
-$('#v-sci').addEventListener('click', e=>{
-  const a=e.target.closest('[data-apply]');
-  if(a){ const p=game.players[+a.dataset.apply]; p.d.sci={...sciCalc}; save(); toast(`Wetenschap gekopieerd naar ${p.name}`); }
-  if(e.target.closest('[data-sreset]')){ sciCalc={t:0,c:0,g:0,w:0}; save(); renderSci(); }
+// Welke grondstoffen ontbreken (zo weinig mogelijk) als elke bron 1 keer per beurt gebruikt wordt?
+function missingList(needs, prods){
+  let best=null; const used=new Array(prods.length).fill(false);
+  (function go(i, miss){
+    if(best && miss.length>=best.length) return;
+    if(i===needs.length){ best=miss.slice(); return; }
+    for(let j=0;j<prods.length;j++) if(!used[j] && prods[j].includes(needs[i])){ used[j]=true; go(i+1,miss); used[j]=false; if(best&&best.length===0) return; }
+    miss.push(needs[i]); go(i+1,miss); miss.pop();
+  })(0,[]);
+  return best||[];
+}
+function buyPrice(res, ids){
+  if(BROWN.includes(res)){ const w=ids.has('westtradingpost'), e=ids.has('easttradingpost'); return w&&e?1:(w||e?1.5:2); }
+  return ids.has('marketplace')?1:2;
+}
+function sciState(p){
+  const s={t:0,c:0,g:0,w:0};
+  cityOf(p).forEach(c=>{ if(c.sym) s[c.sym]++; if(c.id==='scientists') s.w++; });
+  builtFx(p).forEach(f=>{ if(f.wild) s.w++; });
+  return s;
+}
+function myShields(p){ return cityOf(p).reduce((s,c)=>s+(c.sh||0),0) + builtFx(p).reduce((s,f)=>s+(f.sh||0),0); }
+function countCol(p,col){ return cityOf(p).filter(c=>c.col===col).length; }
+
+// Context: tijdperk, munten, schilden van de buren
+function pickCtx(){
+  const mi=meIdx(), p=game.players[mi], n=game.players.length;
+  const age=Math.min(3,Math.max(1, game.pickAge || (phase()>=1&&phase()<=3?phase():3)));
+  const [L,R]=neighbors(n,mi);
+  const cur=(game.cur&&game.cur[age-1])||[];
+  const nb=[cur[L],cur[R]].map(x=> (x==null||x==='')?null:+x);
+  return {mi, p, n, age, ai:age-1, coins:+p.d.coins||0, L, R, nb, ids:new Set(p.city||[])};
+}
+function battle(me, nb, V){ return nb.reduce((s,x)=> s + (me>x?V:(me<x?-1:0)),0); }
+function militaryValue(ctx, sh){
+  const V=MIL_VP[ctx.ai], me=myShields(ctx.p), known=ctx.nb.every(x=>x!=null);
+  const later=sh*0.5*(2-ctx.ai);   // schilden blijven tellen in de volgende tijdperken
+  if(!known) return {v: V*0.75+later, why:`+${sh} schild${sh>1?'en':''}. Vul hierboven de schilden van je buren in voor beter advies.`};
+  const d=battle(me+sh, ctx.nb, V)-battle(me, ctx.nb, V);
+  // je buren kunnen nog schilden bijbouwen voor het einde van het tijdperk: tel de winst niet volledig
+  const why = d>0 ? `Veldslag: tot <b>${PT(d).replace(/^/,'+')}</b> als je buren niet bijbouwen (jij ${me}→${me+sh} schilden, buren ${ctx.nb.join(' en ')})`
+                  : `Verandert je veldslag nu niet (jij ${me}→${me+sh}, buren ${ctx.nb.join(' en ')})`;
+  return {v:d*0.7+later, why};
+}
+function resourceValue(ctx, c){
+  const prods=producers(ctx.p), has=r=>prods.some(o=>o.includes(r));
+  const hi=[3.5,2.5,0.3][ctx.ai], lo=[1,0.6,0.1][ctx.ai];
+  let v=0; const nw=[];
+  (c.prod||[]).forEach(o=>{
+    const n=o.filter(x=>!has(x) && !nw.includes(x));               // een 2e eenheid van dezelfde nieuwe grondstof telt minder
+    if(n.length){ v+=hi*(o.length>1&&n.length>1?1.3:1); nw.push(...n); }
+    else v+= o.some(x=>nw.includes(x)) ? (hi+lo)/2 : lo;
+  });
+  let why = nw.length ? `Nieuwe grondstof: <b>${uniq(nw).join(' / ')}</b>` : 'Deze grondstof maak je al';
+  if(ctx.age===3) why+='. In tijdperk III zijn grondstoffen bijna niets meer waard';
+  return {v, why};
+}
+function kidsBonus(ctx, c){
+  const kids=(KIDS[c.id]||[]).filter(k=>!ctx.ids.has(k) && CARD[k].age>ctx.age);
+  const v=kids.length*[1.5,1,0][ctx.ai];
+  return {v, why: v>0 ? `Maakt later gratis: ${kids.map(k=>CARD[k].n).join(', ')}` : ''};
+}
+const NB_EST={brown:6,grey:4,blue:6,yellow:4,red:6,green:4};   // schatting: kaarten van die kleur bij je twee buren samen op het einde
+function cardValue(ctx, c){
+  const p=ctx.p, why=[]; let v=0;
+  switch(c.col){
+    case 'blue': v=c.vp; why.push(`<b>${c.vp} punten</b>`); break;
+    case 'green': {
+      const s=sciState(p), now=sciScore(s).vp, after=sciScore({...s,[c.sym]:s[c.sym]+1}).vp;
+      v=after-now; why.push(`Wetenschap: <b>+${PT(v)}</b> (${SYMNAME[c.sym]})`);
+      if(ctx.age<3) { v+= [1,0.5,0][ctx.ai]; }
+      break; }
+    case 'red': { const m=militaryValue(ctx,c.sh); v=m.v; why.push(m.why); break; }
+    case 'brown': case 'grey': { const r=resourceValue(ctx,c); v=r.v; why.push(r.why); break; }
+    case 'yellow': {
+      const n={yellow:countCol(p,'yellow')+1, brown:countCol(p,'brown'), grey:countCol(p,'grey'), red:countCol(p,'red'), st:stagesBuilt(p)};
+      const Y={
+        tavern:[5/3+0.5,'+5 munten'],
+        westtradingpost:[[2.5,1.2,0.2][ctx.ai],'Bruine grondstoffen kopen bij je <b>linkerbuur</b> voor 1 munt'],
+        easttradingpost:[[2.5,1.2,0.2][ctx.ai],'Bruine grondstoffen kopen bij je <b>rechterbuur</b> voor 1 munt'],
+        marketplace:[[2,1.2,0.2][ctx.ai],'Grijze grondstoffen kopen bij je buren voor 1 munt'],
+        caravansery:[[3,3,0.3][ctx.ai],'Elke beurt 1 bruine grondstof naar keuze'],
+        forum:[[3,3,0.3][ctx.ai],'Elke beurt 1 grijze grondstof naar keuze'],
+        vineyard:[(n.brown+4)/3,`± ${n.brown+4} munten (bruine kaarten van jou en je buren)`],
+        bazaar:[2*(n.grey+3)/3,`± ${2*(n.grey+3)} munten (grijze kaarten van jou en je buren)`],
+        lighthouse:[n.yellow*4/3,`<b>${n.yellow} punten</b> + ${n.yellow} munten`],
+        haven:[n.brown*4/3,`<b>${n.brown} punten</b> + ${n.brown} munten`],
+        chamberofcommerce:[n.grey*8/3,`<b>${2*n.grey} punten</b> + ${2*n.grey} munten`],
+        ludus:[n.red*2,`<b>${n.red} punten</b> + ${3*n.red} munten`],
+        arena:[n.st*2+1,`<b>${n.st} punten</b> + ${3*n.st} munten (meer als je nog wonderfases bouwt)`],
+      }[c.id]||[1,''];
+      v=Y[0]; why.push(Y[1]); break; }
+    case 'purple': {
+      const est=(col,m)=>{ const x=NB_EST[col]*m; return [x, `± <b>${x} punten</b> (schatting: tel de ${COLNAME[col]}e kaarten van je buren)`]; };
+      const total=stageList(p).length, built=stagesBuilt(p), left=total-built;
+      const G={
+        workers:est('brown',1), craftsmen:est('grey',2), magistrates:est('blue',1), traders:est('yellow',1), spies:est('red',1), philosophers:est('green',1),
+        builders:[built+1+4, `± <b>${built+1+4} punten</b> (jouw wonderfases + die van je buren)`],
+        shipowners:[countCol(p,'brown')+countCol(p,'grey')+countCol(p,'purple')+1, `<b>${countCol(p,'brown')+countCol(p,'grey')+countCol(p,'purple')+1} punten</b> (jouw bruine, grijze en paarse kaarten)`],
+        decorators:[left===0?7:left===1?5:left===2?2.5:0, left===0?'<b>7 punten</b>: je wonder is af':`7 punten <b>als</b> je de laatste ${left} wonderfase${left>1?'s':''} nog bouwt`],
+        scientists:(()=>{ const s=sciState(p), d=sciScore({...s,w:s.w+1}).vp-sciScore(s).vp; return [d, `Joker voor wetenschap: <b>+${PT(d)}</b>`]; })(),
+      }[c.id]||[3,''];
+      v=G[0]; why.push(G[1]); break; }
+  }
+  const k=kidsBonus(ctx,c); if(k.v){ v+=k.v; why.push(k.why); }
+  return {v, why};
+}
+function analyze(ctx, c){
+  const p=ctx.p, r={c, why:[]};
+  if(ctx.ids.has(c.id)){ r.dup=true; r.ok=false; r.val=-99; r.costTxt='Heb je al'; r.why.push('Je mag geen 2 dezelfde kaarten bouwen. Verkoop ze of leg ze onder je wonder.'); return r; }
+  let coins=c.coins, buy=[], olympia=stagesBuilt(p)>1 && p.wonder==='olympia' && p.side==='A' && countCol(p,c.col)===0;
+  if(c.from && c.from.some(f=>ctx.ids.has(f))){ r.free=true; coins=0; r.costTxt='🔗 Gratis via keten'; }
+  else if(olympia){ r.free=true; coins=0; r.costTxt='Gratis (Olympía: eerste '+COLNAME[c.col]+'e kaart)'; }
+  else {
+    buy=missingList(c.cost, producers(p));
+    const price=buy.reduce((s,x)=>s+buyPrice(x,ctx.ids),0);
+    coins+=Math.ceil(price);
+    r.costTxt = !c.cost.length && !c.coins ? 'Gratis' :
+      [buy.length?`Koop ${buy.join(', ')} bij je buren (± ${Math.ceil(price)} munten)`:(c.cost.length?'Je hebt alle grondstoffen':''), c.coins?`${c.coins} munt aan de bank`:''].filter(Boolean).join(' + ');
+  }
+  r.coins=coins; r.buy=buy; r.ok=coins<=ctx.coins;
+  const cv=cardValue(ctx,c); r.why=cv.why.filter(Boolean);
+  r.val=cv.v - coins/3;
+  if(!r.ok) r.why.unshift(`<b>Te duur</b>: je hebt ${coins} munten nodig en hebt er ${ctx.coins}.`);
+  else if(buy.length) r.why.push(`Je buren moeten ${buy.join(', ')} hebben. Kijk even na.`);
+  return r;
+}
+function stageOption(ctx){
+  const p=ctx.p, list=stageList(p), i=stagesBuilt(p);
+  if(!WONDERS[p.wonder] || i>=list.length) return null;
+  const needs=(STAGE_COST[p.wonder]&&STAGE_COST[p.wonder][p.side]&&STAGE_COST[p.wonder][p.side][i])||[];
+  const buy=missingList(needs, producers(p)), price=Math.ceil(buy.reduce((s,x)=>s+buyPrice(x,ctx.ids),0));
+  const f=stageFx(p,i), why=[];
+  let v=list[i].vp; if(v) why.push(`<b>${v} punten</b>`);
+  if(f.coins){ v+=f.coins/3; why.push(`+${f.coins} munten`); }
+  if(f.sh){ const m=militaryValue(ctx,f.sh); v+=m.v; why.push(m.why); }
+  if(f.wild){ const s=sciState(p), d=sciScore({...s,w:s.w+1}).vp-sciScore(s).vp; v+=Math.max(d,4); why.push(`Joker voor wetenschap (nu +${d}, groeit nog)`); }
+  if(f.prod){ v+=[4,3,0.5][ctx.ai]; why.push('Elke beurt een grondstof naar keuze'); }
+  if(f.freeColor||f.freeFirst||f.freeLast){ v+=(3-ctx.ai)*2; why.push('Gratis kaarten bouwen'); }
+  if(f.discard){ v+=[3,4,5][ctx.ai]; why.push('Gratis een kaart uit de aflegstapel bouwen'); }
+  if(f.lastCard){ v+=(3-ctx.ai)*1.5; why.push('Elk tijdperk een extra kaart spelen'); }
+  return {i, v:v-price/3, coins:price, ok:price<=ctx.coins, buy, why, txt:stageText(list[i])};
+}
+function adviseHand(ctx, hand){
+  const rows=hand.map(id=>analyze(ctx, CARD[id])).sort((a,b)=> (b.ok-a.ok) || (b.val-a.val));
+  const worst=rows.slice().sort((a,b)=>(a.dup?-1:0)-(b.dup?-1:0) || a.val-b.val)[0];
+  const st=stageOption(ctx);
+  const sell={v: 1 + (ctx.coins<3?0.5:0)};
+  const best=rows.find(r=>r.ok && !r.dup);
+  let rec;
+  const opts=[];
+  if(best) opts.push({kind:'build', v:best.val, r:best});
+  if(st && st.ok && worst) opts.push({kind:'stage', v:st.v, r:worst});
+  if(worst) opts.push({kind:'sell', v:sell.v, r:worst});
+  rec=opts.sort((a,b)=>b.v-a.v)[0];
+  return {rows, st, sell, rec, worst};
+}
+
+/* ---- weergave ---- */
+function cardChip(c, on, attr){
+  const extra=c.prod?c.prod.map(o=>o.join('/')).join(' + '):c.vp?`${c.vp} pt`:c.sh?`${c.sh} schild${c.sh>1?'en':''}`:c.sym?SYMNAME[c.sym]:'';
+  return `<button class="chip cardchip" ${attr} aria-pressed="${on}"><span class="cdot" style="background:${COLVAR[c.col]}"></span>${esc(c.n)}${extra?` <span class="cx">${extra}</span>`:''}</button>`;
+}
+function cardPicker(title, ids, filter, max, onDone){
+  const sel=new Set(ids);
+  const draw=()=>{
+    const groups=COLORDER.map(col=>{ const cs=uniq(CARDS.filter(c=>c.col===col && filter(c)).map(c=>c.id)).map(id=>CARD[id]); return cs.length?`<div class="sec-title" style="margin-top:10px">${COLNAME[col]}</div><div class="chips">${cs.map(c=>cardChip(c, sel.has(c.id), `data-cpick="${c.id}"`)).join('')}</div>`:''; }).join('');
+    $('#picker-body').innerHTML=`<p class="small muted" style="margin-top:0">${max?`Tik de kaarten aan (max. ${max}). Gekozen: <b>${sel.size}</b>`:`Gekozen: <b>${sel.size}</b>`}</p>${groups}<button class="btn primary block" style="margin-top:14px" data-cdone>Klaar</button>`;
+  };
+  openSheet(title, '<div id="picker-body"></div>', {obj:{}});
+  draw();
+  $('#picker-body').onclick=e=>{
+    const b=e.target.closest('[data-cpick]');
+    if(b){ const id=b.dataset.cpick; if(sel.has(id)) sel.delete(id); else if(!max||sel.size<max) sel.add(id); else toast(`Maximaal ${max} kaarten`); draw(); return; }
+    if(e.target.closest('[data-cdone]')){ onDone([...sel]); closeSheet(); }
+  };
+}
+let pickTimer=null;
+function renderPick(){
+  const v=$('#v-pick');
+  if(!game){ v.innerHTML=`${flowBar('pick')}<div class="card small muted">Start eerst een spel, dan helpt deze pagina je elke beurt kiezen.</div>`; return; }
+  if(meIdx()==null){
+    v.innerHTML=`<div class="card"><b>Wie ben jij?</b><p class="small muted">Dan weet de app wat jouw stad heeft en wie je buren zijn.</p><div class="chips">${game.players.map((p,i)=>`<button class="chip" data-me="${i}">${esc(p.name)}</button>`).join('')}</div></div>`;
+    return;
+  }
+  const ctx=pickCtx(), p=ctx.p, n=game.players.length;
+  if(!game.cur) game.cur=[null,null,null];
+  // schilden blijven liggen: start van de waarden van het vorige tijdperk
+  if(!game.cur[ctx.ai]) game.cur[ctx.ai]=((ctx.ai&&(game.war[ctx.ai-1]||game.cur[ctx.ai-1]))||game.players.map(()=>null)).slice();
+  if(!game.war[ctx.ai]) game.cur[ctx.ai][ctx.mi]=myShields(p);   // eigen schilden voor de Oorlog-pagina
+  ctx.nb=[game.cur[ctx.ai][ctx.L],game.cur[ctx.ai][ctx.R]].map(x=>(x==null||x==='')?null:+x);
+  const hand=(p.hand||[]).filter(id=>CARD[id]);
+  const city=cityOf(p);
+  const sci=sciState(p);
+  let adv='';
+  if(hand.length){
+    const A=adviseHand(ctx, hand), rec=A.rec;
+    const recTxt = !rec ? '' : rec.kind==='build' ? `Bouw <b>${esc(rec.r.c.n)}</b>`
+      : rec.kind==='stage' ? `Bouw <b>wonderfase ${A.st.i+1}</b> met ${esc(rec.r.c.n)}` : `Verkoop <b>${esc(rec.r.c.n)}</b> voor 3 munten`;
+    const passWarn=A.rows.filter(r=>r!==(rec&&rec.r) && !r.dup && (r.c.col==='purple' || (ctx.age===3 && r.c.col==='green') || (r.c.vp||0)>=6)).map(r=>r.c.n);
+    adv=`<div class="card best-card"><div class="small muted">Advies voor deze beurt</div><div class="rec">👉 ${recTxt}</div>
+      ${passWarn.length?`<p class="small" style="margin:6px 0 0">⚠️ Let op wat je doorgeeft (${ctx.ai===1?'naar rechts':'naar links'}): <b>${passWarn.map(esc).join(', ')}</b> kan veel punten opleveren voor je buur. Je kunt een kaart ook onder je wonder leggen.</p>`:''}</div>
+      ${A.rows.map((r,ix)=>`<div class="card cardrow ${rec&&rec.kind==='build'&&rec.r===r?'top':''} ${r.ok&&!r.dup?'':'dim'}">
+        <div class="row"><span class="cdot big" style="background:${COLVAR[r.c.col]}"></span><b class="grow">${esc(r.c.n)}</b><span class="val">${r.dup?'–':(r.val>=0?'+':'')+r1(r.val)}</span></div>
+        <div class="small muted">${r.costTxt}</div>
+        <ul class="small">${r.why.map(w=>`<li>${w}</li>`).join('')}</ul>
+        <div class="row wrap">${!r.dup&&r.ok?`<button class="btn small primary" data-act-build="${r.c.id}">Gebouwd</button>`:''}${A.st&&A.st.ok?`<button class="btn small" data-act-stage="${r.c.id}">Onder wonder</button>`:''}<button class="btn small" data-act-sell="${r.c.id}">Verkocht</button></div>
+      </div>`).join('')}
+      <div class="card small"><b>Andere mogelijkheden</b><ul>
+        ${A.st?`<li>Wonderfase ${A.st.i+1} (${A.st.txt}): ${A.st.ok?`waarde ± <b>${r1(A.st.v)}</b>${A.st.buy.length?`, koop ${A.st.buy.join(', ')}`:''}`:`te duur (${A.st.coins} munten nodig)`}${A.st.why.length?` · ${A.st.why.join(' · ')}`:''}</li>`:'<li>Je wonder is af.</li>'}
+        <li>Een kaart verkopen: +3 munten (± 1 punt)</li></ul>
+        <p class="muted" style="margin-bottom:0">De getallen zijn een schatting in punten, inclusief wat de kaart kost. Gebruik ze als hulp, niet als wet.</p></div>`;
+  }
+  v.innerHTML=`${flowBar('pick')}
+    <div class="card"><div class="row"><b class="grow">${esc(p.name)}${WONDERS[p.wonder]?` · ${WONDERS[p.wonder].n} ${SIDE(p.side)}`:''}</b><button class="btn small ghost" data-me-change>Wissel</button></div>
+      ${WONDERS[p.wonder]?'':'<p class="small" style="color:var(--lose)">Kies je wonder bij <b>Score → Spelers & wonders</b> voor beter advies.</p>'}
+      <div class="chips" style="margin:8px 0">${[1,2,3].map(a=>`<button class="chip" data-page="${a}" aria-pressed="${ctx.age===a}">Tijdperk ${AGE[a-1]}</button>`).join('')}</div>
+      <div data-obj="pick">
+        <div class="field"><div class="lbl"><b>Mijn munten</b></div>${stepper(`players.${ctx.mi}.d.coins`, p.d.coins)}</div>
+        <div class="field"><div class="lbl"><b>Schilden ${esc(game.players[ctx.L].name)}</b><span>linkerbuur</span></div>${stepper(`cur.${ctx.ai}.${ctx.L}`, ctx.nb[0]??0)}</div>
+        ${ctx.L!==ctx.R?`<div class="field"><div class="lbl"><b>Schilden ${esc(game.players[ctx.R].name)}</b><span>rechterbuur</span></div>${stepper(`cur.${ctx.ai}.${ctx.R}`, ctx.nb[1]??0)}</div>`:''}
+      </div>
+    </div>
+    <div class="card"><div class="row"><b class="grow">✋ Mijn hand (${hand.length})</b><button class="btn small primary" data-hand>${hand.length?'Wijzig':'Kies kaarten'}</button></div>
+      ${hand.length?`<div class="chips" style="margin-top:8px">${hand.map(id=>cardChip(CARD[id],false,'disabled')).join('')}</div>`:'<p class="small muted" style="margin-bottom:0">Tik op <b>Kies kaarten</b> en duid de kaarten in je hand aan.</p>'}</div>
+    ${adv}
+    <div class="card"><div class="row"><b class="grow">🏛️ Mijn stad (${city.length})</b><button class="btn small" data-city>Wijzig</button></div>
+      <div class="small muted" style="margin:6px 0">Schilden: <b>${myShields(p)}</b> · Wetenschap: ${sci.t} tablet, ${sci.c} passer, ${sci.g} tandwiel${sci.w?`, ${sci.w} joker`:''} (= ${sciScore(sci).vp} pt) · Wonderfases: <b>${stagesBuilt(p)}/${stageList(p).length||'?'}</b></div>
+      ${city.length?`<div class="chips">${city.map(c=>cardChip(c,false,'disabled')).join('')}</div>`:'<p class="small muted" style="margin-bottom:0">Wat je bouwt met <b>Gebouwd</b> komt hier vanzelf bij.</p>'}</div>`;
+  const wrap=v.querySelector('[data-obj]');
+  if(wrap) wrap._upd=()=>{ clearTimeout(pickTimer); pickTimer=setTimeout(renderPick,500); };
+}
+function doneTurn(p, msg){ p.hand=[]; save(); renderPick(); toast(msg); window.scrollTo(0,0); }
+$('#v-pick').addEventListener('click', e=>{
+  const t=e.target.closest('button'); if(!t) return;
+  if(t.dataset.me!=null){ game.me=+t.dataset.me; save(); renderPick(); return; }
+  if(t.hasAttribute('data-me-change')){ game.me=null; save(); renderPick(); return; }
+  if(t.dataset.page){ game.pickAge=+t.dataset.page; save(); renderPick(); return; }
+  const ctx=meIdx()!=null?pickCtx():null; if(!ctx) return;
+  const p=ctx.p;
+  if(t.hasAttribute('data-hand')){
+    cardPicker(`Mijn hand · tijdperk ${AGE[ctx.ai]}`, p.hand||[], c=>c.age===ctx.age && c.min<=ctx.n, 7, sel=>{ p.hand=sel; save(); });
+    return;
+  }
+  if(t.hasAttribute('data-city')){
+    cardPicker('Mijn stad', p.city||[], c=>c.age<=ctx.age && c.min<=ctx.n, 0, sel=>{ p.city=sel; save(); });
+    return;
+  }
+  if(t.dataset.actBuild){
+    const r=analyze(ctx, CARD[t.dataset.actBuild]), c=r.c;
+    p.city=(p.city||[]).concat(c.id);
+    let gain=0; const nn={yellow:countCol(p,'yellow'),brown:countCol(p,'brown'),grey:countCol(p,'grey'),red:countCol(p,'red'),st:stagesBuilt(p)};
+    gain={tavern:5,lighthouse:nn.yellow,haven:nn.brown,chamberofcommerce:2*nn.grey,ludus:3*nn.red,arena:3*nn.st}[c.id]||0;
+    p.d.coins=Math.max(0,(+p.d.coins||0)-r.coins+gain);
+    doneTurn(p, `${c.n} gebouwd${r.coins?` (−${r.coins} munten)`:''}${gain?` (+${gain} munten)`:''}${['vineyard','bazaar'].includes(c.id)?'. Tel je munten na.':''}`);
+    return;
+  }
+  if(t.dataset.actStage){
+    const st=stageOption(ctx); if(!st) return;
+    p.d.stages=p.d.stages||[]; p.d.stages[st.i]=true;
+    const f=stageFx(p,st.i);
+    p.d.coins=Math.max(0,(+p.d.coins||0)-st.coins+(f.coins||0));
+    doneTurn(p, `Wonderfase ${st.i+1} gebouwd`);
+    return;
+  }
+  if(t.dataset.actSell){ p.d.coins=(+p.d.coins||0)+3; doneTurn(p, `${CARD[t.dataset.actSell].n} verkocht: +3 munten`); return; }
 });
 
 /* ============ OORLOG ============ */
@@ -658,10 +951,10 @@ const GUIDE = [
   <p class="muted small" style="margin-bottom:0">3 tot 7 spelers · ongeveer 30 minuten.</p>`},
  {t:'📱 Zo gebruik je de app', open:true, h:
   step(1,'Voor het spel','<ul><li><b>Gids</b>: lees “Klaarzetten” en “Een beurt”. Voor je eerste spel heb je niets anders nodig.</li><li><b>Score</b>: tik op <b>Nieuw spel</b>. Geef de spelers in <b>zitvolgorde, met de klok mee</b>, want zo weet de app wie naast wie zit. Kies per speler het wonder en Dag of Nacht.</li></ul>')
- +step(2,'Tijdens elk tijdperk (6 beurten)','<ul><li><b>Wetenschap</b>: twijfel je tussen groene kaarten? Vul je symbolen in en zie hoeveel punten elk nieuw symbool oplevert.</li><li><b>Wonders</b>: bekijk wat de volgende fase van jouw wonder (of dat van je buur) doet.</li><li><b>Gids</b>: zoek een regel op, bv. “Kopen bij je buren” of “Ketens”.</li></ul>')
+ +step(2,'Tijdens elk tijdperk (6 beurten)','<ul><li><b>Kiezen</b>: tik de kaarten in je hand aan. De app zegt welke kaart je best legt en waarom (punten, kosten, ketens, veldslag, wetenschap). Tik daarna op <b>Gebouwd</b>, <b>Onder wonder</b> of <b>Verkocht</b>: zo onthoudt de app je stad voor de volgende beurt.</li><li><b>Wonders</b>: bekijk wat de volgende fase van jouw wonder (of dat van je buur) doet.</li><li><b>Gids</b>: zoek een regel op, bv. “Kopen bij je buren” of “Ketens”.</li></ul>')
  +step(3,'Einde van elk tijdperk','<ul><li><b>Oorlog</b>: tel ieders schilden, vul ze in en tik op <b>Veldslag noteren</b>. Je ziet meteen wie +1/+3/+5 of −1 krijgt tegen elke buur. Doe dit na tijdperk I, II én III.</li></ul>')
  +step(4,'Einde van het spel','<ul><li><b>Score</b>: tik op elk vakje en vul in wat je hebt. De app rekent alles uit. Militair staat er al in via Oorlog.</li><li>Tik op <b>Afronden & bewaren</b> om de winnaar te zien en het spel te bewaren.</li></ul>')
- +`<p class="small" style="margin-bottom:0">Kort: <b>Gids</b> om te leren, <b>Oorlog</b> 3 keer per spel, <b>Score</b> bij de start en op het einde. Bovenaan Score en Oorlog zie je altijd <b>waar je bent</b> en <b>wat je nu moet doen</b>.</p>`},
+ +`<p class="small" style="margin-bottom:0">Kort: <b>Gids</b> om te leren, <b>Kiezen</b> elke beurt, <b>Oorlog</b> 3 keer per spel, <b>Score</b> bij de start en op het einde. Bovenaan Score en Oorlog zie je altijd <b>waar je bent</b> en <b>wat je nu moet doen</b>.</p>`},
  {t:'📦 Klaarzetten', h:
   step(1,'Kaarten sorteren','<p>Maak 3 stapels: I, II en III (zie achterkant). Onderaan op elke kaart staat <b>3+</b>, <b>4+</b>, … Hou alleen de kaarten met een getal <b>tot en met</b> jullie aantal spelers. De rest gaat terug in de doos.</p><p class="small muted">Met 4 spelers: hou 3+ en 4+.</p>')
  +step(2,'Paarse kaarten','<p>Trek willekeurig <b>aantal spelers + 2</b> paarse kaarten en stop ze in stapel III. De rest gaat in de doos.</p><p class="small muted">Met 4 spelers: 6 paarse kaarten.</p>')
@@ -697,7 +990,7 @@ const GUIDE = [
   <li><b style="color:var(--mil)">Militair</b>: je fiches (kan negatief zijn)</li>
   <li><b style="color:var(--civ)">Blauw</b>: punten op je blauwe kaarten</li>
   <li><b style="color:var(--com)">Geel</b>: zoals op de kaart</li>
-  <li><b style="color:var(--sci)">Groen</b>: zie tabblad Wetenschap</li>
+  <li><b style="color:var(--sci)">Groen</b>: de app rekent het uit</li>
   <li><b style="color:var(--guild)">Paars</b>: zoals op de kaart</li></ol>
   <p style="margin-bottom:0">Gelijk? Meeste munten wint. Nog gelijk? Dan delen jullie de overwinning.</p>`},
  {t:'🃏 Wat doen de kleuren?', h:`<ul>
@@ -730,10 +1023,11 @@ function renderGuide(){
 }
 
 /* ============ NAVIGATIE ============ */
-const TABS={score:renderScore, sci:renderSci, war:renderWar, wonders:renderWonders, guide:renderGuide};
-const SUB={score:'Scoreblok', sci:'Wetenschapshulp', war:'Veldslagteller', wonders:'Wonderborden', guide:'Spelregels'};
+const TABS={score:renderScore, pick:renderPick, war:renderWar, wonders:renderWonders, guide:renderGuide};
+const SUB={score:'Scoreblok', pick:'Welke kaart leg ik?', war:'Veldslagteller', wonders:'Wonderborden', guide:'Spelregels'};
 let tab=LS.get('tab', LS.get('game',null)?'score':'guide'); if(!TABS[tab]) tab='score';
 function show(t){
+  if(t==='pick' && game){ const ph=phase(); if(ph>=1&&ph<=3) game.pickAge=ph; }
   if(t==='war' && game){ const f=game.war.findIndex(x=>!x); if(f>=0){ warAge=f; LS.set('warAge',warAge); } }
   tab=t; LS.set('tab',t);
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on', v.id==='v-'+t));
