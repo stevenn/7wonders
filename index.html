@@ -182,8 +182,9 @@ const CAT_HINT = {
   cities:'Sum the VP from your black City cards.',
   debt:'Number of debt tokens (each is −1 VP).',
 };
-// Wonders — 1st edition boards. vp = direct victory points per stage.
-const WONDERS = {
+// Wonders. vp = direct victory points per stage. Side 'A'/'B' = Day/Night in the 2020 edition.
+// 1st edition (2010) boards:
+const WONDERS1 = {
   rhodes:{n:'Rhodes', full:'The Colossus of Rhodes', res:'Ore',
     A:[{vp:3,t:'3 VP'},{vp:0,t:'2 shields'},{vp:7,t:'7 VP'}],
     B:[{vp:3,t:'1 shield, 3 VP, 3 coins'},{vp:4,t:'1 shield, 4 VP, 4 coins'}],
@@ -213,7 +214,7 @@ const WONDERS = {
     B:[{vp:3,t:'3 VP'},{vp:5,t:'5 VP'},{vp:5,t:'5 VP'},{vp:7,t:'7 VP'}],
     tips:['Pure points: 15 VP (A) or 20 VP (B) from the wonder alone.','Stone is plentiful for you; trade for the rest and pair with blue civilian cards.','Building stages also buries cards your neighbors want (hate-drafting for free).']},
 };
-const GUILDS = [
+const GUILDS1 = [
   {k:'workers', n:'Workers Guild', m:1, of:'brown cards of both neighbors'},
   {k:'craftsmen', n:'Craftsmens Guild', m:2, of:'grey cards of both neighbors'},
   {k:'traders', n:'Traders Guild', m:1, of:'yellow cards of both neighbors'},
@@ -224,12 +225,51 @@ const GUILDS = [
   {k:'builders', n:'Builders Guild', m:1, of:'wonder stages: yours + both neighbors'},
   {k:'shipowners', n:'Shipowners Guild', m:1, of:'your own brown + grey + purple cards'},
 ];
-const COMMERCE = [
+const COMMERCE1 = [
   {k:'haven', n:'Haven', m:1, of:'your brown cards'},
   {k:'lighthouse', n:'Lighthouse', m:1, of:'your yellow cards (incl. itself)'},
   {k:'chamber', n:'Chamber of Commerce', m:2, of:'your grey cards'},
   {k:'arena', n:'Arena', m:1, of:'your built wonder stages'},
 ];
+// 2nd edition (2020) boards, from the 7 Wonders fan wiki (Day = 'A', Night = 'B').
+const WONDERS2 = {
+  rhodes:{n:'Rhódos', full:'The Colossus of Rhódos', res:'Ore',
+    A:[{vp:3,t:'3 VP'},{vp:0,t:'2 shields'},{vp:7,t:'7 VP'}],
+    B:[{vp:3,t:'1 shield, 3 VP, 3 coins'},{vp:4,t:'1 shield, 4 VP, 4 coins'}],
+    tips:['The military wonder: shields from stages are “free” red cards, so you can win most battles while buying fewer red cards.','Don’t over-invest in red: winning by 1 shield scores the same as winning by 10. Spend the spare turns on points.','Night is fast (2 stages) and gives coins, which suits a flexible game.']},
+  alexandria:{n:'Alexandria', full:'The Lighthouse of Alexandria', res:'Glass',
+    A:[{vp:3,t:'3 VP'},{vp:0,t:'1 raw resource of your choice each turn'},{vp:7,t:'7 VP'}],
+    B:[{vp:0,t:'1 raw resource of your choice each turn'},{vp:0,t:'1 manufactured good of your choice each turn'},{vp:7,t:'7 VP'}],
+    tips:['Resource flexibility means you can skip many brown/grey cards and draft points instead.','Build the resource stages early, since they pay off every remaining turn.','You’ll sell few resources to neighbors, so watch your coins.']},
+  ephesus:{n:'Éphesos', full:'The Temple of Artemis in Éphesos', res:'Papyrus',
+    A:[{vp:3,t:'3 VP'},{vp:0,t:'9 coins'},{vp:7,t:'7 VP'}],
+    B:[{vp:2,t:'2 VP, 4 coins'},{vp:3,t:'3 VP, 4 coins'},{vp:5,t:'5 VP, 4 coins'}],
+    tips:['Coins buy whatever you lack from neighbors, so play the flexible “buy, don’t build” game.','Build the wonder early to get the coins working for you; a trading post or Marketplace stretches them further.','Left-over coins still score 1 VP per 3 at the end.']},
+  babylon:{n:'Babylon', full:'The Hanging Gardens of Babylon', res:'Wood',
+    A:[{vp:3,t:'3 VP'},{vp:0,t:'1 science symbol of your choice (wild)'},{vp:7,t:'7 VP'}],
+    B:[{vp:0,t:'Play the last card of each age instead of discarding it'},{vp:0,t:'1 science symbol of your choice (wild)'}]
+    ,tips:['The science wonder: the wild symbol is often worth 10+ VP late in the game.','Green cards chain heavily, so Babylon can skip many brown cards and build science for free.','Night: build stage 1 as early as possible. In Age I it gives you 3 extra cards over the game. Night has no VP stages; the payoff is science.']},
+  olympia:{n:'Olympía', full:'The Statue of Zeus in Olympía', res:'Clay',
+    A:[{vp:3,t:'3 VP'},{vp:0,t:'The first card of each color you build is free'},{vp:7,t:'7 VP'}],
+    B:[{vp:2,t:'2 VP + the first card of each age is free'},{vp:3,t:'3 VP + the last card of each age is free'},{vp:5,t:'5 VP'}],
+    tips:['Build stage 2 as early as possible: free builds are the whole point of this wonder.','Day: hold the free “first of a color” for expensive cards, e.g. your first guild or a big blue card.','Night: stage 2 in Age I means 3 free last-cards. The effect only covers Age cards, not wonder stages.']},
+  halicarnassus:{n:'Halikarnassos', full:'The Mausoleum of Halikarnassos', res:'Loom (textile)',
+    A:[{vp:3,t:'3 VP'},{vp:0,t:'Build one card from the discard pile for free'},{vp:7,t:'7 VP'}],
+    B:[{vp:2,t:'2 VP + build a discarded card free'},{vp:1,t:'1 VP + build a discarded card free'},{vp:0,t:'Build a discarded card free'}],
+    tips:['Time the discard-build for the end of an age, when the pile holds the most cards (including the end-of-age discards).','Strong with science: grab green cards others discard, then chain the rest for free.','Night gives three free cards; pick your best synergy each time.']},
+  giza:{n:'Gizah', full:'The Pyramids of Gizah', res:'Stone',
+    A:[{vp:3,t:'3 VP'},{vp:5,t:'5 VP'},{vp:7,t:'7 VP'}],
+    B:[{vp:3,t:'3 VP'},{vp:5,t:'5 VP'},{vp:5,t:'5 VP'},{vp:7,t:'7 VP'}],
+    tips:['Pure points: 15 VP (Day) or 20 VP (Night). Night is usually the stronger side.','Easy first wonder: build stages whenever your hand is weak.','Building stages also buries cards your neighbors want (hate-drafting for free).']},
+};
+const GUILDS2 = GUILDS1.filter(g=>g.k!=='strategists').concat([{k:'decorators', n:'Decorators Guild', m:7, of:'enter 1 if every stage of your wonder is built'}]);
+const COMMERCE2 = [...COMMERCE1.slice(0,3), {k:'ludus', n:'Ludus', m:1, of:'your red cards'}, COMMERCE1[3]];
+const ED = e => e===1 ? 1 : 2;
+const W = e => ED(e)===1 ? WONDERS1 : WONDERS2;
+const GL = e => ED(e)===1 ? GUILDS1 : GUILDS2;
+const CL = e => ED(e)===1 ? COMMERCE1 : COMMERCE2;
+const SIDE = (e,s) => ED(e)===1 ? 'side '+s : (s==='A'?'Day':'Night');
+const ED_NAME = e => ED(e)===1 ? '2010 (1st ed.)' : '2020 (2nd ed.)';
 const MIL_VP = [1,3,5];
 const SYM = {
   t:{n:'Tablet', svg:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm1 4v1.6h8V7zm0 4v1.6h8V11zm0 4v1.6h5V15z"/></svg>'},
@@ -244,16 +284,18 @@ const LS = {
   set(k, v){ try{ localStorage.setItem('7wc.'+k, JSON.stringify(v)); }catch(e){} },
 };
 let game = LS.get('game', null);
+if(game && !game.ed) game.ed = 1;
 let history = LS.get('history', []);
 let roster = LS.get('roster', []);
 let sciCalc = LS.get('sci', {t:0,c:0,g:0,w:0});
 let warAge = LS.get('warAge', 0);
 let wonderSide = 'A';
-const save = () => { LS.set('game', game); LS.set('history', history); LS.set('roster', roster); LS.set('sci', sciCalc); LS.set('warAge', warAge); };
+let edition = LS.get('edition', 2);
+const save = () => { LS.set('game', game); LS.set('history', history); LS.set('roster', roster); LS.set('sci', sciCalc); LS.set('warAge', warAge); LS.set('edition', edition); };
 
 function newPlayer(name){ return {name, wonder:'', side:'A', d:{coins:3, sci:{t:0,c:0,g:0,w:0}, mil:{p1:0,p3:0,p5:0,m1:0}, stages:[], guild:{}, com:{}, man:{}}}; }
 function newGame(names, exp){
-  return {id:Date.now(), date:new Date().toISOString(), exp:exp||{leaders:false,cities:false}, players:names.map(newPlayer), war:[null,null,null]};
+  return {id:Date.now(), ed:edition, date:new Date().toISOString(), exp:exp||{leaders:false,cities:false}, players:names.map(newPlayer), war:[null,null,null]};
 }
 
 /* ============ SCORING ============ */
@@ -288,9 +330,9 @@ function catScore(g, pi, k, war){
     case 'coin': return Math.floor((+d.coins||0)/3)+man;
     case 'sci': return sciScore(d.sci).vp+man;
     case 'mil': { const m=d.mil; return (war||warTokens(g))[pi].vp + m.p1+3*m.p3+5*m.p5-m.m1 + man; }
-    case 'wonder': { let v=man; if(p.wonder){ const st=WONDERS[p.wonder][p.side]; (d.stages||[]).forEach((b,i)=>{ if(b&&st[i]) v+=st[i].vp; }); } return v; }
-    case 'guild': return GUILDS.reduce((s,x)=>s+(+d.guild[x.k]||0)*x.m,0)+man;
-    case 'com': return COMMERCE.reduce((s,x)=>s+(+d.com[x.k]||0)*x.m,0)+man;
+    case 'wonder': { let v=man; if(p.wonder){ const st=W(g.ed)[p.wonder][p.side]; (d.stages||[]).forEach((b,i)=>{ if(b&&st[i]) v+=st[i].vp; }); } return v; }
+    case 'guild': return GL(g.ed).reduce((s,x)=>s+(+d.guild[x.k]||0)*x.m,0)+man;
+    case 'com': return CL(g.ed).reduce((s,x)=>s+(+d.com[x.k]||0)*x.m,0)+man;
     case 'debt': return -Math.abs(man);
     default: return man;
   }
@@ -364,12 +406,12 @@ function renderScore(){
   v.innerHTML=`
     <div class="podium">${rk.map((r,ix)=>`<div class="p ${ix===0&&r.tot>0?'lead':''}"><div class="rank">${ix===0&&r.tot>0?'👑 ':''}${ord(ix+1)}</div><div class="tot">${r.tot}</div><div class="nm">${esc(r.name)}</div></div>`).join('')}</div>
     <div class="pad-wrap"><table class="pad">
-      <thead><tr><th class="cat"></th>${game.players.map((p,i)=>`<th><button class="icon-btn" style="color:inherit;padding:0;font-weight:600" data-act="players">${esc(p.name)}</button><span class="w">${p.wonder?WONDERS[p.wonder].n+' '+p.side:'&nbsp;'}</span></th>`).join('')}</tr></thead>
+      <thead><tr><th class="cat"></th>${game.players.map((p,i)=>`<th><button class="icon-btn" style="color:inherit;padding:0;font-weight:600" data-act="players">${esc(p.name)}</button><span class="w">${p.wonder?W(game.ed)[p.wonder].n+' '+SIDE(game.ed,p.side).replace('side ',''):'&nbsp;'}</span></th>`).join('')}</tr></thead>
       <tbody>
       ${cats.map(c=>`<tr><th class="cat"><span class="sw" style="background:${c.c}"></span>${c.n}</th>${game.players.map((p,i)=>{const s=byI[i].by[c.k];return `<td><button data-cell="${i}:${c.k}" class="${s===0?'zero':''}">${s}</button></td>`}).join('')}</tr>`).join('')}
       <tr class="total"><th class="cat">Total</th>${game.players.map((p,i)=>`<td>${byI[i].tot}</td>`).join('')}</tr>
       </tbody></table></div>
-    <p class="hint">Tap any cell to score it. The helpers do the maths: coins → VP, science sets, guild counts, wonder stages. Ties go to the player with the most coins.</p>
+    <p class="hint">Edition: ${ED_NAME(game.ed)}. Tap any cell to score it. The helpers do the maths: coins → VP, science sets, guild counts, wonder stages. Ties go to the player with the most coins.</p>
     <div class="row wrap">
       <button class="btn" data-act="players">Players & wonders</button>
       <button class="btn primary grow" data-act="finish">Finish & save</button>
@@ -428,17 +470,17 @@ function editCat(pi,k){
     upd=base;
   } else if(k==='wonder'){
     if(p.wonder){
-      const W=WONDERS[p.wonder], st=W[p.side];
-      body=`${out}<div class="card"><div class="small muted">${W.full} · side ${p.side}</div>${st.map((s,i)=>`<label class="check"><input type="checkbox" data-stage="${i}" ${d.stages[i]?'checked':''}><div class="grow"><b>Stage ${i+1}</b> <span class="small muted">${s.t}</span></div><b>${s.vp?'+'+s.vp:''}</b></label>`).join('')}
+      const Wd=W(game.ed)[p.wonder], st=Wd[p.side];
+      body=`${out}<div class="card"><div class="small muted">${Wd.full} · ${SIDE(game.ed,p.side)}</div>${st.map((s,i)=>`<label class="check"><input type="checkbox" data-stage="${i}" ${d.stages[i]?'checked':''}><div class="grow"><b>Stage ${i+1}</b> <span class="small muted">${s.t}</span></div><b>${s.vp?'+'+s.vp:''}</b></label>`).join('')}
       ${manual('Other wonder VP','e.g. 2nd-edition boards or expansions')}</div>`;
     } else body=`${out}<div class="card">${manual('Wonder VP','Sum of VP on your built stages')}<p class="small muted">Set this player’s wonder in <b>Players & wonders</b> to just tick off built stages.</p></div>`;
     upd=base;
   } else if(k==='guild'||k==='com'){
-    const list=k==='guild'?GUILDS:COMMERCE, key=k==='guild'?'guild':'com';
+    const list=k==='guild'?GL(game.ed):CL(game.ed), key=k==='guild'?'guild':'com';
     body=`${out}<div class="card"><div class="small muted" style="margin-bottom:4px">${k==='guild'?'For each guild you own, enter the count it scores on.':'Age III yellow cards that score VP. Enter the count for each card you own.'}</div>
       ${list.map(x=>`<div class="field"><div class="lbl"><b>${x.n} <span style="display:inline;color:var(--muted);font-weight:400">${x.m>1?x.m+' VP':'1 VP'} each</span></b><span>${x.of}</span></div>${stepper(key+'.'+x.k, d[key][x.k])}</div>`).join('')}
       ${k==='guild'?'<div class="field"><div class="lbl"><b>Scientists Guild</b><span>No VP itself: add +1 wild in Science.</span></div></div>':''}
-      ${manual(k==='guild'?'Other guild VP':'Other yellow-card VP', k==='guild'?'Expansion or 2nd-edition guilds':'')}</div>`;
+      ${manual(k==='guild'?'Other guild VP':'Other yellow-card VP', k==='guild'?'Expansion guilds':'')}</div>`;
     upd=base;
   } else {
     body=`${out}<div class="card">${manual(c.n+(k==='debt'?' tokens':' VP'), CAT_HINT[k])}</div>`;
@@ -459,17 +501,18 @@ $('#sheet').addEventListener('click', e=>{
 });
 
 function setupSheet(edit){
-  const draft = edit ? JSON.parse(JSON.stringify(game)) : {players:(roster.slice(0,4).length>=3?roster.slice(0,4):['','','']).map(n=>newPlayer(n)), exp:{leaders:false,cities:false}};
+  const draft = edit ? JSON.parse(JSON.stringify(game)) : {players:(roster.slice(0,4).length>=3?roster.slice(0,4):['','','']).map(n=>newPlayer(n)), exp:{leaders:false,cities:false}, ed:edition};
   const draw=()=>{
-    const wopts=w=>`<option value="">Wonder…</option>`+Object.entries(WONDERS).map(([k,v])=>`<option value="${k}" ${w===k?'selected':''}>${v.n}</option>`).join('');
+    const wopts=w=>`<option value="">Wonder…</option>`+Object.entries(W(draft.ed)).map(([k,v])=>`<option value="${k}" ${w===k?'selected':''}>${v.n}</option>`).join('');
     $('#setup-body').innerHTML=`
       <div class="row" style="margin-bottom:10px"><div class="grow small muted">${draft.players.length} players · seating order, clockwise</div>
         <button class="btn small" data-pc="-1" ${draft.players.length<=3?'disabled':''}>−</button><button class="btn small" data-pc="1" ${draft.players.length>=7?'disabled':''}>+</button></div>
+      <div class="row" style="margin-bottom:10px"><span class="small muted grow">Edition</span><div class="chips">${[2,1].map(e=>`<button class="chip" data-ed="${e}" aria-pressed="${ED(draft.ed)===e}">${ED_NAME(e)}</button>`).join('')}</div></div>
       ${draft.players.map((p,i)=>`<div class="card" style="padding:10px">
         <div class="row"><span class="muted small" style="width:16px">${i+1}</span><input type="text" list="roster" placeholder="Player ${i+1}" value="${esc(p.name)}" data-pn="${i}" autocomplete="off">
         ${i>0?`<button class="icon-btn" data-up="${i}" aria-label="Move up">▲</button>`:'<span style="width:30px"></span>'}</div>
         <div class="row" style="margin-top:6px;padding-left:24px"><select data-pw="${i}">${wopts(p.wonder)}</select>
-        <div class="chips" style="flex:0 0 auto">${['A','B'].map(s=>`<button class="chip" data-ps="${i}:${s}" aria-pressed="${p.side===s}">${s}</button>`).join('')}</div>
+        <div class="chips" style="flex:0 0 auto">${['A','B'].map(s=>`<button class="chip" data-ps="${i}:${s}" aria-pressed="${p.side===s}">${ED(draft.ed)===1?s:SIDE(draft.ed,s)}</button>`).join('')}</div>
         </div></div>`).join('')}
       <button class="btn small" data-rand>🎲 Random wonders</button>
       <div class="sec-title">Expansions</div>
@@ -487,19 +530,21 @@ function setupSheet(edit){
     if(t.dataset.pc){ if(+t.dataset.pc>0) draft.players.push(newPlayer('')); else draft.players.pop(); draw(); }
     else if(t.dataset.ps){ const [i,s]=t.dataset.ps.split(':'); draft.players[+i].side=s; draw(); }
     else if(t.dataset.up){ const i=+t.dataset.up; [draft.players[i-1],draft.players[i]]=[draft.players[i],draft.players[i-1]]; draw(); }
+    else if(t.dataset.ed){ draft.ed=+t.dataset.ed; draw(); }
     else if(t.dataset.exp){ draft.exp[t.dataset.exp]=!draft.exp[t.dataset.exp]; draw(); }
-    else if(t.hasAttribute('data-rand')){ const ks=Object.keys(WONDERS).sort(()=>Math.random()-.5); draft.players.forEach((p,i)=>{p.wonder=ks[i]; p.side=Math.random()<.5?'A':'B';}); draw(); }
+    else if(t.hasAttribute('data-rand')){ const ks=Object.keys(W(draft.ed)).sort(()=>Math.random()-.5); draft.players.forEach((p,i)=>{p.wonder=ks[i]; p.side=Math.random()<.5?'A':'B';}); draw(); }
     else if(t.hasAttribute('data-start')){
       draft.players.forEach((p,i)=>{ p.name=p.name.trim()||`Player ${i+1}`; });
       const used=draft.players.map(p=>p.wonder).filter(Boolean);
       if(new Set(used).size!==used.length){ toast('Each wonder can only be used once'); return; }
       roster=[...new Set([...draft.players.map(p=>p.name).filter(n=>!/^Player \d+$/.test(n)), ...roster])].slice(0,20);
+      edition=ED(draft.ed);
       if(edit){
         // keep war records only if player count unchanged
         if(draft.players.length!==game.players.length) draft.war=[null,null,null];
         draft.players.forEach(p=>{ if(game.players.length && !p.d) p.d=newPlayer('').d; });
         game=draft;
-      } else game=newGame([], draft.exp), game.players=draft.players;
+      } else { game=newGame([], draft.exp); game.players=draft.players; game.ed=edition; }
       closeSheet();
     }
   };
@@ -599,15 +644,17 @@ $('#v-war').addEventListener('click', e=>{
 /* ============ WONDERS ============ */
 function renderWonders(){
   const v=$('#v-wonders');
-  v.innerHTML=`<div class="row" style="margin-bottom:12px"><div class="grow small muted">Wonder boards (1st edition). 2nd-edition boards differ slightly; check yours.</div>
-    <div class="chips">${['A','B'].map(s=>`<button class="chip" data-side="${s}" aria-pressed="${wonderSide===s}">Side ${s}</button>`).join('')}</div></div>
-    ${Object.values(WONDERS).map(W=>{ const st=W[wonderSide]; const vp=st.reduce((a,s)=>a+s.vp,0); return `<div class="card wonder">
+  v.innerHTML=`<div class="row" style="margin-bottom:12px">${edChips()}</div>
+    <div class="chips" style="margin-bottom:12px">${['A','B'].map(s=>`<button class="chip" data-side="${s}" aria-pressed="${wonderSide===s}">${ED(edition)===1?'Side '+s:SIDE(edition,s)}</button>`).join('')}</div>
+    ${Object.values(W(edition)).map(W=>{ const st=W[wonderSide]; const vp=st.reduce((a,s)=>a+s.vp,0); return `<div class="card wonder">
       <div class="row"><h3 class="grow">${W.n}</h3><span class="tag">starts with ${W.res}</span><span class="tag">${vp} VP</span></div>
       <div class="small muted" style="margin-bottom:6px">${W.full}</div>
       ${st.map((s,i)=>`<div class="stage"><span class="n">${i+1}</span><span>${s.t}</span></div>`).join('')}
       <ul class="small" style="padding-left:18px;margin:10px 0 0">${W.tips.map(t=>`<li>${t}</li>`).join('')}</ul></div>`; }).join('')}`;
 }
 $('#v-wonders').addEventListener('click', e=>{ const s=e.target.closest('[data-side]'); if(s){ wonderSide=s.dataset.side; renderWonders(); } });
+function edChips(){ return `<div class="grow small muted">Edition</div><div class="chips">${[2,1].map(e=>`<button class="chip" data-edition="${e}" aria-pressed="${ED(edition)===e}">${ED_NAME(e)}</button>`).join('')}</div>`; }
+document.addEventListener('click', e=>{ const b=e.target.closest('[data-edition]'); if(b){ edition=+b.dataset.edition; save(); renderAll(); } });
 
 /* ============ GUIDE ============ */
 const GUIDE = [
@@ -653,7 +700,7 @@ const GUIDE = [
   <li>Age III battles swing <b>6 VP per neighbor</b> (+5 vs −1). Count shields before the last two turns of each age.</li>
   <li>Winning by 1 shield is the same as winning by 10. Don’t overspend.</li>
   <li>If a neighbor goes heavily military, sometimes it’s cheaper to <b>concede</b> (−1) and spend those turns on points.</li>
-  <li>The Strategists Guild punishes neighbors who take defeats.</li></ul>`},
+  <li>In the 2010 edition, the Strategists Guild scores off neighbors’ defeat tokens.</li></ul>`},
  {t:'Science, smartly', h:`<ul>
   <li>Science explodes late: the 3rd tablet is worth +5, the 4th +7, the 5th +9.</li>
   <li>It’s strongest when <b>neither neighbor</b> is also going science. Two scientists side by side starve each other.</li>
@@ -664,15 +711,7 @@ const GUIDE = [
   <li><span class="age-badge a1">I</span> Build economy: resources (especially doubles), a trading post if neighbors are resource-rich, and chain starters. Grab a cheap red card if neighbors don’t.</li>
   <li><span class="age-badge a2">II</span> Grey goods if you lack them, mid-size blue and green cards, more chains. Build wonder stages when hands are weak.</li>
   <li><span class="age-badge a3">III</span> Points only. Guilds, big blue cards, finish the wonder, win the military battle, and hate-draft what would win the game for someone else.</li></ul>`},
- {t:'Free-build chains (1st edition)', h:`<p class="small muted">Owning the left card lets you build the right one for free. Cards show the chain as a name or symbol (2nd edition uses symbols and some links differ).</p>
-  <table class="mini"><tr><th>Age I</th><th>→ Age II</th></tr>
-  <tr><td>Baths</td><td>Aqueduct</td></tr><tr><td>Altar</td><td>Temple</td></tr><tr><td>Theater</td><td>Statue</td></tr>
-  <tr><td>East / West Trading Post</td><td>Forum</td></tr><tr><td>Marketplace</td><td>Caravansery</td></tr>
-  <tr><td>Apothecary</td><td>Stables, Dispensary</td></tr><tr><td>Workshop</td><td>Archery Range, Laboratory</td></tr><tr><td>Scriptorium</td><td>Courthouse, Library</td></tr></table>
-  <table class="mini" style="margin-top:10px"><tr><th>Age II</th><th>→ Age III</th></tr>
-  <tr><td>Temple</td><td>Pantheon</td></tr><tr><td>Statue</td><td>Gardens</td></tr><tr><td>Forum</td><td>Haven</td></tr><tr><td>Caravansery</td><td>Lighthouse</td></tr>
-  <tr><td>Walls</td><td>Fortifications</td></tr><tr><td>Training Ground</td><td>Circus</td></tr><tr><td>Dispensary</td><td>Lodge, Arena</td></tr>
-  <tr><td>Laboratory</td><td>Observatory, Siege Workshop</td></tr><tr><td>Library</td><td>Senate, University</td></tr><tr><td>School</td><td>Academy, Study</td></tr></table>`},
+ {t:'Free-build chains', h:()=>chainsHtml(edition)},
  {t:'Common beginner mistakes', h:`<ul>
   <li>Taking resources in Age III. They’re almost never worth a turn that late.</li>
   <li>Forgetting that neighbors can buy your resources (it’s income for you!).</li>
@@ -680,8 +719,17 @@ const GUIDE = [
   <li>Passing a guild or science card that hands a neighbor 10+ VP.</li>
   <li>Hoarding coins: 9 coins sitting idle is just 3 VP.</li></ul>`},
 ];
+function chainsHtml(e){
+  const tbl=(head,rows)=>`<table class="mini" style="margin-top:10px"><tr><th>${head[0]}</th><th>${head[1]}</th></tr>${rows.map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join('')}</table>`;
+  const intro=`<p class="small muted" style="margin:0">Owning the left card lets you build the right one for free. Showing the <b>${ED_NAME(e)}</b> edition. Switch it at the top of this page.${ED(e)===2?' On 2020 cards the link is shown as a symbol in the corner.':''}</p>`;
+  if(ED(e)===1) return intro+tbl(['Age I','→ Age II'],[['Baths','Aqueduct'],['Altar','Temple'],['Theater','Statue'],['East / West Trading Post','Forum'],['Marketplace','Caravansery'],['Apothecary','Stables, Dispensary'],['Workshop','Archery Range, Laboratory'],['Scriptorium','Courthouse, Library']])
+    +tbl(['Age II','→ Age III'],[['Temple','Pantheon'],['Statue','Gardens'],['Forum','Haven'],['Caravansery','Lighthouse'],['Walls','Fortifications'],['Training Ground','Circus'],['Dispensary','Lodge, Arena'],['Laboratory','Observatory, Siege Workshop'],['Library','Senate, University'],['School','Academy, Study']]);
+  return intro+tbl(['Age I','→ Age II'],[['Well','Statue'],['Baths','Aqueduct'],['East / West Trading Post','Forum'],['Marketplace','Caravansery'],['Apothecary','Stables, Dispensary'],['Workshop','Archery Range, Laboratory'],['Scriptorium','Courthouse, Library']])
+    +tbl(['Age I','→ Age III (skips an age)'],[['Altar','Pantheon'],['Theater','Gardens']])
+    +tbl(['Age II','→ Age III'],[['Forum','Haven'],['Caravansery','Lighthouse'],['Walls','Fortifications'],['Training Ground','Circus'],['Dispensary','Lodge, Arena'],['Laboratory','Observatory, Siege Workshop'],['Library','Senate, University'],['School','Academy, Study']]);
+}
 function renderGuide(){
-  $('#v-guide').innerHTML=GUIDE.map(g=>`<details ${g.open?'open':''}><summary>${g.t}</summary><div class="body">${g.h}</div></details>`).join('')+
+  $('#v-guide').innerHTML=`<div class="row" style="margin-bottom:12px">${edChips()}</div>`+GUIDE.map(g=>`<details ${g.open?'open':''}><summary>${g.t}</summary><div class="body">${typeof g.h==='function'?g.h():g.h}</div></details>`).join('')+
   `<p class="small muted" style="text-align:center">An unofficial fan companion. 7 Wonders is a game by Antoine Bauza, published by Repos Production.</p>`;
 }
 
