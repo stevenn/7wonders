@@ -175,6 +175,18 @@ details .body li{margin-bottom:4px}
 .big-steps{padding-left:22px;margin:4px 0}
 .big-steps li{margin:8px 0;font-size:16px}
 .autosh{font-size:18px;font-weight:800;padding:0 8px}
+.diagram{width:100%;max-width:440px;display:block;margin:4px auto 8px;overflow:visible}
+.read-list{padding-left:22px;margin:4px 0}
+.read-list li{margin:6px 0}
+.read-list li::marker{color:var(--accent);font-weight:900}
+.lg-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-bottom:8px}
+.lg{display:flex;gap:8px;align-items:center;font-size:14px;line-height:1.25}
+.lg-i{flex:0 0 26px;display:flex}
+.mcard{display:inline-block;width:16px;height:22px;border-radius:3px;border:1px solid #2a2318;vertical-align:middle}
+.ar{color:var(--accent);font-size:16px;padding:0 2px}
+.arrows-key{display:flex;gap:14px;flex-wrap:wrap;margin:6px 0 10px;font-size:14px}
+.ex{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px dashed var(--line)}
+.ex-i{flex:0 0 118px;display:flex;align-items:center;gap:2px;justify-content:center;background:#4a3a6a;border-radius:8px;padding:4px}
 .sec-title{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:18px 2px 8px;font-weight:700}
 </style>
 </head>
@@ -426,6 +438,7 @@ document.addEventListener('click', e=>{
   const f=e.target.closest('[data-flow]'); if(!f) return;
   const a=f.dataset.flow;
   if(a==='new') setupSheet();
+  else if(a==='readcard'){ show('guide'); const d=[...document.querySelectorAll('#v-guide details')].find(x=>x.textContent.includes('Zo lees je een kaart')); if(d){ d.open=true; d.scrollIntoView({behavior:'smooth'}); } }
   else if(a==='fill'){ const first=CATS[0].k; editCat(0, first); }
   else if(a==='autofill'){ game.players.forEach(p=>{ if(p.joined) autoFill(p); }); save(); renderAll(); toast('Blauw, groen en geel ingevuld. Kijk de paarse gilden nog na.'); }
   else show(a);
@@ -992,7 +1005,7 @@ function renderPick(){
     ${turnsDone>=6?`<div class="card turn"><div class="turn-h">✅ Tijdperk ${AGE[ctx.ai]} klaar</div><p style="margin:0 0 10px">Je hebt 6 kaarten gespeeld. Tijd voor de veldslag.</p><div class="row"><button class="btn primary grow" data-flow="war">⚔️ Naar Oorlog</button><button class="btn small ghost" data-turn="-1">Toch nog een beurt</button></div></div>`
     :`<div class="card turn"><div class="row"><div class="turn-h grow">Beurt ${turn} van 6 · Tijdperk ${AGE[ctx.ai]}</div><button class="btn small ghost" data-turn="-1" ${turnsDone?'':'disabled'}>−</button><button class="btn small ghost" data-turn="1">+</button></div>
       <ol class="turn-steps">
-        <li class="${hand.length?'done':'now'}">Neem je ${cardsLeft} kaarten in je hand (niet tonen) en tik ze aan bij <b>Mijn hand</b>.</li>
+        <li class="${hand.length?'done':'now'}">Neem je ${cardsLeft} kaarten in je hand (niet tonen) en tik ze aan bij <b>Mijn hand</b>. <button class="btn small ghost" data-flow="readcard" style="padding:2px 8px">❓ Hoe lees ik een kaart?</button></li>
         <li class="${hand.length?'now':''}">Lees het advies. Leg die kaart <b>gedekt</b> voor je.</li>
         <li class="${hand.length?'now':''}">Wacht tot iedereen klaar is en <b>draai samen om</b>.</li>
         <li class="${hand.length?'now':''}">Doe wat je koos (betaal en bouw, onder je wonder, of verkoop) en tik hieronder op <b>Gebouwd</b>, <b>Onder wonder</b> of <b>Verkocht</b>.</li>
@@ -1125,15 +1138,162 @@ $('#v-wonders').addEventListener('click', e=>{ const s=e.target.closest('[data-s
 
 /* ============ GIDS ============ */
 const step = (n, title, html) => `<div class="gstep"><span class="gnum">${n}</span><div><b>${title}</b>${html}</div></div>`;
+/* ============ ZO LEES JE KAARTEN EN BORDEN (getekende uitleg) ============ */
+// Kleuren van de grondstoffen zoals op de kaarten.
+const RC={klei:'#c4512b',steen:'#9aa0a6',erts:'#3a3a3a',hout:'#7d7a35',glas:'#3d8fd6',stof:'#9b2c5c',papyrus:'#d9a066'};
+const RG={klei:'▰',steen:'◆',erts:'⬩',hout:'♣',glas:'◈',stof:'≋',papyrus:'▤'};
+const svgRes=(x,y,r,res)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${RC[res]}" stroke="#2a2318" stroke-width="1"/><text x="${x}" y="${y+r*0.38}" font-size="${r*1.05}" text-anchor="middle" fill="#fff">${RG[res]}</text>`;
+const svgVP=(x,y,r,n)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" stroke="#3f8f3f" stroke-width="${r/5}" stroke-dasharray="${r/3} ${r/6}"/><text x="${x}" y="${y+r*0.4}" font-size="${r*1.15}" font-weight="800" text-anchor="middle" fill="#2a2318">${n}</text>`;
+const svgCoin=(x,y,r,n)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#e8c040" stroke="#8a6d10" stroke-width="1.5"/><text x="${x}" y="${y+r*0.4}" font-size="${r*1.15}" font-weight="800" text-anchor="middle" fill="#2a2318">${n}</text>`;
+const svgShield=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#a3302a" stroke="#2a2318" stroke-width="1"/><text x="${x}" y="${y+r*0.4}" font-size="${r*1.1}" text-anchor="middle" fill="#fff">⚔</text>`;
+const svgChain=(x,y,r,g)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#fffaf0" stroke="#2a2318" stroke-width="1.2"/><text x="${x}" y="${y+r*0.4}" font-size="${r*1.1}" text-anchor="middle">${g}</text>`;
+const svgNum=(x,y,n)=>`<circle cx="${x}" cy="${y}" r="9" fill="var(--accent)"/><text x="${x}" y="${y+4}" font-size="11" font-weight="800" text-anchor="middle" fill="var(--accent-ink)">${n}</text>`;
+const svgLine=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--accent)" stroke-width="1.5"/>`;
+// Een kaart: kleurband met effect bovenaan, naam op een lint, kosten in een kolom links, ketensymbolen rechtsboven.
+function svgCard(x,y,w,h,o){
+  const band=h*0.3;
+  return `<g>
+    <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="#efe6d2" stroke="#2a2318" stroke-width="1.2"/>
+    <path d="M${x} ${y+8} a8 8 0 0 1 8 -8 h${w-16} a8 8 0 0 1 8 8 v${band-8} h-${w} z" fill="${o.col}"/>
+    <rect x="${x+8}" y="${y+band+4}" width="${w-16}" height="${h-band-12}" rx="4" fill="#d9ccb0" opacity=".55"/>
+    <rect x="${x+w*0.18}" y="${y-7}" width="${w*0.64}" height="15" rx="3" fill="#f6eedb" stroke="#2a2318" stroke-width="1"/>
+    <text x="${x+w/2}" y="${y+4}" font-size="9" font-weight="800" text-anchor="middle" fill="#2a2318">${o.name}</text>
+    ${o.effect(x+w/2, y+band/2+4)}
+    ${(o.cost||[]).map((r,i)=>svgRes(x+13, y+band+18+i*21, 8.5, r)).join('')}
+    ${o.costChain?svgChain(x+36, y+band+18, 9, o.costChain):''}
+    ${(o.chains||[]).map((g,i)=>svgChain(x+w-13, y+16+i*21, 8.5, g)).join('')}
+    <text x="${x+w-8}" y="${y+h-8}" font-size="9" font-weight="700" text-anchor="end" fill="#2a2318">${o.players}</text>
+  </g>`;
+}
+function diagramCard(){
+  const x=118,y=24,w=118,h=196;
+  return `<svg viewBox="0 0 350 236" class="diagram" role="img" aria-label="Voorkant van de kaart School met uitleg">
+    ${svgCard(x,y,w,h,{col:'#3f8a3f',name:'SCHOOL',effect:(cx,cy)=>`<circle cx="${cx}" cy="${cy}" r="15" fill="#fffaf0" stroke="#2a2318"/><text x="${cx}" y="${cy+5}" font-size="15" text-anchor="middle">📜</text>`,cost:['hout','papyrus'],chains:['🎵','🪶'],players:'3+ 7+'})}
+    ${svgLine(x+w/2,y-6,x+w/2,10)}${svgNum(x+w/2,10,1)}
+    ${svgLine(x+w/2-16,y+33,96,48)}${svgNum(88,48,2)}
+    ${svgLine(x+4,y+105,96,118)}${svgNum(88,118,3)}
+    ${svgLine(x+w-13,y+26,262,48)}${svgNum(270,48,4)}
+    ${svgLine(x+w-16,y+h-10,262,y+h-10)}${svgNum(270,y+h-10,5)}
+    <text x="80" y="52" font-size="11" text-anchor="end" fill="var(--text)">Effect</text>
+    <text x="80" y="122" font-size="11" text-anchor="end" fill="var(--text)">Bouwkosten</text>
+    <text x="282" y="44" font-size="11" fill="var(--text)">Keten-</text><text x="282" y="57" font-size="11" fill="var(--text)">symbolen</text>
+    <text x="282" y="${y+h-6}" font-size="11" fill="var(--text)">Spelers</text>
+    <text x="${x+w/2+14}" y="14" font-size="11" fill="var(--text)">Naam</text>
+  </svg>`;
+}
+function diagramChain(){
+  return `<svg viewBox="0 0 350 196" class="diagram" role="img" aria-label="Keten van Theater naar Tuinen">
+    ${svgCard(14,20,110,160,{col:'#2f6db5',name:'THEATER',effect:(cx,cy)=>svgVP(cx,cy,15,3),chains:['🎭'],players:'3+ 6+'})}
+    ${svgCard(226,20,110,160,{col:'#2f6db5',name:'TUINEN',effect:(cx,cy)=>svgVP(cx,cy,15,5),cost:['klei','klei','hout'],costChain:'🎭',players:'3+ 4+'})}
+    <path d="M112 36 C 170 30, 190 60, 249 85" fill="none" stroke="var(--win)" stroke-width="2.5" marker-end="url(#arr)"/>
+    <defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--win)"/></marker></defs>
+    <text x="175" y="118" font-size="11" text-anchor="middle" fill="var(--text)">zelfde symbool</text>
+    <text x="175" y="133" font-size="11" text-anchor="middle" font-weight="800" fill="var(--win)">= gratis bouwen</text>
+    <text x="69" y="194" font-size="10" text-anchor="middle" fill="var(--muted)">tijdperk I</text>
+    <text x="281" y="194" font-size="10" text-anchor="middle" fill="var(--muted)">tijdperk III</text>
+  </svg>`;
+}
+function diagramBack(){
+  const back=(x,label,arrow)=>`<rect x="${x}" y="10" width="78" height="112" rx="8" fill="#26211b" stroke="#2a2318"/><circle cx="${x+39}" cy="56" r="24" fill="none" stroke="#bfb39a" stroke-width="2"/>
+    <text x="${x+39}" y="64" font-size="22" font-weight="800" text-anchor="middle" fill="#efe6d2">${label}</text>
+    <text x="${x+39}" y="110" font-size="18" text-anchor="middle" fill="#efe6d2">${arrow}</text>`;
+  return `<svg viewBox="0 0 350 150" class="diagram" role="img" aria-label="Achterkant van de kaarten">
+    ${back(18,'I','↶')}${back(136,'II','↷')}${back(254,'III','↶')}
+    <text x="57" y="142" font-size="11" text-anchor="middle" fill="var(--text)">← naar links</text>
+    <text x="175" y="142" font-size="11" text-anchor="middle" fill="var(--text)">naar rechts →</text>
+    <text x="293" y="142" font-size="11" text-anchor="middle" fill="var(--text)">← naar links</text>
+  </svg>`;
+}
+function diagramWonder(){
+  const X=14,Y=26,W=322,H=150;
+  const stage=(i,cost,eff)=>{ const sx=X+10+i*104, sy=Y+H-52;
+    return `<rect x="${sx}" y="${sy}" width="96" height="44" rx="4" fill="#1f1b16" stroke="#bfa25a"/>
+      <rect x="${sx+4}" y="${sy+4}" width="20" height="36" rx="3" fill="none" stroke="#bfa25a"/>
+      ${cost.map((r,k)=>svgRes(sx+14, sy+14+k*16, 6.5, r)).join('')}
+      ${eff(sx+60, sy+22)}`; };
+  return `<svg viewBox="0 0 350 236" class="diagram" role="img" aria-label="Wonderbord van Alexandria met uitleg">
+    <rect x="${X}" y="${Y}" width="${W}" height="${H}" rx="6" fill="#4c5f78" stroke="#2a2318"/>
+    <path d="M${X} ${Y+6} q0 -6 6 -6 h90 v12 h-96 z" fill="#c9c9c9"/>
+    <path d="M${X+30} ${Y+12} h36 v26 l-18 10 l-18 -10 z" fill="#c9c9c9"/>
+    ${svgRes(X+48, Y+27, 10, 'glas')}
+    <rect x="${X+W-96}" y="${Y+8}" width="78" height="15" rx="3" fill="#f6eedb"/><text x="${X+W-57}" y="${Y+19}" font-size="9" font-weight="800" text-anchor="middle" fill="#2a2318">ALEXANDRIA</text>
+    <text x="${X+W-9}" y="${Y+20}" font-size="12" text-anchor="middle" fill="#fff">☀</text>
+    <text x="${X+W/2}" y="${Y+62}" font-size="20" text-anchor="middle" fill="#dfe6f0" opacity=".5">🗼</text>
+    ${stage(0,['steen','steen'],(cx,cy)=>svgVP(cx,cy,12,3))}
+    ${stage(1,['erts','erts'],(cx,cy)=>['hout','steen','klei','erts'].map((r,k)=>svgRes(cx-27+k*18,cy,6.5,r)+(k<3?`<text x="${cx-18+k*18}" y="${cy+4}" font-size="11" text-anchor="middle" fill="#efe6d2">/</text>`:'')).join(''))}
+    ${stage(2,['papyrus','stof'],(cx,cy)=>svgVP(cx,cy,12,7))}
+    <rect x="${X+12}" y="${Y+H-6}" width="92" height="20" rx="3" fill="#26211b" stroke="#2a2318"/><text x="${X+58}" y="${Y+H+8}" font-size="8" text-anchor="middle" fill="#efe6d2">kaart gedekt eronder</text>
+    ${svgLine(X+48,Y+38,X+48,Y+70)}${svgNum(X+48,Y+78,1)}
+    ${svgLine(X+W-30,Y+16,X+W-30,8)}${svgNum(X+W-44,8,2)}
+    ${svgLine(X+14,Y+H-30,4,Y+H-36)}${svgNum(8,Y+H-44,3)}
+    ${svgLine(X+170,Y+H-52,X+170,Y+H-70)}${svgNum(X+170,Y+H-78,4)}
+    ${svgLine(X+58,Y+H+14,X+58,Y+H+30)}${svgNum(X+58,Y+H+38,5)}
+  </svg>`;
+}
+const legendRow=(icon,name,txt)=>`<div class="lg"><span class="lg-i">${icon}</span><div><b>${name}</b><br><span class="small muted">${txt}</span></div></div>`;
+const mini=(inner,w=26)=>`<svg viewBox="0 0 ${w} 26" width="${w}" height="26">${inner}</svg>`;
+function symbolLegend(){
+  const res=[['klei','Klei'],['steen','Steen'],['erts','Erts'],['hout','Hout'],['glas','Glas'],['stof','Stof'],['papyrus','Papyrus']];
+  return `<div class="lg-grid">
+    ${res.slice(0,4).map(([r,n])=>legendRow(mini(svgRes(13,13,11,r)),n,'bruine grondstof')).join('')}
+    ${res.slice(4).map(([r,n])=>legendRow(mini(svgRes(13,13,11,r)),n,'grijze grondstof')).join('')}
+    ${legendRow(mini(svgCoin(13,13,11,1)),'Munt','geld: kosten, kopen, 3 munten = 1 punt')}
+    ${legendRow(mini(svgVP(13,13,11,3)),'Punten','krans met getal = punten op het einde')}
+    ${legendRow(mini(svgShield(13,13,11)),'Schild','telt voor de veldslag')}
+    ${legendRow(mini(`<circle cx="13" cy="13" r="11" fill="#3f8a3f"/><text x="13" y="18" font-size="12" text-anchor="middle">📜</text>`),'Tablet','wetenschap')}
+    ${legendRow(mini(`<circle cx="13" cy="13" r="11" fill="#3f8a3f"/><text x="13" y="18" font-size="12" text-anchor="middle">📐</text>`),'Passer','wetenschap')}
+    ${legendRow(mini(`<circle cx="13" cy="13" r="11" fill="#3f8a3f"/><text x="13" y="18" font-size="12" text-anchor="middle">⚙️</text>`),'Tandwiel','wetenschap')}
+    ${legendRow(mini(svgChain(13,13,11,'🎭')),'Ketensymbool','wit rondje met tekening: zie “Ketens”')}
+  </div>
+  <p class="small muted" style="margin-bottom:0">Twee grondstoffen met een <b>/</b> ertussen (bv. steen / klei): je kiest er <b>elke beurt één</b>. Twee naast elkaar zonder /: je krijgt ze <b>allebei</b>.</p>`;
+}
+const card=(col,inner)=>`<span class="mcard" style="background:${col}">${inner}</span>`;
+const arrowsHtml=()=>`
+  <p style="margin-top:0">Op gele en paarse kaarten staan kleine pijltjes. Die zeggen <b>wiens kaarten tellen</b>:</p>
+  <div class="arrows-key"><span><b class="ar">◀</b> je linkerbuur</span><span><b class="ar">▼</b> jijzelf</span><span><b class="ar">▶</b> je rechterbuur</span></div>
+  <div class="ex"><div class="ex-i"><b class="ar">◀</b>${card('#7a4a2a','')}${mini(svgVP(13,13,10,1))}<b class="ar">▶</b></div><div><b>Arbeidersgilde</b><br><span class="small">1 punt per bruine kaart van je <b>linker- én rechterbuur</b>.</span></div></div>
+  <div class="ex"><div class="ex-i">${card('#7a4a2a','')}${mini(svgCoin(13,13,10,1))}${mini(svgVP(13,13,10,1))}<b class="ar">▼</b></div><div><b>Haven</b><br><span class="small">Per bruine kaart <b>van jezelf</b>: 1 munt nu en 1 punt op het einde.</span></div></div>
+  <div class="ex"><div class="ex-i"><b class="ar">◀</b>${card('#7a4a2a','')}${mini(svgCoin(13,13,10,1))}<b class="ar">▼</b><b class="ar">▶</b></div><div><b>Wijngaard</b><br><span class="small">1 munt per bruine kaart bij <b>jou en je twee buren</b>.</span></div></div>
+  <div class="ex"><div class="ex-i"><b class="ar">◀</b>${mini(svgRes(13,13,9,'hout')+'',26)}${mini(svgCoin(13,13,10,1))}</div><div><b>Handelspost West</b><br><span class="small">Bruine grondstoffen kopen bij je <b>linkerbuur</b> kost 1 munt in plaats van 2. (Oost: rechterbuur ▶.)</span></div></div>
+  <p class="small muted" style="margin-bottom:0">Twijfel je over een kaart? Tik in <b>Kiezen</b> de kaart aan: de app schrijft het effect uit in woorden.</p>`;
+const READ_GUIDE=[
+ {t:'🔍 Zo lees je een kaart', h:()=>`${diagramCard()}
+  <ol class="read-list">
+   <li><b>Naam</b> van het gebouw. Je mag nooit twee kaarten met dezelfde naam bouwen.</li>
+   <li><b>Effect</b> (gekleurde band bovenaan): wat de kaart je geeft. Hier: een tablet voor wetenschap.</li>
+   <li><b>Bouwkosten</b> (kolom links): wat je moet betalen. Hier: 1 hout en 1 papyrus. <b>Leeg = gratis.</b> Een munt = betaal 1 munt aan de bank.</li>
+   <li><b>Ketensymbolen</b> (rechtsboven): deze kaart maakt later een andere kaart <b>gratis</b>. Zie het voorbeeld hieronder.</li>
+   <li><b>Spelers</b>: “3+ 7+” betekent dat deze kaart meedoet vanaf 3 spelers, en er bij 7 spelers een tweede exemplaar bij komt.</li>
+  </ol>
+  <div class="sec-title">Ketens: gratis bouwen</div>
+  ${diagramChain()}
+  <p class="small" style="margin-bottom:0">Heb je het <b>Theater</b> (met 🎭 rechtsboven), dan bouw je later de <b>Tuinen</b> gratis: daar staat hetzelfde 🎭-symbool <b>naast de kosten</b>. Je hoeft de klei en het hout dan niet te betalen.</p>
+  <div class="sec-title">De achterkant</div>
+  ${diagramBack()}
+  <p class="small" style="margin-bottom:0">Het <b>cijfer</b> is het tijdperk. Het <b>pijltje</b> onderaan zegt naar wie je de kaarten doorgeeft.</p>`},
+ {t:'🏛️ Zo lees je je wonderbord', h:()=>`${diagramWonder()}
+  <ol class="read-list">
+   <li><b>Basisgrondstof</b> (linksboven): die maak je <b>elke beurt gratis</b>. Hier: glas.</li>
+   <li><b>Naam</b> en <b>☀ Dag</b> of <b>☾ Nacht</b>: welke kant boven ligt. Eerste spel: Dag.</li>
+   <li><b>Bouwkosten van een fase</b> (smal kolommetje links in elk vak): wat je betaalt om die fase te bouwen.</li>
+   <li><b>Effect van een fase</b>: wat je krijgt. Hier fase 1 = 3 punten, fase 2 = elke beurt een bruine grondstof naar keuze, fase 3 = 7 punten.</li>
+   <li><b>Fase bouwen</b>: schuif een kaart uit je hand <b>gedekt</b> half onder het vak. Wat er op die kaart staat, telt niet meer. Altijd van <b>links naar rechts</b>.</li>
+  </ol>
+  <p class="small muted" style="margin-bottom:0">Elk wonder in detail (Dag en Nacht): tabblad <b>Wonders</b>.</p>`},
+ {t:'🔣 Symbolen', h:()=>symbolLegend()},
+ {t:'◀ ▼ ▶ De pijltjes op gele en paarse kaarten', h:()=>arrowsHtml()},
+];
+
 const GUIDE = [
  {t:'⚡ Zo speel je (in 1 minuut)', open:true, h:`<ol class="big-steps">
   <li><b>Iedereen krijgt 7 kaarten</b>, een wonderbord en 3 munten.</li>
   <li><b>Kies 1 kaart</b> en leg ze gedekt voor je. Draai samen om.</li>
-  <li><b>Doe er 1 ding mee</b>: bouwen (betaal wat linksboven staat), onder je wonder schuiven, of verkopen voor 3 munten.</li>
+  <li><b>Doe er 1 ding mee</b>: bouwen (betaal wat links op de kaart staat), onder je wonder schuiven, of verkopen voor 3 munten. Hoe je een kaart leest: zie <b>🔍</b> hieronder.</li>
   <li><b>Geef de rest door</b> aan je buur. Herhaal tot iedereen 6 kaarten gespeeld heeft.</li>
   <li><b>Veldslag</b>: heb je meer schilden (rood) dan je buur, dan win je punten.</li>
   <li>Dit <b>3 keer</b> (tijdperk I, II en III). Wie dan de meeste punten heeft, wint.</li></ol>
   <p style="margin-bottom:0">📱 <b>De app helpt:</b> <b>Kiezen</b> zegt elke beurt wat je moet doen en welke kaart je best legt. <b>Oorlog</b> doet de veldslag. <b>Score</b> telt alles.</p>`},
+ ...READ_GUIDE,
  {t:'📱 Zo gebruik je de app', h:
   step(1,'Eén telefoon start','<p>Ga naar <b>Score → Nieuw spel</b>. Geef de spelers in <b>met de klok mee</b> en kies ieders wonder. Tik dan op <b>Samen spelen</b>.</p>')
  +step(2,'De anderen doen mee','<p>Ze scannen de QR-code (of tikken de code in) en kiezen hun naam. Iedereen heeft nu het spel op zijn eigen telefoon.</p><p class="small muted">Liever één telefoon voor iedereen? Dat kan ook: sla deze stap over.</p>')
