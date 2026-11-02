@@ -139,6 +139,13 @@ details .body li{margin-bottom:4px}
 .hist-item:last-child{border-bottom:0}
 .toast{position:fixed;left:50%;bottom:calc(84px + var(--safe-b));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:30;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.on{opacity:1}
+.flow{background:var(--card);border:1px solid var(--accent);border-radius:var(--radius);padding:12px 14px;margin-bottom:12px}
+.flow-steps{display:flex;gap:4px;margin-bottom:10px}
+.flow-steps span{flex:1;text-align:center;font-size:11px;font-weight:700;padding:5px 2px;border-radius:6px;background:var(--bg2);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.flow-steps span.done{background:color-mix(in srgb,var(--win) 25%,transparent);color:var(--win)}
+.flow-steps span.now{background:var(--accent);color:var(--accent-ink)}
+.flow-title{font-weight:800;font-size:16px;margin-bottom:2px}
+.flow-text{font-size:14px;margin:0 0 10px}
 .sec-title{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:18px 2px 8px;font-weight:700}
 </style>
 </head>
@@ -357,21 +364,57 @@ document.addEventListener('input', e=>{
 document.addEventListener('focusin', e=>{ if(e.target.matches('.step input')) e.target.select(); });
 const OBJS = { sci:()=>sciCalc, war:()=>game };
 
+/* ============ SPELVERLOOP ============ */
+// Fase: 0 = klaarzetten, 1..3 = tijdperk I..III bezig, 4 = eindtelling
+function phase(){
+  if(!game) return 0;
+  let done=0; while(done<3 && game.war[done]) done++;
+  return done+1;
+}
+const FLOW_STEPS=['Start','Tijdperk I','Tijdperk II','Tijdperk III','Eindscore'];
+function flowBar(where){
+  const ph=phase();
+  let title, text, btns;
+  if(ph===0){
+    title='Stap 1 · Klaarzetten';
+    text='Lees in de <b>Gids</b> hoe je klaarzet. Start daarna een spel en geef de spelers in volgens de zitvolgorde (met de klok mee).';
+    btns=`<button class="btn" data-flow="guide">📖 Gids</button><button class="btn primary grow" data-flow="new">Nieuw spel</button>`;
+  } else if(ph<4){
+    const a=AGE[ph-1], dir=ph===2?'naar rechts →':'← naar links';
+    title=`Tijdperk ${a} · speel 6 beurten`;
+    text=`Kies een kaart, speel ze, geef de rest door <b>${dir}</b>. Na de 6e beurt: tel de schilden in <b>Oorlog</b>.<br><span class="muted small">Twijfel je over een groene kaart? Kijk in <b>Wetenschap</b>.</span>`;
+    btns = where==='war' ? '' : `<button class="btn" data-flow="sci">🔬 Wetenschap</button><button class="btn primary grow" data-flow="war">⚔️ Veldslag tijdperk ${a}</button>`;
+  } else {
+    title='Eindscore · tel de punten';
+    text='Alle veldslagen zijn genoteerd. Tik in <b>Score</b> op elk vakje en vul in wat iedereen heeft. Tik daarna op <b>Afronden & bewaren</b>.';
+    btns = where==='score' ? `<button class="btn primary grow" data-flow="fill">Score invullen</button>` : `<button class="btn primary grow" data-flow="score">🏆 Naar Score</button>`;
+  }
+  return `<div class="flow"><div class="flow-steps">${FLOW_STEPS.map((n,i)=>`<span class="${i<ph?'done':i===ph?'now':''}">${i<ph?'✓ ':''}${n}</span>`).join('')}</div>
+    <div class="flow-title">${title}</div><p class="flow-text">${text}</p>${btns?`<div class="row">${btns}</div>`:''}</div>`;
+}
+document.addEventListener('click', e=>{
+  const f=e.target.closest('[data-flow]'); if(!f) return;
+  const a=f.dataset.flow;
+  if(a==='new') setupSheet();
+  else if(a==='fill'){ const first=CATS[0].k; editCat(0, first); }
+  else show(a);
+});
+
 /* ============ SCORE ============ */
 function renderScore(){
   const v=$('#v-score');
   if(!game){
-    v.innerHTML=`<div class="card empty">
+    v.innerHTML=`${flowBar('score')}<div class="card empty">
       <svg class="seal" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="var(--accent)" stroke-width="3"/><path d="M50 18 22 78h56z" fill="none" stroke="var(--accent)" stroke-width="3"/><path d="M36 78l14-30 14 30" fill="none" stroke="var(--accent)" stroke-width="3"/></svg>
       <h2 style="font-family:Georgia,serif">Klaar om een wereldwonder te bouwen?</h2>
-      <p class="muted">Start een spel voor het scoreblok en de veldslagteller. Eerste keer? Lees eerst de <b>Gids</b>.</p>
-      <button class="btn primary" data-act="new">Nieuw spel</button></div>
+      <p class="muted" style="margin-bottom:0">Het scoreblok en de veldslagteller verschijnen zodra je een spel start.</p></div>
       ${renderHistory()}`;
     return;
   }
   const rk=ranking(game), byI=Object.fromEntries(rk.map(r=>[r.i,r]));
   v.innerHTML=`
-    <div class="podium">${rk.map(r=>`<div class="p ${r.rank===1&&r.tot>0?'lead':''}"><div class="rank">${r.rank===1&&r.tot>0?'👑 ':''}${r.rank}e</div><div class="tot">${r.tot}</div><div class="nm">${esc(r.name)}</div></div>`).join('')}</div>
+    ${flowBar('score')}
+    ${phase()<4?'':`<div class="podium">${rk.map(r=>`<div class="p ${r.rank===1&&r.tot>0?'lead':''}"><div class="rank">${r.rank===1&&r.tot>0?'👑 ':''}${r.rank}e</div><div class="tot">${r.tot}</div><div class="nm">${esc(r.name)}</div></div>`).join('')}</div>`}
     <div class="pad-wrap"><table class="pad">
       <thead><tr><th class="cat"></th>${game.players.map(p=>`<th><button class="icon-btn" style="color:inherit;padding:0;font-weight:600" data-act="players">${esc(p.name)}</button><span class="w">${WONDERS[p.wonder]?WONDERS[p.wonder].n+' '+SIDE(p.side):'&nbsp;'}</span></th>`).join('')}</tr></thead>
       <tbody>
@@ -553,6 +596,7 @@ function renderWar(){
   const sh=game.cur[age];
   const dir=['← Kaarten doorgeven naar links','Kaarten doorgeven naar rechts →','← Kaarten doorgeven naar links'][age];
   v.innerHTML=`
+    ${flowBar('war')}
     <div class="chips" style="margin-bottom:12px">${[0,1,2].map(a=>`<button class="chip" data-age="${a}" aria-pressed="${a===age}">Tijdperk ${AGE[a]}${game.war[a]?' ✓':''}</button>`).join('')}</div>
     <div class="card small"><div class="row"><span class="age-badge a${age+1}">TIJDPERK ${AGE[age]}</span><span class="grow">Winnen <b>+${MIL_VP[age]}</b> · Verliezen <b>−1</b> · Gelijk 0, tegen elke buur</span></div><div class="muted" style="margin-top:6px">${dir}</div></div>
     <div class="card" data-obj="war">
@@ -589,7 +633,7 @@ function warExplainer(){
 $('#v-war').addEventListener('click', e=>{
   const ag=e.target.closest('[data-age]');
   if(ag){ warAge=+ag.dataset.age; save(); renderWar(); return; }
-  if(e.target.closest('[data-record]')){ game.war[warAge]=game.cur[warAge].slice(); save(); toast(`Tijdperk ${AGE[warAge]} genoteerd`); if(warAge<2) warAge++; renderAll(); return; }
+  if(e.target.closest('[data-record]')){ game.war[warAge]=game.cur[warAge].slice(); save(); toast(warAge===2&&phase()===4?'Laatste veldslag genoteerd. Tijd voor de eindscore!':`Tijdperk ${AGE[warAge]} genoteerd`); if(warAge<2) warAge++; renderAll(); return; }
   if(e.target.closest('[data-unrecord]')){ game.war[warAge]=null; save(); renderAll(); return; }
   if(e.target.closest('[data-act="new"]')) setupSheet();
 });
@@ -612,6 +656,12 @@ const GUIDE = [
  {t:'🎯 Het doel', open:true, h:`
   <p>Je bouwt een stad met kaarten, in <b>3 rondes</b> (tijdperk I, II en III). Na tijdperk III wint wie de <b>meeste punten</b> heeft.</p>
   <p class="muted small" style="margin-bottom:0">3 tot 7 spelers · ongeveer 30 minuten.</p>`},
+ {t:'📱 Zo gebruik je de app', open:true, h:
+  step(1,'Voor het spel','<ul><li><b>Gids</b>: lees “Klaarzetten” en “Een beurt”. Voor je eerste spel heb je niets anders nodig.</li><li><b>Score</b>: tik op <b>Nieuw spel</b>. Geef de spelers in <b>zitvolgorde, met de klok mee</b>, want zo weet de app wie naast wie zit. Kies per speler het wonder en Dag of Nacht.</li></ul>')
+ +step(2,'Tijdens elk tijdperk (6 beurten)','<ul><li><b>Wetenschap</b>: twijfel je tussen groene kaarten? Vul je symbolen in en zie hoeveel punten elk nieuw symbool oplevert.</li><li><b>Wonders</b>: bekijk wat de volgende fase van jouw wonder (of dat van je buur) doet.</li><li><b>Gids</b>: zoek een regel op, bv. “Kopen bij je buren” of “Ketens”.</li></ul>')
+ +step(3,'Einde van elk tijdperk','<ul><li><b>Oorlog</b>: tel ieders schilden, vul ze in en tik op <b>Veldslag noteren</b>. Je ziet meteen wie +1/+3/+5 of −1 krijgt tegen elke buur. Doe dit na tijdperk I, II én III.</li></ul>')
+ +step(4,'Einde van het spel','<ul><li><b>Score</b>: tik op elk vakje en vul in wat je hebt. De app rekent alles uit. Militair staat er al in via Oorlog.</li><li>Tik op <b>Afronden & bewaren</b> om de winnaar te zien en het spel te bewaren.</li></ul>')
+ +`<p class="small" style="margin-bottom:0">Kort: <b>Gids</b> om te leren, <b>Oorlog</b> 3 keer per spel, <b>Score</b> bij de start en op het einde. Bovenaan Score en Oorlog zie je altijd <b>waar je bent</b> en <b>wat je nu moet doen</b>.</p>`},
  {t:'📦 Klaarzetten', h:
   step(1,'Kaarten sorteren','<p>Maak 3 stapels: I, II en III (zie achterkant). Onderaan op elke kaart staat <b>3+</b>, <b>4+</b>, … Hou alleen de kaarten met een getal <b>tot en met</b> jullie aantal spelers. De rest gaat terug in de doos.</p><p class="small muted">Met 4 spelers: hou 3+ en 4+.</p>')
  +step(2,'Paarse kaarten','<p>Trek willekeurig <b>aantal spelers + 2</b> paarse kaarten en stop ze in stapel III. De rest gaat in de doos.</p><p class="small muted">Met 4 spelers: 6 paarse kaarten.</p>')
@@ -684,6 +734,7 @@ const TABS={score:renderScore, sci:renderSci, war:renderWar, wonders:renderWonde
 const SUB={score:'Scoreblok', sci:'Wetenschapshulp', war:'Veldslagteller', wonders:'Wonderborden', guide:'Spelregels'};
 let tab=LS.get('tab', LS.get('game',null)?'score':'guide'); if(!TABS[tab]) tab='score';
 function show(t){
+  if(t==='war' && game){ const f=game.war.findIndex(x=>!x); if(f>=0){ warAge=f; LS.set('warAge',warAge); } }
   tab=t; LS.set('tab',t);
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on', v.id==='v-'+t));
   document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-current', b.dataset.tab===t?'page':'false'));
