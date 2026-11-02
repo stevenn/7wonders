@@ -1,11 +1,19 @@
 {
   "$schema": "https://unpkg.com/wrangler@4/config-schema.json",
   "name": "wonders-companion",
+  "main": "worker.js",
   "compatibility_date": "2026-11-02",
   "observability": {
     "enabled": true
   },
   "assets": {
-    "directory": "."
-  }
+    "directory": ".",
+    "binding": "ASSETS"
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "ROOM", "class_name": "Room" }]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["Room"] }
+  ]
 }

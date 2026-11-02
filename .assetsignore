@@ -16,3 +16,6 @@ node_modules
 README.md
 wrangler.jsonc
 .gitignore
+
+# server code
+worker.js
