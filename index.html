@@ -187,6 +187,11 @@ details .body li{margin-bottom:4px}
 .arrows-key{display:flex;gap:14px;flex-wrap:wrap;margin:6px 0 10px;font-size:14px}
 .ex{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px dashed var(--line)}
 .ex-i{flex:0 0 118px;display:flex;align-items:center;gap:2px;justify-content:center;background:#4a3a6a;border-radius:8px;padding:4px}
+.goal td:nth-child(3){white-space:nowrap;font-weight:700;text-align:right}
+.goal td:nth-child(2){text-align:left;font-size:13px}
+.loop{display:flex;flex-wrap:wrap;align-items:center;gap:6px;justify-content:center;margin:12px 0 2px;font-size:14px}
+.loop span{background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:5px 9px;font-weight:600}
+.loop b{color:var(--accent)}
 .sec-title{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:18px 2px 8px;font-weight:700}
 </style>
 </head>
@@ -1285,14 +1290,39 @@ const READ_GUIDE=[
 ];
 
 const GUIDE = [
- {t:'⚡ Zo speel je (in 1 minuut)', open:true, h:`<ol class="big-steps">
-  <li><b>Iedereen krijgt 7 kaarten</b>, een wonderbord en 3 munten.</li>
-  <li><b>Kies 1 kaart</b> en leg ze gedekt voor je. Draai samen om.</li>
-  <li><b>Doe er 1 ding mee</b>: bouwen (betaal wat links op de kaart staat), onder je wonder schuiven, of verkopen voor 3 munten. Hoe je een kaart leest: zie <b>🔍</b> hieronder.</li>
-  <li><b>Geef de rest door</b> aan je buur. Herhaal tot iedereen 6 kaarten gespeeld heeft.</li>
-  <li><b>Veldslag</b>: heb je meer schilden (rood) dan je buur, dan win je punten.</li>
-  <li>Dit <b>3 keer</b> (tijdperk I, II en III). Wie dan de meeste punten heeft, wint.</li></ol>
-  <p style="margin-bottom:0">📱 <b>De app helpt:</b> <b>Kiezen</b> zegt elke beurt wat je moet doen en welke kaart je best legt. <b>Oorlog</b> doet de veldslag. <b>Score</b> telt alles.</p>`},
+ {t:'🎯 Het doel: de meeste punten', open:true, h:`
+  <p style="margin-top:0">Iedereen bouwt een oude stad uit met kaarten. Na <b>3 tijdperken</b> (rondes) tel je de <b>overwinningspunten</b>. Wie de meeste heeft, wint.</p>
+  <p><b>Je hebt 18 beurten</b> (6 per tijdperk). Elke beurt leg je precies 1 kaart. De vraag is dus elke keer: <b>welke kaart brengt me het meest op?</b></p>
+  <div class="sec-title">Waar komen de punten vandaan?</div>
+  <table class="mini goal"><tr><th>Bron</th><th>Hoe</th><th>Vaak</th></tr>
+   <tr><td><b style="color:var(--wonder)">Wonder</b></td><td>fases van je wonderbord bouwen</td><td>10–20</td></tr>
+   <tr><td><b style="color:var(--civ)">Blauw</b></td><td>elke blauwe kaart = punten (3 tot 8)</td><td>10–25</td></tr>
+   <tr><td><b style="color:var(--sci)">Groen</b></td><td>wetenschap: groeit hoe meer je verzamelt</td><td>0–40</td></tr>
+   <tr><td><b style="color:var(--mil)">Militair</b></td><td>veldslagen winnen tegen je 2 buren</td><td>−6 tot +18</td></tr>
+   <tr><td><b style="color:var(--guild)">Paars</b></td><td>gilden: punten voor wat jij of je buren hebben</td><td>0–15</td></tr>
+   <tr><td><b style="color:var(--com)">Geel</b></td><td>gele kaarten uit tijdperk III</td><td>0–10</td></tr>
+   <tr><td><b style="color:var(--coin)">Munten</b></td><td>1 punt per 3 munten op het einde</td><td>2–5</td></tr></table>
+  <p class="small muted">Voorbeeld uit jullie spelregels: Alex wint met <b>55 punten</b> (wonder 10, munten 3, militair 6, blauw 9, geel 2, groen 21, paars 4). Een goede score ligt tussen 50 en 70.</p>
+  <div class="sec-title">Het probleem: kaarten kosten iets</div>
+  <p style="margin-bottom:0">De meeste kaarten die punten geven, kosten <b>grondstoffen</b> (hout, steen, glas, …). Die krijg je van <b>bruine en grijze kaarten</b>, of je <b>koopt</b> ze bij je buren voor 2 munten. Je moet dus eerst een stad bouwen die grondstoffen maakt, en pas daarna punten verzamelen.</p>
+  <div class="loop"><span>🟫 grondstoffen</span><b>→</b><span>🏗️ betere kaarten bouwen</span><b>→</b><span>🏆 punten</span></div>`},
+ {t:'🗺️ De weg ernaartoe: 3 tijdperken', open:true, h:
+  step('I','Tijdperk I · fundament leggen','<p>Bijna geen punten, wel je basis. Neem vooral:</p><ul><li><b>Bruine en grijze kaarten</b> (grondstoffen), het liefst soorten die je nog niet hebt. Kaarten met <b>2 grondstoffen</b> zijn extra goed.</li><li><b>Kaarten met een ketensymbool</b> rechtsboven: die maken later een dure kaart gratis.</li><li>Eén goedkope <b>rode kaart</b> als je buren dat ook doen, om de eerste veldslag niet te verliezen.</li></ul>')
+ +step('II','Tijdperk II · uitbouwen','<p>Nu wordt het interessanter. Neem:</p><ul><li>Grondstoffen die je <b>nog mist</b> (vaak grijs: glas, stof, papyrus).</li><li><b>Blauwe en groene kaarten</b> van gemiddelde waarde, liefst <b>gratis via een keten</b>.</li><li><b>Wonderfases</b> als je hand niets nuttigs heeft.</li><li>Rode kaarten als je buren sterker worden: een veldslag is nu <b>+3</b> waard.</li></ul>')
+ +step('III','Tijdperk III · punten scoren','<p>Alles draait nu om punten. Grondstoffen zijn bijna niets meer waard. Neem:</p><ul><li><b>Grote blauwe kaarten</b> (5 tot 8 punten) en <b>paarse gilden</b>.</li><li><b>Groen</b> als je al wetenschap hebt: elk symbool levert dan veel op.</li><li>Je <b>wonder afwerken</b>.</li><li>De laatste <b>veldslag</b> winnen: <b>+5</b> per buur.</li><li>Kaarten <b>wegnemen</b> die je buur veel punten zouden geven: schuif ze onder je wonder.</li></ul>')
+ +`<div class="sec-title">Kies 1 of 2 sporen</div>
+  <p style="margin-top:0">Je kunt niet alles. Spelers die winnen, kiezen rond tijdperk II een richting en gaan ervoor:</p>
+  <ul><li><b>🏛️ Bouwer</b>: blauwe kaarten + je wonder. Veilig, goed voor een eerste spel (bv. met Gizah).</li>
+  <li><b>🔬 Wetenschapper</b>: veel groene kaarten. Begint traag, eindigt vaak met 30+ punten. Werkt het best als je buren geen groen verzamelen.</li>
+  <li><b>⚔️ Generaal</b>: rood. Win je veldslagen tegen beide buren: tot 18 punten. Werkt als je buren zwak zijn in rood.</li>
+  <li><b>💰 Handelaar</b>: geel en munten. Koop wat je mist en bouw de dure kaarten.</li></ul>
+  <p style="margin-bottom:0">📱 <b>Kiezen</b> in de app weegt dit elke beurt voor je af: tik je kaarten aan en je ziet welke kaart je het meest oplevert, en waarom.</p>`},
+ {t:'⚡ Een beurt in het kort', h:`<ol class="big-steps">
+  <li><b>Kies 1 kaart</b> uit je hand en leg ze gedekt voor je. Iedereen tegelijk.</li>
+  <li><b>Draai samen om</b> en doe er 1 ding mee: <b>bouwen</b> (betaal de kosten links op de kaart), <b>onder je wonder schuiven</b> (bouwt de volgende fase), of <b>verkopen</b> voor 3 munten.</li>
+  <li><b>Geef de rest door</b> aan je buur (de pijl op de achterkant toont de richting).</li>
+  <li>Na <b>6 beurten</b>: <b>veldslag</b> tegen je twee buren. Daarna het volgende tijdperk.</li></ol>
+  <p class="small muted" style="margin-bottom:0">Hoe je een kaart leest: zie <b>🔍</b> hieronder. Alle details staan verderop in <b>🔄 Een beurt</b>.</p>`},
  ...READ_GUIDE,
  {t:'📱 Zo gebruik je de app', h:
   step(1,'Eén telefoon start','<p>Ga naar <b>Score → Nieuw spel</b>. Geef de spelers in <b>met de klok mee</b> en kies ieders wonder. Tik dan op <b>Samen spelen</b>.</p>')
