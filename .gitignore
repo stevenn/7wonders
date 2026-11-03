@@ -4,3 +4,12 @@
 !.dev.vars.example
 .env*
 !.env.example
+
+# secrets and local files: never commit
+.env
+.env.*
+.dev.vars
+*.pem
+*.key
+node_modules/
+.DS_Store

@@ -19,3 +19,6 @@ wrangler.jsonc
 
 # server code
 worker.js
+
+# repo-only files
+LICENSE
