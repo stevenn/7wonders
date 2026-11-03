@@ -1,5 +1,5 @@
 // Offline-first service worker. Bump VERSION when you change any file.
-const VERSION = 'v13';
+const VERSION = 'v15';
 const CACHE = 'wonders-' + VERSION;
 const ASSETS = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 self.addEventListener('install', e => {

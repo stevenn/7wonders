@@ -1289,6 +1289,100 @@ const READ_GUIDE=[
  {t:'◀ ▼ ▶ De pijltjes op gele en paarse kaarten', h:()=>arrowsHtml()},
 ];
 
+/* ============ HET VERLOOP IN BEELD ============ */
+const vzBox=(x,y,w,h,fill,stroke,rx=8)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>`;
+const vzT=(x,y,txt,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||12}" font-weight="${o.b?800:400}" text-anchor="${o.a||'start'}" fill="${o.c||'var(--text)'}">${txt}</text>`;
+const vzArrowDefs=id=>`<defs><marker id="${id}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs>`;
+const AGE_FOCUS=[
+  {t:'fundament',d:'← doorgeven',cols:['#7a4a2a','#8d8d8d','#8d8d8d'],tip:'grondstoffen + ketens',v:1},
+  {t:'uitbouwen',d:'doorgeven →',cols:['#8d8d8d','#2f6db5','#3f8a3f'],tip:'ontbrekende grondstoffen, blauw, groen',v:3},
+  {t:'punten scoren',d:'← doorgeven',cols:['#2f6db5','#7a4aa0','#3f8a3f'],tip:'grote blauwe, gilden, wonder afwerken',v:5},
+];
+function vizTimeline(){
+  const H=118, top=58;
+  let y=top, out='';
+  AGE_FOCUS.forEach((a,k)=>{
+    const cardsY=y+30;
+    out+=`<line x1="28" y1="${y-14}" x2="28" y2="${y+H+18}" stroke="var(--line)" stroke-width="4"/>
+      <circle cx="28" cy="${y+12}" r="13" fill="var(--accent)"/>${vzT(28,y+17,AGE[k],{s:12,b:1,a:'middle',c:'var(--accent-ink)'})}
+      ${vzBox(50,y-6,288,H-14,'var(--card)','var(--line)')}
+      ${vzT(60,y+12,`Tijdperk ${AGE[k]} · ${a.t}`,{s:13,b:1})}
+      ${vzT(328,y+12,a.d,{s:11,a:'end',c:'var(--muted)'})}
+      ${[0,1,2,3,4,5].map(i=>`<rect x="${60+i*31}" y="${cardsY}" width="24" height="32" rx="3" fill="${a.cols[i%3]}" stroke="#2a2318" ${i===5?'stroke-dasharray="3 2"':''}/>${vzT(72+i*31,cardsY+21,i+1,{s:11,b:1,a:'middle',c:'#fff'})}`).join('')}
+      ${vzT(254,cardsY+13,'6 beurten',{s:11,c:'var(--muted)'})}${vzT(254,cardsY+27,'= 6 kaarten',{s:11,c:'var(--muted)'})}
+      ${vzT(60,cardsY+50,'<tspan font-weight="800">Neem:</tspan> '+a.tip,{s:11})}
+      <circle cx="28" cy="${y+H+4}" r="11" fill="var(--mil)"/>${vzT(28,y+H+8,'⚔',{s:11,a:'middle',c:'#fff'})}
+      ${vzT(48,y+H+8,`Veldslag: winst <tspan font-weight="800">+${a.v}</tspan>, verlies −1 (tegen elke buur)`,{s:12})}`;
+    y+=H+40;
+  });
+  return `<svg viewBox="0 0 350 ${y+44}" class="diagram" role="img" aria-label="Verloop van het spel">
+    <circle cx="28" cy="18" r="13" fill="var(--win)"/>${vzT(28,23,'▶',{s:12,a:'middle',c:'#fff'})}
+    ${vzT(50,15,'Start',{s:13,b:1})}${vzT(50,31,'iedereen: wonderbord, 3 munten, 7 kaarten',{s:11,c:'var(--muted)'})}
+    ${out}
+    <circle cx="28" cy="${y}" r="13" fill="var(--coin)"/>${vzT(28,y+5,'🏆',{s:12,a:'middle'})}
+    ${vzT(50,y-3,'Eindscore',{s:13,b:1})}${vzT(50,y+13,'tel de punten uit 7 bronnen · meeste punten wint',{s:11,c:'var(--muted)'})}
+  </svg>`;
+}
+function vizTurn(){
+  const node=(x,y,n,title,sub)=>`<circle cx="${x}" cy="${y}" r="34" fill="var(--card)" stroke="var(--accent)" stroke-width="2.5"/>
+    ${vzT(x,y-8,n,{s:13,b:1,a:'middle',c:'var(--accent)'})}${vzT(x,y+8,title,{s:13,b:1,a:'middle'})}${sub?vzT(x,y+22,sub,{s:10,a:'middle',c:'var(--muted)'}):''}`;
+  const opt=(y,icon,t,sub)=>`${vzBox(250,y,94,38,'var(--bg2)','var(--line)',6)}${vzT(258,y+16,icon+' '+t,{s:11,b:1})}${vzT(258,y+30,sub,{s:10,c:'var(--muted)'})}`;
+  return `<svg viewBox="0 0 350 262" class="diagram" role="img" aria-label="Een beurt: kiezen, spelen, doorgeven">${vzArrowDefs('ta')}
+    ${node(118,48,'1','Kies','gedekt')}
+    ${node(190,170,'2','Speel','samen')}
+    ${node(46,170,'3','Geef door','')}
+    <path d="M150 62 Q 196 92 196 132" fill="none" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#ta)"/>
+    <path d="M152 186 Q 118 210 84 186" fill="none" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#ta)"/>
+    <path d="M40 134 Q 44 76 82 56" fill="none" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#ta)"/>
+    ${vzT(118,140,'6×',{s:22,b:1,a:'middle',c:'var(--muted)'})}${vzT(118,156,'per tijdperk',{s:10,a:'middle',c:'var(--muted)'})}
+    <path d="M224 160 L250 98 M224 170 L250 150 M224 180 L250 204" stroke="var(--line)" stroke-width="1.5" fill="none"/>
+    ${vzT(297,84,'kies 1 van 3:',{s:10,a:'middle',c:'var(--muted)'})}
+    ${opt(90,'🏗️','Bouwen','betaal de kosten')}
+    ${opt(142,'🏛️','Wonderfase','kaart onder bord')}
+    ${opt(194,'💰','Verkopen','+3 munten')}
+    ${vzT(46,224,'naar je buur',{s:10,a:'middle',c:'var(--muted)'})}${vzT(46,238,'(zie de tafel)',{s:10,a:'middle',c:'var(--muted)'})}
+  </svg>`;
+}
+let tblAge=0;
+function vizTable(){
+  // Spelers met de klok mee; jij onderaan. Visueel met de klok mee = van onder naar links naar boven.
+  let names, meI=0;
+  if(game&&game.players.length){ names=game.players.map(p=>p.name); meI=meIdx()??0; }
+  else names=['Jij','Speler 2','Speler 3','Speler 4'];
+  const N=names.length, cx=175, cy=150, R=92, rot=i=>(i-meI+N)%N;
+  const pos=i=>{ const a=(90+rot(i)*360/N)*Math.PI/180; return [cx+R*Math.cos(a), cy+R*Math.sin(a)]; };
+  const left=(meI+1)%N, right=(meI-1+N)%N, ccw=(tblAge===1);
+  // Pijlen tussen buren: met de klok mee (tijdperk I en III) of tegen de klok in (tijdperk II).
+  const step=360/N, ra=66, P=a=>[cx+ra*Math.cos(a*Math.PI/180), cy+ra*Math.sin(a*Math.PI/180)].map(n=>n.toFixed(1)).join(' ');
+  let arcs='';
+  for(let k=0;k<N;k++){
+    const a=90+k*step, b=a+step;
+    arcs += ccw ? `<path d="M${P(b-14)} A${ra} ${ra} 0 0 0 ${P(a+14)}" fill="none" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#tb)"/>`
+                : `<path d="M${P(a+14)} A${ra} ${ra} 0 0 1 ${P(b-14)}" fill="none" stroke="var(--accent)" stroke-width="2.5" marker-end="url(#tb)"/>`;
+  }
+  const seat=i=>{ const [x,y]=pos(i), me=i===meI, nb=i===left||i===right;
+    const fill=me?'var(--accent)':nb?'color-mix(in srgb,var(--win) 30%,var(--card))':'var(--card)';
+    const lbl=me?'jij':i===left?'linkerbuur':i===right?'rechterbuur':'';
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="27" fill="${fill}" stroke="${nb?'var(--win)':'var(--line)'}" stroke-width="${nb?2.5:1.5}"/>
+      ${vzT(x,y+4,esc(names[i]).slice(0,9),{s:11,b:1,a:'middle',c:me?'var(--accent-ink)':'var(--text)'})}
+      ${lbl?vzT(x,y+(y>cy?42:-34),lbl,{s:10,a:'middle',c:me?'var(--text)':'var(--win)'}):''}`; };
+  return `<div class="chips" style="justify-content:center;margin-bottom:4px">${[0,1,2].map(a=>`<button class="chip" data-tbl-age="${a}" aria-pressed="${a===tblAge}">Tijdperk ${AGE[a]}</button>`).join('')}</div>
+  <svg viewBox="0 0 350 300" class="diagram" role="img" aria-label="Tafel van bovenaf met doorgeefrichting">${vzArrowDefs('tb')}
+    <circle cx="${cx}" cy="${cy}" r="${R-52}" fill="color-mix(in srgb,var(--wonder) 25%,var(--bg2))" stroke="var(--line)"/>
+    ${arcs}
+    ${vzT(cx,cy-4,'kaarten',{s:11,a:'middle',c:'var(--muted)'})}${vzT(cx,cy+12,ccw?'naar rechts':'naar links',{s:13,b:1,a:'middle'})}
+    ${names.map((_,i)=>seat(i)).join('')}
+  </svg>
+  <p class="small" style="margin:0">Je geeft je kaarten door ${ccw?'<b>naar rechts</b> (tijdperk II)':'<b>naar links</b> (tijdperk I en III)'}. Met je <b style="color:var(--win)">twee buren</b> (groen) koop je grondstoffen en vecht je de veldslagen uit. De anderen spelen niet tegen jou.</p>
+  ${game?'':'<p class="small muted" style="margin:6px 0 0">Start een spel en je ziet hier jullie eigen namen.</p>'}`;
+}
+document.addEventListener('click', e=>{ const b=e.target.closest('[data-tbl-age]'); if(!b) return; tblAge=+b.dataset.tblAge; const el=$('#vz-table'); if(el) el.innerHTML=vizTable(); });
+const FLOW_GUIDE={t:'🧭 Het verloop in beeld', open:true, h:()=>`
+  <div class="sec-title" style="margin-top:0">Het hele spel</div>${vizTimeline()}
+  <div class="sec-title">Eén beurt</div>${vizTurn()}
+  <p class="small" style="margin:0 0 4px">Iedereen kiest <b>tegelijk</b> een kaart en draait <b>samen</b> om. Na 6 beurten volgt de veldslag.</p>
+  <div class="sec-title">De tafel van bovenaf</div><div id="vz-table">${vizTable()}</div>`};
+
 const GUIDE = [
  {t:'🎯 Het doel: de meeste punten', open:true, h:`
   <p style="margin-top:0">Iedereen bouwt een oude stad uit met kaarten. Na <b>3 tijdperken</b> (rondes) tel je de <b>overwinningspunten</b>. Wie de meeste heeft, wint.</p>
@@ -1306,7 +1400,7 @@ const GUIDE = [
   <div class="sec-title">Het probleem: kaarten kosten iets</div>
   <p style="margin-bottom:0">De meeste kaarten die punten geven, kosten <b>grondstoffen</b> (hout, steen, glas, …). Die krijg je van <b>bruine en grijze kaarten</b>, of je <b>koopt</b> ze bij je buren voor 2 munten. Je moet dus eerst een stad bouwen die grondstoffen maakt, en pas daarna punten verzamelen.</p>
   <div class="loop"><span>🟫 grondstoffen</span><b>→</b><span>🏗️ betere kaarten bouwen</span><b>→</b><span>🏆 punten</span></div>`},
- {t:'🗺️ De weg ernaartoe: 3 tijdperken', open:true, h:
+ {t:'🗺️ De weg ernaartoe: 3 tijdperken', h:
   step('I','Tijdperk I · fundament leggen','<p>Bijna geen punten, wel je basis. Neem vooral:</p><ul><li><b>Bruine en grijze kaarten</b> (grondstoffen), het liefst soorten die je nog niet hebt. Kaarten met <b>2 grondstoffen</b> zijn extra goed.</li><li><b>Kaarten met een ketensymbool</b> rechtsboven: die maken later een dure kaart gratis.</li><li>Eén goedkope <b>rode kaart</b> als je buren dat ook doen, om de eerste veldslag niet te verliezen.</li></ul>')
  +step('II','Tijdperk II · uitbouwen','<p>Nu wordt het interessanter. Neem:</p><ul><li>Grondstoffen die je <b>nog mist</b> (vaak grijs: glas, stof, papyrus).</li><li><b>Blauwe en groene kaarten</b> van gemiddelde waarde, liefst <b>gratis via een keten</b>.</li><li><b>Wonderfases</b> als je hand niets nuttigs heeft.</li><li>Rode kaarten als je buren sterker worden: een veldslag is nu <b>+3</b> waard.</li></ul>')
  +step('III','Tijdperk III · punten scoren','<p>Alles draait nu om punten. Grondstoffen zijn bijna niets meer waard. Neem:</p><ul><li><b>Grote blauwe kaarten</b> (5 tot 8 punten) en <b>paarse gilden</b>.</li><li><b>Groen</b> als je al wetenschap hebt: elk symbool levert dan veel op.</li><li>Je <b>wonder afwerken</b>.</li><li>De laatste <b>veldslag</b> winnen: <b>+5</b> per buur.</li><li>Kaarten <b>wegnemen</b> die je buur veel punten zouden geven: schuif ze onder je wonder.</li></ul>')
@@ -1317,6 +1411,7 @@ const GUIDE = [
   <li><b>⚔️ Generaal</b>: rood. Win je veldslagen tegen beide buren: tot 18 punten. Werkt als je buren zwak zijn in rood.</li>
   <li><b>💰 Handelaar</b>: geel en munten. Koop wat je mist en bouw de dure kaarten.</li></ul>
   <p style="margin-bottom:0">📱 <b>Kiezen</b> in de app weegt dit elke beurt voor je af: tik je kaarten aan en je ziet welke kaart je het meest oplevert, en waarom.</p>`},
+ FLOW_GUIDE,
  {t:'⚡ Een beurt in het kort', h:`<ol class="big-steps">
   <li><b>Kies 1 kaart</b> uit je hand en leg ze gedekt voor je. Iedereen tegelijk.</li>
   <li><b>Draai samen om</b> en doe er 1 ding mee: <b>bouwen</b> (betaal de kosten links op de kaart), <b>onder je wonder schuiven</b> (bouwt de volgende fase), of <b>verkopen</b> voor 3 munten.</li>
